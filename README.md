@@ -15,4 +15,6 @@ popular tools like chaostoolkit.
   The litmus-python is very similar to and therefore a sister repo of [litmus-go](https://github.com/litmuschaos/litmus-go) 
   which houses examples for experiment business logic written in golang. 
 
+**Appendix
+- This repo moved from existing location of [test-tools/chaostoolkit] (https://github.com/litmuschaos/test-tools/tree/master/chaostoolkit) to better serve as stand-alone project 
 
