@@ -20,11 +20,11 @@ jobs:
       name: checking syntax of shell script
       script:
       - bash -c 'shopt -s globstar nullglob; shellcheck **/*.{sh,ksh,bash}' || true
-      
-    - stage: build chaostoolkit images
-      name: build docker image chaostoolkit
+
+    - stage: build chaos-test images
+      name: build docker image chaos-test
       script:
-      - make chaostoolkit
+      - make chaos-test
 
 notifications:
   email:

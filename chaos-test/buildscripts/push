@@ -1,14 +1,14 @@
 #!/bin/bash
 set -e
 
-IMAGEID=$( docker images -q litmuschaos/chaostoolkit )
+IMAGEID=$( docker images -q litmuschaos/chaos-test )
 
 if [ ! -z "${DNAME}" ] && [ ! -z "${DPASS}" ];
 then
   docker login -u "${DNAME}" -p "${DPASS}";
   #Push to docker hub repository with latest tag
-  docker tag ${IMAGEID} litmuschaos/chaostoolkit:latest
-  docker push litmuschaos/chaostoolkit:latest;
+  docker tag ${IMAGEID} litmuschaos/chaos-test:latest
+  docker push litmuschaos/chaos-test:latest;
 else
   echo "No docker credentials provided. Skip uploading litmuschaos/chaostoolkit:latest to docker hub";
 fi;

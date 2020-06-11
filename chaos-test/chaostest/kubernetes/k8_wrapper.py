@@ -57,7 +57,7 @@ parser.add_argument('-report_endpoint', action='store',
 
 results = parser.parse_args()
 
-# adopt log structure used by the chaostest framework
+# adopt log structure used by the chaos-test framework
 logging.basicConfig(
 	format="[%(asctime)s %(levelname)-2s] [%(module)s:%(lineno)s] %(message)s",
 	level=logging.DEBUG,

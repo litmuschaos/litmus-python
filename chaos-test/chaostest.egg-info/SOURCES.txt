@@ -3,12 +3,12 @@ README.md
 setup.cfg
 setup.py
 chaostest/__init__.py
-chaostest/setup.py
 chaostest.egg-info/PKG-INFO
 chaostest.egg-info/SOURCES.txt
 chaostest.egg-info/dependency_links.txt
 chaostest.egg-info/requires.txt
 chaostest.egg-info/top_level.txt
+chaostest/intuit/chaos-v2-pod-app-kill.json
 chaostest/json/pod-app-kill-all.json
 chaostest/json/pod-app-kill-count-aks.json
 chaostest/json/pod-app-kill-count.json

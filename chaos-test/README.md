@@ -1,10 +1,10 @@
 # Chaos Toolkit for Litmus Chaos
 
-## ChaosToolKit
+## chaostest
 
 The Chaos Toolkit aims to be the simplest and easiest way to explore building your own Chaos Engineering Experiments. It also aims to define a vendor and technology independent way of specifying Chaos Engineering experiments by providing an Open API.
 
-Reference: https://chaostoolkit.org/
+Reference: https://chaostest.org/
 
 ## Steps to install Chaos Toolkit
 
@@ -31,12 +31,37 @@ Install Python for your system:
    ```
    Download the latest binary installer (https://www.python.org/downloads/windows/) from the Python website.
    ```
+# Build Manually
+
+   Dependencies can be installed for your system via its package management but, more likely, you will want to install them yourself in a local virtual environment.
+1.
+   ```
+   $ python3 -m venv ~/.venvs/chaostk
+   ```
+
+1. Make sure to always activate your virtual environment before using it:
+
+   ```
+   $ source  ~/.venvs/chaostk/bin/activate
+   ```
+
+# Install chaostest CLI
+
+1. Install chaostest in the virtual environment as follows:
+   ```
+   (chaostk) $ pip install chaostoolkit
+   ```
+
+1. You can verify the command was installed by running:
+   ```
+   (chaostk) $ chaos --version
+   ```
 
 # Local Development
 
 1. In this directory
     ```
-    cd test-tools/chaostoolkit
+    cd litmus-python/chaos-test
    ```
 1. build python package
     ```
@@ -44,11 +69,11 @@ Install Python for your system:
    ```
 1. In this directory
     ```
-    cd test-tools
+    cd litmus-python
     ```
 1. build pip module
     ```
-    pip install chaostoolkit/
+    pip install chaos-test/
    ```
 
 
