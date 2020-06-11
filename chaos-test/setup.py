@@ -11,7 +11,7 @@ def get_version_from_package() -> str:
 	"""
     Read the package version from the source without importing it.
     """
-	path = os.path.join(os.path.dirname(__file__), "chaos-test/__init__.py")
+	path = os.path.join(os.path.dirname(__file__), "chaostest/__init__.py")
 	path = os.path.normpath(os.path.abspath(path))
 	with open(path) as f:
 		for line in f:
@@ -45,9 +45,9 @@ author = 'Sumit Nagal'
 author_email = 'sumit_nagal@intuit.com'
 license = 'Apache License Version 2.0'
 packages = [
-	'chaos-test',
-	'chaos-test.kubernetes',
-	'chaos-test.utils'
+	'chaostest',
+	'chaostest.kubernetes',
+	'chaostest.utils'
 ]
 needs_pytest = set(['pytest', 'test']).intersection(sys.argv)
 package_data = {

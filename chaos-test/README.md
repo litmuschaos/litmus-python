@@ -4,7 +4,7 @@
 
 The Chaos Toolkit aims to be the simplest and easiest way to explore building your own Chaos Engineering Experiments. It also aims to define a vendor and technology independent way of specifying Chaos Engineering experiments by providing an Open API.
 
-Reference: https://chaostest.org/
+Reference: https://chaostoolkit.org/
 
 ## Steps to install Chaos Toolkit
 

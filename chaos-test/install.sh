@@ -1,21 +1,5 @@
 #!/bin/bash
 
-# Chaos toolkit litmus local package installation
-declare -a chaos_litmus_packages=("chaostest")
-for chaos_litmus_package in "${chaos_litmus_packages[@]}"
-do
-  pwd
-#  mkdir /app/"$chaos_litmus_package"/
-#  cd "$chaos_litmus_package"
-#  ls -lrt
-#  cp -rf . /app/"$chaos_litmus_package"/
-  cd /app/"$chaos_litmus_package"/
-  pwd
-  ls -ltr
-  python setup.py develop
-  pip install -U .
-done
-
 # Preserve order for chaos-test and lib in the beginning, thats the core
 declare -a chaosexperiments=("chaostoolkit" "chaostoolkit-lib" "chaostoolkit-kubernetes" "chaostoolkit-reporting")
 for chaosexperiment in "${chaosexperiments[@]}"
@@ -35,6 +19,21 @@ do
   ls -ltr
 done
 
+# Chaos toolkit litmus local package installation
+declare -a chaos_litmus_packages=("chaostest")
+for chaos_litmus_package in "${chaos_litmus_packages[@]}"
+do
+  pwd
+#  mkdir /app/"$chaos_litmus_package"/
+#  cd "$chaos_litmus_package"
+#  ls -lrt
+#  cp -rf . /app/"$chaos_litmus_package"/
+  cd /app/"$chaos_litmus_package"/
+  pwd
+  ls -ltr
+  python setup.py develop
+  pip install -U .
+done
 
 
 rm -rf /tmp/* /root/.cache
