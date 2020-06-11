@@ -21,7 +21,7 @@ def get_version_from_package() -> str:
 				return version
 
 
-name = 'chaostest'
+name = 'chaos-test'
 desc = 'Chaos Toolkit for running with litmus'
 
 with io.open('README.md', encoding='utf-8') as strm:
