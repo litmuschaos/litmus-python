@@ -24,17 +24,21 @@
     "steady-state-hypothesis": {
         "title": "Application is normal",
         "probes": [
-            {
-                "type": "probe",
-                "name": "application-must-respond-normally",
-                "tolerance": 200,
-                "provider": {
-                    "type": "http",
-                    "url": "https://${service_url}/health/full",
-                    "timeout": 0.5
-                }
-            }
-        ]
+					{
+					  "type": "probe",
+					  "name": "there-should-be-at-least-2-running-app-replicas",
+					  "tolerance": 3,
+					  "provider": {
+						"type": "python",
+						"module": "chaosk8s.pod.probes",
+						"func": "count_pods",
+						"arguments": {
+						  "label_selector": "`${app_name}",
+						  "ns": "${name_space}"
+						}
+					  }
+					}
+    			]
     },
     "method": [
 	    {

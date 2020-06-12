@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 parser = argparse.ArgumentParser()
 
 parser.add_argument("-file", action='store',
-                    default="pod-app-kill-count-aks.json",
+                    default="pod-custom-kill-count.json",
                     dest="file",
                     help="Chaos file to chose for execution"
                     )
