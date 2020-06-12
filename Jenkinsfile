@@ -50,7 +50,7 @@ podTemplate(name: ptNameVersion, label: ptNameVersion, containers: [
         def scmInfo = checkout scm
         def shortCommit = "${scmInfo.GIT_COMMIT}"[0..6]
         tag = "${env.BUILD_TAG}-${shortCommit}"
-        def hasReleaseTag = sh(returnStdout: true, script: 'git tag --points-at HEAD').trim().startsWith('release-')
+        //def hasReleaseTag = sh(returnStdout: true, script: 'git tag --points-at HEAD').trim().startsWith('release-')
 
         // Build Stage
         stage('Build') {
