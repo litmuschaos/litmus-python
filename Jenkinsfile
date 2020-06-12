@@ -2,7 +2,7 @@
 
 def l1 = 'dev'
 def l2 = 'tools'
-def serviceName = 'litmus-python'
+def serviceName = 'chaos-test'
 def region = 'usw2'
 def iksType = 'ppd'
 def appName = "${l1}-${l2}-${serviceName}-${region}-${iksType}"
@@ -11,7 +11,7 @@ def deployable_branches = ["master"]
 // def argocd_password = "argocd-${serviceName}"
 // def kson_compnt= "sample"
 def ptNameVersion = "${serviceName}-${UUID.randomUUID().toString().toLowerCase()}"
-def repo = "dev/tools/reliabilityiks2/"
+def repo = "dev/tools/reliabilityiks2"
 def deploy_repo = "github.intuit.com/dev-tools/litmus-python.git"
 def tag = ""
 def registry = "docker.artifactory.a.intuit.com"
