@@ -35,7 +35,7 @@ class Helper(object):
 	"""
 
 	def chaos_result_tracker(self, exp_name, exp_phase, exp_verdict, ns):
-		env_tmpl = Environment(loader=PackageLoader('chaos-test', 'templates'), trim_blocks=True, lstrip_blocks=True,
+		env_tmpl = Environment(loader=PackageLoader('chaostest', 'templates'), trim_blocks=True, lstrip_blocks=True,
 							   autoescape=select_autoescape(['yaml']))
 		template = env_tmpl.get_template('chaos-result.j2')
 		updated_chaosresult_template = template.render(c_experiment=exp_name, phase=exp_phase, verdict=exp_verdict)
