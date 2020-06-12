@@ -62,18 +62,19 @@ podTemplate(name: ptNameVersion, label: ptNameVersion, containers: [
 //                     sh "pip download -r requirements.txt -d packages"
 //                 }
                 container('docker') {
-                    sh "echo ${DOCKER_PASSWORD} | docker login ${registry} -u ${DOCKER_USERNAME} --password-stdin"
-                    if(isPR){
-						sh "cd chaos-test/ && DOCKER_BUILDKIT=1 docker build -f Dockerfile . -t ${registry}/${image}:${tag}"
-						sh "docker push ${registry}/${image}:${tag}"
-                    } else {
-						sh "cd chaos-test/ && DOCKER_BUILDKIT=1 docker build -f Dockerfile . -t ${registry}/${image}:${tag}"
-						sh "docker push ${registry}/${image}:${tag}"
-                    }
-                   sh "docker logout ${registry}"
-                }
-            }
-        }
-}
+									sh "echo ${DOCKER_PASSWORD} | docker login ${registry} -u ${DOCKER_USERNAME} --password-stdin"
+									if(isPR){
+										sh "cd chaos-test/ && DOCKER_BUILDKIT=1 docker build -f Dockerfile . -t ${registry}/${image}:${tag}"
+										sh "docker push ${registry}/${image}:${tag}"
+									} else {
+										sh "cd chaos-test/ && DOCKER_BUILDKIT=1 docker build -f Dockerfile . -t ${registry}/${image}:${tag}"
+										sh "docker push ${registry}/${image}:${tag}"
+									}
+								   sh "docker logout ${registry}"
+								} //container
+            	}  //withCredentials
+        	} // stage
+       } // Node
+} //Template
 
 
