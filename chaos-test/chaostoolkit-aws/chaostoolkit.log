@@ -1,0 +1,234 @@
+[36m[2019-09-26 16:26:04 DEBUG] [cli:70][39m ###############################################################################
+[36m[2019-09-26 16:26:04 DEBUG] [cli:71][39m Running command 'run'
+[36m[2019-09-26 16:26:04 DEBUG] [cli:75][39m Using settings file '/Users/vthomas2/.chaostoolkit/settings.yaml'
+[36m[2019-09-26 16:26:04 DEBUG] [settings:24][39m The Chaos Toolkit settings file could not be found at '/Users/vthomas2/.chaostoolkit/settings.yaml'.
+[36m[2019-09-26 16:26:04 DEBUG] [__init__:355][39m No controls to apply on 'loader'
+[36m[2019-09-26 16:26:04 DEBUG] [__init__:355][39m No controls to apply on 'loader'
+[36m[2019-09-26 16:26:04 DEBUG] [caching:25][39m Building activity cache...
+[36m[2019-09-26 16:26:04 DEBUG] [caching:35][39m Cached 2 activities
+[32m[2019-09-26 16:26:04 INFO] [experiment:54][39m Validating the experiment's syntax
+[36m[2019-09-26 16:26:04 DEBUG] [configuration:36][39m Loading configuration...
+[36m[2019-09-26 16:26:04 DEBUG] [caching:42][39m Clearing activities cache
+[31m[2019-09-26 16:26:04 ERROR] [cli:119][39m Configuration makes reference to an environment key that does not exist: AWS_REGION
+[36m[2019-09-26 16:26:04 DEBUG] [cli:120][39m Configuration makes reference to an environment key that does not exist: AWS_REGION
+[36m[2019-09-26 16:26:46 DEBUG] [cli:70][39m ###############################################################################
+[36m[2019-09-26 16:26:46 DEBUG] [cli:71][39m Running command 'run'
+[36m[2019-09-26 16:26:46 DEBUG] [cli:75][39m Using settings file '/Users/vthomas2/.chaostoolkit/settings.yaml'
+[36m[2019-09-26 16:26:46 DEBUG] [settings:24][39m The Chaos Toolkit settings file could not be found at '/Users/vthomas2/.chaostoolkit/settings.yaml'.
+[36m[2019-09-26 16:26:46 DEBUG] [__init__:355][39m No controls to apply on 'loader'
+[36m[2019-09-26 16:26:46 DEBUG] [__init__:355][39m No controls to apply on 'loader'
+[36m[2019-09-26 16:26:46 DEBUG] [caching:25][39m Building activity cache...
+[36m[2019-09-26 16:26:46 DEBUG] [caching:35][39m Cached 2 activities
+[32m[2019-09-26 16:26:46 INFO] [experiment:54][39m Validating the experiment's syntax
+[36m[2019-09-26 16:26:46 DEBUG] [configuration:36][39m Loading configuration...
+[36m[2019-09-26 16:26:46 DEBUG] [secret:74][39m Loading secrets...
+[36m[2019-09-26 16:26:46 DEBUG] [secret:89][39m Secrets loaded
+[32m[2019-09-26 16:26:47 INFO] [experiment:100][39m Experiment looks valid
+[36m[2019-09-26 16:26:47 DEBUG] [caching:42][39m Clearing activities cache
+[36m[2019-09-26 16:26:47 DEBUG] [caching:25][39m Building activity cache...
+[36m[2019-09-26 16:26:47 DEBUG] [caching:35][39m Cached 2 activities
+[32m[2019-09-26 16:26:47 INFO] [experiment:179][39m Running experiment: EC2 instances Going from K8 cluster
+[36m[2019-09-26 16:26:47 DEBUG] [configuration:36][39m Loading configuration...
+[36m[2019-09-26 16:26:47 DEBUG] [secret:74][39m Loading secrets...
+[36m[2019-09-26 16:26:47 DEBUG] [secret:89][39m Secrets loaded
+[36m[2019-09-26 16:26:47 DEBUG] [__init__:39][39m Initializing controls
+[36m[2019-09-26 16:26:47 DEBUG] [__init__:355][39m No controls to apply on 'experiment'
+[32m[2019-09-26 16:26:47 INFO] [hypothesis:184][39m Steady state hypothesis: EC2 instance stopped and K8 recreating them
+[36m[2019-09-26 16:26:47 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[36m[2019-09-26 16:26:47 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-26 16:26:47 INFO] [activity:158][39m Probe: there-should-be-fixed-running-instance-5-node-3-master
+[36m[2019-09-26 16:26:47 DEBUG] [python:36][39m Activity 'there-should-be-fixed-running-instance-5-node-3-master' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/probes.py'
+[36m[2019-09-26 16:26:47 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-26 16:26:47 DEBUG] [activity:176][39m   => succeeded with '8'
+[36m[2019-09-26 16:26:47 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-26 16:26:47 DEBUG] [hypothesis:212][39m allowed tolerance is 8
+[32m[2019-09-26 16:26:47 INFO] [hypothesis:222][39m Steady state hypothesis is met!
+[36m[2019-09-26 16:26:47 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[36m[2019-09-26 16:26:47 DEBUG] [__init__:355][39m No controls to apply on 'method'
+[36m[2019-09-26 16:26:47 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-26 16:26:47 INFO] [activity:158][39m Action: stopping-instance-now
+[36m[2019-09-26 16:26:47 DEBUG] [python:36][39m Activity 'stopping-instance-now' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/actions.py'
+[36m[2019-09-26 16:26:47 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-26 16:26:47 DEBUG] [actions:59][39m Picked EC2 instance 'defaultdict(typing.List, {'normal': ['i-032196c8b3aed1d4b']})' from AZ 'None' to be stopped
+[36m[2019-09-26 16:26:47 DEBUG] [actions:527][39m Stopping instances: ['i-032196c8b3aed1d4b']
+[36m[2019-09-26 16:26:47 DEBUG] [activity:176][39m   => succeeded with '[{'StoppingInstances': [{'CurrentState': {'Code': 64, 'Name': 'stopping'}, 'InstanceId': 'i-032196c8b3aed1d4b', 'PreviousState': {'Code': 16, 'Name': 'running'}}], 'ResponseMetadata': {'RequestId': '19b82962-98c5-4388-8467-b47cb1ae9e4a', 'HTTPStatusCode': 200, 'HTTPHeaders': {'content-type': 'text/xml;charset=UTF-8', 'content-length': '579', 'date': 'Thu, 26 Sep 2019 23:26:47 GMT', 'server': 'AmazonEC2'}, 'RetryAttempts': 0}}]'
+[32m[2019-09-26 16:26:47 INFO] [activity:195][39m Pausing after activity for 120s...
+[36m[2019-09-26 16:28:47 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-26 16:28:47 DEBUG] [__init__:355][39m No controls to apply on 'method'
+[32m[2019-09-26 16:28:47 INFO] [hypothesis:184][39m Steady state hypothesis: EC2 instance stopped and K8 recreating them
+[36m[2019-09-26 16:28:47 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[36m[2019-09-26 16:28:47 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-26 16:28:47 INFO] [activity:158][39m Probe: there-should-be-fixed-running-instance-5-node-3-master
+[36m[2019-09-26 16:28:47 DEBUG] [python:36][39m Activity 'there-should-be-fixed-running-instance-5-node-3-master' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/probes.py'
+[36m[2019-09-26 16:28:47 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-26 16:28:48 DEBUG] [activity:176][39m   => succeeded with '8'
+[36m[2019-09-26 16:28:48 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-26 16:28:48 DEBUG] [hypothesis:212][39m allowed tolerance is 8
+[32m[2019-09-26 16:28:48 INFO] [hypothesis:222][39m Steady state hypothesis is met!
+[36m[2019-09-26 16:28:48 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[32m[2019-09-26 16:28:48 INFO] [experiment:311][39m Let's rollback...
+[36m[2019-09-26 16:28:48 DEBUG] [__init__:355][39m No controls to apply on 'rollback'
+[32m[2019-09-26 16:28:48 INFO] [rollback:28][39m Rollback: terminate-instance
+[36m[2019-09-26 16:28:48 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-26 16:28:48 INFO] [activity:148][39m Pausing before next activity for 15s...
+[32m[2019-09-26 16:29:03 INFO] [activity:158][39m Action: terminate-instance
+[36m[2019-09-26 16:29:03 DEBUG] [python:36][39m Activity 'terminate-instance' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/actions.py'
+[36m[2019-09-26 16:29:03 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-26 16:29:03 DEBUG] [actions:567][39m Terminating normal instance(s): ['i-032196c8b3aed1d4b']
+[36m[2019-09-26 16:29:03 DEBUG] [activity:176][39m   => succeeded with '[{'TerminatingInstances': [{'CurrentState': {'Code': 48, 'Name': 'terminated'}, 'InstanceId': 'i-032196c8b3aed1d4b', 'PreviousState': {'Code': 80, 'Name': 'stopped'}}], 'ResponseMetadata': {'RequestId': 'e63068b2-dcd1-459e-9e9a-26afd4914ac2', 'HTTPStatusCode': 200, 'HTTPHeaders': {'content-type': 'text/xml;charset=UTF-8', 'transfer-encoding': 'chunked', 'vary': 'accept-encoding', 'date': 'Thu, 26 Sep 2019 23:29:03 GMT', 'server': 'AmazonEC2'}, 'RetryAttempts': 0}}]'
+[36m[2019-09-26 16:29:03 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-26 16:29:03 DEBUG] [__init__:355][39m No controls to apply on 'rollback'
+[32m[2019-09-26 16:29:03 INFO] [experiment:261][39m Experiment ended with status: completed
+[36m[2019-09-26 16:29:03 DEBUG] [__init__:355][39m No controls to apply on 'experiment'
+[36m[2019-09-26 16:29:03 DEBUG] [__init__:72][39m Cleaning up controls
+[36m[2019-09-26 16:29:03 DEBUG] [caching:42][39m Clearing activities cache
+[36m[2019-09-30 11:20:47 DEBUG] [cli:70][39m ###############################################################################
+[36m[2019-09-30 11:20:47 DEBUG] [cli:71][39m Running command 'run'
+[36m[2019-09-30 11:20:47 DEBUG] [cli:75][39m Using settings file '/Users/vthomas2/.chaostoolkit/settings.yaml'
+[36m[2019-09-30 11:20:48 DEBUG] [settings:24][39m The Chaos Toolkit settings file could not be found at '/Users/vthomas2/.chaostoolkit/settings.yaml'.
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:355][39m No controls to apply on 'loader'
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:355][39m No controls to apply on 'loader'
+[36m[2019-09-30 11:20:48 DEBUG] [caching:25][39m Building activity cache...
+[36m[2019-09-30 11:20:48 DEBUG] [caching:35][39m Cached 2 activities
+[32m[2019-09-30 11:20:48 INFO] [experiment:54][39m Validating the experiment's syntax
+[36m[2019-09-30 11:20:48 DEBUG] [configuration:36][39m Loading configuration...
+[36m[2019-09-30 11:20:48 DEBUG] [secret:74][39m Loading secrets...
+[36m[2019-09-30 11:20:48 DEBUG] [secret:89][39m Secrets loaded
+[32m[2019-09-30 11:20:48 INFO] [experiment:100][39m Experiment looks valid
+[36m[2019-09-30 11:20:48 DEBUG] [caching:42][39m Clearing activities cache
+[36m[2019-09-30 11:20:48 DEBUG] [caching:25][39m Building activity cache...
+[36m[2019-09-30 11:20:48 DEBUG] [caching:35][39m Cached 2 activities
+[32m[2019-09-30 11:20:48 INFO] [experiment:179][39m Running experiment: EC2 instances Going from K8 cluster
+[36m[2019-09-30 11:20:48 DEBUG] [configuration:36][39m Loading configuration...
+[36m[2019-09-30 11:20:48 DEBUG] [secret:74][39m Loading secrets...
+[36m[2019-09-30 11:20:48 DEBUG] [secret:89][39m Secrets loaded
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:39][39m Initializing controls
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:355][39m No controls to apply on 'experiment'
+[32m[2019-09-30 11:20:48 INFO] [hypothesis:184][39m Steady state hypothesis: EC2 instance stopped and K8 recreating them
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-30 11:20:48 INFO] [activity:158][39m Probe: there-should-be-fixed-running-instance-5-node-3-master
+[36m[2019-09-30 11:20:48 DEBUG] [python:36][39m Activity 'there-should-be-fixed-running-instance-5-node-3-master' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/probes.py'
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-30 11:20:48 DEBUG] [activity:176][39m   => succeeded with '8'
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-30 11:20:48 DEBUG] [hypothesis:212][39m allowed tolerance is 8
+[32m[2019-09-30 11:20:48 INFO] [hypothesis:222][39m Steady state hypothesis is met!
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:355][39m No controls to apply on 'method'
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-30 11:20:48 INFO] [activity:158][39m Action: stopping-instance-now
+[36m[2019-09-30 11:20:48 DEBUG] [python:36][39m Activity 'stopping-instance-now' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/actions.py'
+[36m[2019-09-30 11:20:48 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-30 11:20:48 DEBUG] [actions:59][39m Picked EC2 instance 'defaultdict(typing.List, {'normal': ['i-045077cd67f2bc587']})' from AZ 'None' to be stopped
+[36m[2019-09-30 11:20:48 DEBUG] [actions:527][39m Stopping instances: ['i-045077cd67f2bc587']
+[36m[2019-09-30 11:20:49 DEBUG] [activity:176][39m   => succeeded with '[{'StoppingInstances': [{'CurrentState': {'Code': 64, 'Name': 'stopping'}, 'InstanceId': 'i-045077cd67f2bc587', 'PreviousState': {'Code': 16, 'Name': 'running'}}], 'ResponseMetadata': {'RequestId': 'c57474f2-59df-499c-8ac5-873e48be5b65', 'HTTPStatusCode': 200, 'HTTPHeaders': {'content-type': 'text/xml;charset=UTF-8', 'content-length': '579', 'date': 'Mon, 30 Sep 2019 18:20:48 GMT', 'server': 'AmazonEC2'}, 'RetryAttempts': 0}}]'
+[32m[2019-09-30 11:20:49 INFO] [activity:195][39m Pausing after activity for 120s...
+[36m[2019-09-30 11:22:49 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-30 11:22:49 DEBUG] [__init__:355][39m No controls to apply on 'method'
+[32m[2019-09-30 11:22:49 INFO] [hypothesis:184][39m Steady state hypothesis: EC2 instance stopped and K8 recreating them
+[36m[2019-09-30 11:22:49 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[36m[2019-09-30 11:22:49 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-30 11:22:49 INFO] [activity:158][39m Probe: there-should-be-fixed-running-instance-5-node-3-master
+[36m[2019-09-30 11:22:49 DEBUG] [python:36][39m Activity 'there-should-be-fixed-running-instance-5-node-3-master' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/probes.py'
+[36m[2019-09-30 11:22:49 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-30 11:22:49 DEBUG] [activity:176][39m   => succeeded with '8'
+[36m[2019-09-30 11:22:49 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-30 11:22:49 DEBUG] [hypothesis:212][39m allowed tolerance is 8
+[32m[2019-09-30 11:22:49 INFO] [hypothesis:222][39m Steady state hypothesis is met!
+[36m[2019-09-30 11:22:49 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[32m[2019-09-30 11:22:49 INFO] [experiment:311][39m Let's rollback...
+[36m[2019-09-30 11:22:49 DEBUG] [__init__:355][39m No controls to apply on 'rollback'
+[32m[2019-09-30 11:22:49 INFO] [rollback:28][39m Rollback: terminate-instance
+[36m[2019-09-30 11:22:49 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-30 11:22:49 INFO] [activity:148][39m Pausing before next activity for 15s...
+[32m[2019-09-30 11:23:04 INFO] [activity:158][39m Action: terminate-instance
+[36m[2019-09-30 11:23:04 DEBUG] [python:36][39m Activity 'terminate-instance' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/actions.py'
+[36m[2019-09-30 11:23:04 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-30 11:23:04 DEBUG] [actions:567][39m Terminating normal instance(s): ['i-045077cd67f2bc587']
+[36m[2019-09-30 11:23:04 DEBUG] [activity:176][39m   => succeeded with '[{'TerminatingInstances': [{'CurrentState': {'Code': 48, 'Name': 'terminated'}, 'InstanceId': 'i-045077cd67f2bc587', 'PreviousState': {'Code': 80, 'Name': 'stopped'}}], 'ResponseMetadata': {'RequestId': '5600e9fc-fe07-4a9a-9115-87559a4cfd4f', 'HTTPStatusCode': 200, 'HTTPHeaders': {'content-type': 'text/xml;charset=UTF-8', 'transfer-encoding': 'chunked', 'vary': 'accept-encoding', 'date': 'Mon, 30 Sep 2019 18:23:04 GMT', 'server': 'AmazonEC2'}, 'RetryAttempts': 0}}]'
+[36m[2019-09-30 11:23:04 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-30 11:23:04 DEBUG] [__init__:355][39m No controls to apply on 'rollback'
+[32m[2019-09-30 11:23:04 INFO] [experiment:261][39m Experiment ended with status: completed
+[36m[2019-09-30 11:23:04 DEBUG] [__init__:355][39m No controls to apply on 'experiment'
+[36m[2019-09-30 11:23:04 DEBUG] [__init__:72][39m Cleaning up controls
+[36m[2019-09-30 11:23:04 DEBUG] [caching:42][39m Clearing activities cache
+[36m[2019-09-30 12:29:58 DEBUG] [cli:70][39m ###############################################################################
+[36m[2019-09-30 12:29:58 DEBUG] [cli:71][39m Running command 'run'
+[36m[2019-09-30 12:29:58 DEBUG] [cli:75][39m Using settings file '/Users/vthomas2/.chaostoolkit/settings.yaml'
+[36m[2019-09-30 12:29:58 DEBUG] [settings:24][39m The Chaos Toolkit settings file could not be found at '/Users/vthomas2/.chaostoolkit/settings.yaml'.
+[36m[2019-09-30 12:29:58 DEBUG] [__init__:355][39m No controls to apply on 'loader'
+[36m[2019-09-30 12:29:58 DEBUG] [__init__:355][39m No controls to apply on 'loader'
+[36m[2019-09-30 12:29:58 DEBUG] [caching:25][39m Building activity cache...
+[36m[2019-09-30 12:29:58 DEBUG] [caching:35][39m Cached 2 activities
+[32m[2019-09-30 12:29:58 INFO] [experiment:54][39m Validating the experiment's syntax
+[36m[2019-09-30 12:29:58 DEBUG] [configuration:36][39m Loading configuration...
+[36m[2019-09-30 12:29:58 DEBUG] [secret:74][39m Loading secrets...
+[36m[2019-09-30 12:29:58 DEBUG] [secret:89][39m Secrets loaded
+[32m[2019-09-30 12:29:58 INFO] [experiment:100][39m Experiment looks valid
+[36m[2019-09-30 12:29:58 DEBUG] [caching:42][39m Clearing activities cache
+[36m[2019-09-30 12:29:58 DEBUG] [caching:25][39m Building activity cache...
+[36m[2019-09-30 12:29:58 DEBUG] [caching:35][39m Cached 2 activities
+[32m[2019-09-30 12:29:58 INFO] [experiment:179][39m Running experiment: EC2 instances Going from K8 cluster
+[36m[2019-09-30 12:29:58 DEBUG] [configuration:36][39m Loading configuration...
+[36m[2019-09-30 12:29:58 DEBUG] [secret:74][39m Loading secrets...
+[36m[2019-09-30 12:29:58 DEBUG] [secret:89][39m Secrets loaded
+[36m[2019-09-30 12:29:58 DEBUG] [__init__:39][39m Initializing controls
+[36m[2019-09-30 12:29:58 DEBUG] [__init__:355][39m No controls to apply on 'experiment'
+[32m[2019-09-30 12:29:58 INFO] [hypothesis:184][39m Steady state hypothesis: EC2 instance stopped and K8 recreating them
+[36m[2019-09-30 12:29:58 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[36m[2019-09-30 12:29:58 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-30 12:29:58 INFO] [activity:158][39m Probe: there-should-be-fixed-running-instance-5-node-3-master
+[36m[2019-09-30 12:29:58 DEBUG] [python:36][39m Activity 'there-should-be-fixed-running-instance-5-node-3-master' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/probes.py'
+[36m[2019-09-30 12:29:58 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-30 12:29:59 DEBUG] [activity:176][39m   => succeeded with '8'
+[36m[2019-09-30 12:29:59 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-30 12:29:59 DEBUG] [hypothesis:212][39m allowed tolerance is 8
+[32m[2019-09-30 12:29:59 INFO] [hypothesis:222][39m Steady state hypothesis is met!
+[36m[2019-09-30 12:29:59 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[36m[2019-09-30 12:29:59 DEBUG] [__init__:355][39m No controls to apply on 'method'
+[36m[2019-09-30 12:29:59 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-30 12:29:59 INFO] [activity:158][39m Action: stopping-instance-now
+[36m[2019-09-30 12:29:59 DEBUG] [python:36][39m Activity 'stopping-instance-now' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/actions.py'
+[36m[2019-09-30 12:29:59 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-30 12:29:59 DEBUG] [actions:59][39m Picked EC2 instance 'defaultdict(typing.List, {'normal': ['i-0b14b17de174ceeea']})' from AZ 'None' to be stopped
+[36m[2019-09-30 12:29:59 DEBUG] [actions:527][39m Stopping instances: ['i-0b14b17de174ceeea']
+[36m[2019-09-30 12:29:59 DEBUG] [activity:176][39m   => succeeded with '[{'StoppingInstances': [{'CurrentState': {'Code': 64, 'Name': 'stopping'}, 'InstanceId': 'i-0b14b17de174ceeea', 'PreviousState': {'Code': 16, 'Name': 'running'}}], 'ResponseMetadata': {'RequestId': '6ea5c336-cc2b-483c-b3b4-b3c1a346b7c8', 'HTTPStatusCode': 200, 'HTTPHeaders': {'content-type': 'text/xml;charset=UTF-8', 'content-length': '579', 'date': 'Mon, 30 Sep 2019 19:29:59 GMT', 'server': 'AmazonEC2'}, 'RetryAttempts': 0}}]'
+[32m[2019-09-30 12:29:59 INFO] [activity:195][39m Pausing after activity for 120s...
+[36m[2019-09-30 12:31:59 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-30 12:31:59 DEBUG] [__init__:355][39m No controls to apply on 'method'
+[32m[2019-09-30 12:31:59 INFO] [hypothesis:184][39m Steady state hypothesis: EC2 instance stopped and K8 recreating them
+[36m[2019-09-30 12:31:59 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[36m[2019-09-30 12:31:59 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-30 12:31:59 INFO] [activity:158][39m Probe: there-should-be-fixed-running-instance-5-node-3-master
+[36m[2019-09-30 12:31:59 DEBUG] [python:36][39m Activity 'there-should-be-fixed-running-instance-5-node-3-master' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/probes.py'
+[36m[2019-09-30 12:31:59 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-30 12:32:00 DEBUG] [activity:176][39m   => succeeded with '8'
+[36m[2019-09-30 12:32:00 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-30 12:32:00 DEBUG] [hypothesis:212][39m allowed tolerance is 8
+[32m[2019-09-30 12:32:00 INFO] [hypothesis:222][39m Steady state hypothesis is met!
+[36m[2019-09-30 12:32:00 DEBUG] [__init__:355][39m No controls to apply on 'hypothesis'
+[32m[2019-09-30 12:32:00 INFO] [experiment:311][39m Let's rollback...
+[36m[2019-09-30 12:32:00 DEBUG] [__init__:355][39m No controls to apply on 'rollback'
+[32m[2019-09-30 12:32:00 INFO] [rollback:28][39m Rollback: terminate-instance
+[36m[2019-09-30 12:32:00 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[32m[2019-09-30 12:32:00 INFO] [activity:148][39m Pausing before next activity for 15s...
+[32m[2019-09-30 12:32:15 INFO] [activity:158][39m Action: terminate-instance
+[36m[2019-09-30 12:32:15 DEBUG] [python:36][39m Activity 'terminate-instance' loaded from '/Users/vthomas2/.venvs/chaostk/lib/python3.7/site-packages/chaosaws/ec2/actions.py'
+[36m[2019-09-30 12:32:15 DEBUG] [__init__:73][39m Using default AWS role
+[36m[2019-09-30 12:32:15 DEBUG] [actions:567][39m Terminating normal instance(s): ['i-0b14b17de174ceeea']
+[36m[2019-09-30 12:32:15 DEBUG] [activity:176][39m   => succeeded with '[{'TerminatingInstances': [{'CurrentState': {'Code': 48, 'Name': 'terminated'}, 'InstanceId': 'i-0b14b17de174ceeea', 'PreviousState': {'Code': 80, 'Name': 'stopped'}}], 'ResponseMetadata': {'RequestId': '7ed5736e-a34d-4535-aa21-7b2ab5a7ae59', 'HTTPStatusCode': 200, 'HTTPHeaders': {'content-type': 'text/xml;charset=UTF-8', 'transfer-encoding': 'chunked', 'vary': 'accept-encoding', 'date': 'Mon, 30 Sep 2019 19:32:14 GMT', 'server': 'AmazonEC2'}, 'RetryAttempts': 0}}]'
+[36m[2019-09-30 12:32:15 DEBUG] [__init__:355][39m No controls to apply on 'activity'
+[36m[2019-09-30 12:32:15 DEBUG] [__init__:355][39m No controls to apply on 'rollback'
+[32m[2019-09-30 12:32:15 INFO] [experiment:261][39m Experiment ended with status: completed
+[36m[2019-09-30 12:32:15 DEBUG] [__init__:355][39m No controls to apply on 'experiment'
+[36m[2019-09-30 12:32:15 DEBUG] [__init__:72][39m Cleaning up controls
+[36m[2019-09-30 12:32:15 DEBUG] [caching:42][39m Clearing activities cache
+[36m[2019-10-08 17:51:45 DEBUG] [cli:70][39m ###############################################################################
+[36m[2019-10-08 17:51:45 DEBUG] [cli:71][39m Running command 'discover'
+[36m[2019-10-08 17:51:45 DEBUG] [cli:75][39m Using settings file '/Users/vthomas2/.chaostoolkit/settings.yaml'
+[36m[2019-10-08 17:51:45 DEBUG] [settings:24][39m The Chaos Toolkit settings file could not be found at '/Users/vthomas2/.chaostoolkit/settings.yaml'.
+[36m[2019-10-08 17:52:03 DEBUG] [cli:70][39m ###############################################################################
+[36m[2019-10-08 17:52:03 DEBUG] [cli:71][39m Running command 'discover'
+[36m[2019-10-08 17:52:03 DEBUG] [cli:75][39m Using settings file '/Users/vthomas2/.chaostoolkit/settings.yaml'
+[36m[2019-10-08 17:52:03 DEBUG] [settings:24][39m The Chaos Toolkit settings file could not be found at '/Users/vthomas2/.chaostoolkit/settings.yaml'.

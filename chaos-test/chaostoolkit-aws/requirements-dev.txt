@@ -1,0 +1,7 @@
+coverage
+moto==1.3.4
+pycodestyle
+pytest>=2.8
+pytest-cov
+pytest-sugar
+requests_mock
