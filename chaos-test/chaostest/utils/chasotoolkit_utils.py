@@ -13,7 +13,7 @@ from chaoslib.exceptions import InvalidSource
 from chaoslib.experiment import run_experiment
 from chaoslib.loader import load_experiment
 from  chaostest.utils.report import Report
-from chaostest import encoder
+from chaostoolkit import encoder
 
 logger = logging.getLogger(__name__)
 
