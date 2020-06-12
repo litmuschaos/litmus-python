@@ -54,7 +54,7 @@ podTemplate(name: ptNameVersion, label: ptNameVersion, containers: [
 
         // Build Stage
         stage('Build') {
-            withCredentials([usernamePassword(credentialsId: "artifactory-${serviceName}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+            withCredentials([usernamePassword(credentialsId: "artifactory-reliabilityiks2", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
 //                 container('python') {
 //                     sh "echo Test 1"
 //                     sh "cp pip.conf /etc/pip.conf"
