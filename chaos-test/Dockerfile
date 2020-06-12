@@ -73,10 +73,10 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
 ### Setup chaostoolkit packages
-ADD . /app/chaostest
+ADD . /app/chaos
 # ADD install.sh install.sh
-WORKDIR /app/chaostest
+WORKDIR /app/chaos
 RUN chmod +x install.sh
 RUN ./install.sh
-WORKDIR /app/chaostest
+WORKDIR /app/chaos
 ### Setup chaostoolkit package
