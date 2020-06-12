@@ -61,7 +61,7 @@ Install Python for your system:
 
 1. In this directory
     ```
-    cd litmus-python/chaos-test
+    cd litmus-python/chaos-test/chaostest
    ```
 1. build python package
     ```
@@ -69,11 +69,11 @@ Install Python for your system:
    ```
 1. In this directory
     ```
-    cd litmus-python
+    cd litmus-python/chaos-test
     ```
 1. build pip module
     ```
-    pip install chaos-test/
+    pip install chaostest/
    ```
 
 
