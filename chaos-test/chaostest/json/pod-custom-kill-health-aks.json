@@ -56,7 +56,6 @@
                 "func": "terminate_pods",
                 "arguments": {
                     "label_selector": "app=${app_name}",
-                    "name_pattern": "${app_name}",
                     "ns": "${name_space}",
                     "rand": true,
                     "mode": "fixed",
