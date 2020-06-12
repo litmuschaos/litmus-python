@@ -1,4 +1,4 @@
-FROM python:3.7-buster
+FROM docker.intuit.com/oicp/standard/external/python:3.7-stretch-20.06.03
 
 LABEL maintainer="sumit nagal"
 LABEL name=chaostoolkit
