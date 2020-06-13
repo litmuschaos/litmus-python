@@ -7,26 +7,22 @@
         "kubernetes",
         "spring"
     ],
-      "secrets": {
-		"k8s": {
-		  "KUBERNETES_VERIFY_SSL": {
-			"type": "env",
-			"key": "False"
-		  }
-		}
-	  },
      "configuration": {
         "app_name": {
 		"type" : "env",
 		"key" : "LABEL_NAME"
-	},
+	    },
         "name_space": {
         	"type": "env",
         	"key": "NAME_SPACE"
-          },
+        },
         "service_url": {
             "type": "env",
             "key": "APP_ENDPOINT"
+        },
+        "percentage": {
+            "type": "env",
+            "key": "PERCENTAGE"
         }
     },
     "steady-state-hypothesis": {
@@ -36,7 +32,6 @@
                 "type": "probe",
                 "name": "application-must-respond-normally",
                 "tolerance": 200,
-                "secrets": ["k8s"],
                 "provider": {
                     "type": "http",
                     "url": "https://${service_url}/health/full",
@@ -49,17 +44,17 @@
 	    {
             "type": "action",
             "name": "Terminate_pod",
-            "secrets": ["k8s"],
             "provider": {
                 "type": "python",
                 "module": "chaosk8s.pod.actions",
                 "func": "terminate_pods",
                 "arguments": {
-                    "label_selector": "app=${app_name}",
+                    "label_selector": "${app_name}",
+                    "name_pattern": "${app_name}",
                     "ns": "${name_space}",
                     "rand": true,
-                    "mode": "fixed",
-                    "qty": 1
+                    "mode": "percentage",
+                    "qty": 100
                 }
             },
             "pauses": {

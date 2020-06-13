@@ -7,14 +7,6 @@
     "kubernetes",
     "spring"
   ],
-  "secrets": {
-	"k8s": {
-	  "KUBERNETES_VERIFY_SSL": {
-		"type": "env",
-		"key": "False"
-	  }
-	}
-  },
   "configuration": {
     "app_name": {
       "type": "env",
@@ -32,7 +24,6 @@
         "type": "probe",
         "name": "there-should-be-at-least-2-running-app-replicas",
         "tolerance": 3,
-        "secrets": ["k8s"],
         "provider": {
           "type": "python",
           "module": "chaosk8s.pod.probes",
@@ -49,13 +40,13 @@
     {
       "type": "action",
       "name": "Terminate_pod",
-      "secrets": ["k8s"],
       "provider": {
         "type": "python",
         "module": "chaosk8s.pod.actions",
         "func": "terminate_pods",
         "arguments": {
           "label_selector": "app=${app_name}",
+          "name_pattern": "${app_name}",
           "ns": "${name_space}",
           "rand": true,
           "mode": "fixed",
