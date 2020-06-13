@@ -1,0 +1,82 @@
+{
+  "version": "1.0.0",
+  "title": "EC2 instances are self-healing",
+  "description": "Do instances restart on their own when they are stopped? Unlikely in a default case, which is why we use a rollback to restart it manually. It's expected this experiment will likely always fail",
+  "configuration": {
+    "aws_region": { 
+        "type": "env", 
+        "key": "AWS_REGION"
+    },
+  "ec2_instance_id": {
+    "type": "env",
+    "key": "EC2_INSTANCE_ID"
+  },
+  "ec2_az": {
+    "type": "env",
+    "key": "EC2_AZ"
+  }
+},
+  "steady-state-hypothesis": {
+    "title": "EC2 instance self-heals",
+    "probes": [
+      {
+          "type": "probe",
+          "name": "there-should-be-fixed-running-instance-5-node-3-master",
+          "tolerance": {
+            "type": "jsonpath",
+            "path": "$.Reservations[*].Instances[*][?(@.InstanceId=\"${ec2_instance_id}\")].State.Name",
+            "expect": "running"
+          },
+          "provider": {
+            "type": "python",
+            "module": "chaosaws.ec2.probes",
+            "func": "describe_instances",
+            "arguments": {
+              "filters": [
+                {
+                  "Name": "availability-zone",
+                  "Values": [
+                    "${ec2_az}"
+                  ]
+                },
+                {
+                  "Name": "instance-state-name",
+                  "Values": [ "running" ]
+              }
+              ]
+            }
+          }
+        }
+    ]
+  },
+  "method": [
+    {
+      "type": "action",
+      "name": "describe-instance-now",
+      "provider": {
+        "type": "python",
+        "module": "chaosaws.ec2.probes",
+        "func": "describe_instances",
+        "arguments": {
+          "filters": [
+            {
+              "Name": "availability-zone",
+              "Values": [
+                "${ec2_az}"
+              ]
+            },
+            {
+              "Name": "instance-state-name",
+              "Values": [ "running" ]
+          }
+          ]
+        }
+      },
+      "pauses": {
+        "after": 15
+      }
+    }
+  ],
+  "rollbacks": [
+  ]
+}

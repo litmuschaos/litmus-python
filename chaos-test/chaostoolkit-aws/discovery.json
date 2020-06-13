@@ -1,0 +1,2362 @@
+{
+  "chaoslib_version": "1.0.0",
+  "id": "5bc4abab-5178-44f3-af16-f471f91b198b",
+  "target": "aws",
+  "date": "2019-09-20T00:58:49.607706Z",
+  "platform": {
+    "system": "Darwin",
+    "node": "mtvl150487165",
+    "release": "17.7.0",
+    "version": "Darwin Kernel Version 17.7.0: Wed Apr 24 21:17:24 PDT 2019; root:xnu-4570.71.45~1/RELEASE_X86_64",
+    "machine": "x86_64",
+    "proc": "i386",
+    "python": "3.6.1"
+  },
+  "extension": {
+    "name": "chaostoolkit-aws",
+    "version": "0.11.2"
+  },
+  "activities": [
+    {
+      "type": "action",
+      "name": "attach_volume",
+      "mod": "chaosaws.ec2.actions",
+      "doc": "Attaches a previously detached EBS volume to its associated EC2 instance.\n\nIf neither 'instance_ids' or 'filters' are provided, all detached volumes\nwill be reattached to their respective instances\n\nParameters:\n    One of:\n        instance_ids: list: instance ids\n        filters: list: key/value pairs to pull ec2 instances",
+      "arguments": [
+        {
+          "name": "instance_ids",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "filters",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "detach_random_volume",
+      "mod": "chaosaws.ec2.actions",
+      "doc": "Detaches a random ebs volume (non root) from one or more EC2 instances\n\nParameters:\n    One of:\n        instance_ids: a list of one or more ec2 instance ids\n        filters: a list of key/value pairs to pull ec2 instances\n\n    force: force detach volume (default: true)\n\nAdditional filters may be used to narrow the scope:\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_instances",
+      "arguments": [
+        {
+          "name": "instance_ids",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "filters",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "force",
+          "default": true,
+          "type": "boolean"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "restart_instances",
+      "mod": "chaosaws.ec2.actions",
+      "doc": "Restarts one or more EC2 instances.\n\nWARNING: If only an Availability Zone is provided, all instances in the\nprovided AZ will be restarted.\n\nAdditional filters may be used to narrow the scope:\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_instances",
+      "arguments": [
+        {
+          "name": "instance_ids",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "az",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "filters",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "start_instances",
+      "mod": "chaosaws.ec2.actions",
+      "doc": "Starts one or more EC2 instances.\n\nWARNING: If only an Availability Zone is provided, all instances in the\nprovided AZ will be started.\n\nAdditional filters may be used to narrow the scope:\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_instances",
+      "arguments": [
+        {
+          "name": "instance_ids",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "az",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "filters",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "stop_instance",
+      "mod": "chaosaws.ec2.actions",
+      "doc": "Stop a single EC2 instance.\n\nYou may provide an instance id explicitly or, if you only specify the AZ,\na random instance will be selected. If you need more control, you can\nalso provide a list of filters following the documentation\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_instances",
+      "arguments": [
+        {
+          "name": "instance_id",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "az",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "force",
+          "default": false,
+          "type": "boolean"
+        },
+        {
+          "name": "filters",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "stop_instances",
+      "mod": "chaosaws.ec2.actions",
+      "doc": "Stop the given EC2 instances or, if none is provided, all instances\nof the given availability zone. If you need more control, you can\nalso provide a list of filters following the documentation\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_instances",
+      "arguments": [
+        {
+          "name": "instance_ids",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "az",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "filters",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "force",
+          "default": false,
+          "type": "boolean"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "terminate_instance",
+      "mod": "chaosaws.ec2.actions",
+      "doc": "Terminates a single EC2 instance.\n\nAn instance may be targeted by specifying it by instance-id. If only the\navailability-zone is provided, a random instances in that AZ will be\nselected and terminated. For more control, please reference the available\nfilters found:\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_instances",
+      "arguments": [
+        {
+          "name": "instance_id",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "az",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "filters",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "terminate_instances",
+      "mod": "chaosaws.ec2.actions",
+      "doc": "Terminates multiple EC2 instances\n\nA set of instances may be targeted by providing them as the instance-ids.\n\nWARNING: If  only an Availability Zone is specified, all instances in\nthat AZ will be terminated.\n\nAdditional filters may be used to narrow the scope:\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_instances",
+      "arguments": [
+        {
+          "name": "instance_ids",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "az",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "filters",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "probe",
+      "name": "count_instances",
+      "mod": "chaosaws.ec2.probes",
+      "doc": "Return count of instances matching the specified filters.\n\nPlease refer to https://bit.ly/2Sv9lmU\n\nfor details on said filters.",
+      "arguments": [
+        {
+          "name": "filters",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "integer"
+    },
+    {
+      "type": "probe",
+      "name": "describe_instances",
+      "mod": "chaosaws.ec2.probes",
+      "doc": "Describe instances following the specified filters.\n\nPlease refer to https://bit.ly/2Sv9lmU\n\nfor details on said filters.",
+      "arguments": [
+        {
+          "name": "filters",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "instance_state",
+      "mod": "chaosaws.ec2.probes",
+      "doc": "Determines if EC2 instances match desired state\n\nFor additional filter options, please refer to the documentation found:\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_instances",
+      "arguments": [
+        {
+          "name": "state",
+          "type": "string"
+        },
+        {
+          "name": "instance_ids",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "filters",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "action",
+      "name": "delete_cluster",
+      "mod": "chaosaws.ecs.actions",
+      "doc": "Delete a given ECS cluster",
+      "arguments": [
+        {
+          "name": "cluster",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "delete_service",
+      "mod": "chaosaws.ecs.actions",
+      "doc": "Update a given ECS service by updating it to set the desired count of tasks\nto 0 then delete it. If not provided, a random one will be picked up\nregarding `service_pattern`, if provided, so that only service names\nmatching the pattern would be be used. This should be a valid regex.\n\nYou can specify a cluster by its ARN identifier or, if not provided, the\ndefault cluster will be picked up.",
+      "arguments": [
+        {
+          "name": "service",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "cluster",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "service_pattern",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "deregister_container_instance",
+      "mod": "chaosaws.ecs.actions",
+      "doc": "Deregister a given ECS container. Becareful that tasks handled by this\ninstance will remain orphan.",
+      "arguments": [
+        {
+          "name": "cluster",
+          "type": "string"
+        },
+        {
+          "name": "instance_id",
+          "type": "string"
+        },
+        {
+          "name": "force",
+          "default": false,
+          "type": "boolean"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "stop_random_tasks",
+      "mod": "chaosaws.ecs.actions",
+      "doc": "Stop a random number of tasks based on given task_count or task_percent\n\nYou can specify a cluster by its ARN identifier or, if not provided, the\ndefault cluster will be picked up.\n\nParameters:\n            Required:\n                - cluster: name of the cluster to stop tasks in\n\n            Optional:\n                - service: name of the service to stop tasks in\n\n            One Of:\n                - task_count: the number of tasks to stop\n                - task_percent: the percentage of tasks to stop",
+      "arguments": [
+        {
+          "name": "cluster",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "task_count",
+          "default": null,
+          "type": "integer"
+        },
+        {
+          "name": "task_percent",
+          "default": null,
+          "type": "integer"
+        },
+        {
+          "name": "service",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "reason",
+          "default": "Chaos Testing",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "stop_task",
+      "mod": "chaosaws.ecs.actions",
+      "doc": "Stop a given ECS task instance. If no task_id provided, a random task of\nthe given service is stopped.\n\nYou can specify a cluster by its ARN identifier or, if not provided, the\ndefault cluster will be picked up.",
+      "arguments": [
+        {
+          "name": "cluster",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "task_id",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "service",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "reason",
+          "default": "Chaos Testing",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "are_all_desired_tasks_running",
+      "mod": "chaosaws.ecs.probes",
+      "doc": "Checks to make sure desired and running tasks counts are equal",
+      "arguments": [
+        {
+          "name": "cluster",
+          "type": "string"
+        },
+        {
+          "name": "service",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "probe",
+      "name": "describe_cluster",
+      "mod": "chaosaws.ecs.probes",
+      "doc": "Returns AWS response describing the specified cluster\n\nProbe example:\n    \"steady-state-hypothesis\": {\n        \"title\": \"MyCluster has 3 running tasks\",\n        \"probes\": [{\n            \"type\": \"probe\",\n            \"name\": \"Cluster running task count\",\n            \"tolerance\": {\n                \"type\": \"jsonpath\",\n                \"path\": $.clusters[0].runningTasksCount,\n                \"expect\": 3\n            },\n            \"provider\": {\n                \"type\": \"python\",\n                \"module\": \"chaosaws.ecs.probes\",\n                \"func\": \"describe_cluster\",\n                \"arguments\": {\n                    \"cluster\": \"MyCluster\"\n                }\n            }\n        }]\n    }\n\nFull list of possible paths can be found:\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ecs.html#ECS.Client.describe_clusters",
+      "arguments": [
+        {
+          "name": "cluster",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "describe_service",
+      "mod": "chaosaws.ecs.probes",
+      "doc": "Returns AWS response describing the specified cluster service\n\nProbe example:\n    \"steady-state-hypothesis\": {\n        \"title\": \"MyService pending count is 1\",\n        \"probes\": [{\n            \"type\": \"probe\",\n            \"name\": \"Service pending count\",\n            \"tolerance\": {\n                \"type\": \"jsonpath\",\n                \"path\": $.services[0].pendingCount,\n                \"expect\": 1\n            },\n            \"provider\": {\n                \"type\": \"python\",\n                \"module\": \"chaosaws.ecs.probes\",\n                \"func\": \"describe_service\",\n                \"arguments\": {\n                    \"cluster\": \"MyCluster\",\n                    \"service\": \"MyService\"\n                }\n            }\n        }]\n    }\n\nFull list of possible paths can be found:\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ecs.html#ECS.Client.describe_services",
+      "arguments": [
+        {
+          "name": "cluster",
+          "type": "string"
+        },
+        {
+          "name": "service",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "describe_tasks",
+      "mod": "chaosaws.ecs.probes",
+      "doc": "Returns AWS response describing the tasks for a provided cluster\n\nProbe example:\n    \"steady-state-hypothesis\": {\n        \"title\": \"MyCluster tasks are healthy\",\n        \"probes\": [{\n            \"type\": \"probe\",\n            \"name\": \"first task is healthy\",\n            \"tolerance\": {\n                \"type\": \"jsonpath\",\n                \"path\": $.tasks[0].healthStatus,\n                \"expect\": \"HEALTHY\"\n            },\n            \"provider\": {\n                \"type\": \"python\",\n                \"module\": \"chaosaws.ecs.probes\",\n                \"func\": \"describe_tasks\",\n                \"arguments\": {\n                    \"cluster\": \"MyCluster\"\n                }\n            }\n        }]\n    }\n\nFull list of possible paths can be found:\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ecs.html#ECS.Client.describe_tasks",
+      "arguments": [
+        {
+          "name": "cluster",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "service_is_deploying",
+      "mod": "chaosaws.ecs.probes",
+      "doc": "Checks to make sure there is not an in progress deployment",
+      "arguments": [
+        {
+          "name": "cluster",
+          "type": "string"
+        },
+        {
+          "name": "service",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "action",
+      "name": "attach_role_policy",
+      "mod": "chaosaws.iam.actions",
+      "doc": "Attach a role to a policy.",
+      "arguments": [
+        {
+          "name": "arn",
+          "type": "string"
+        },
+        {
+          "name": "role_name",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "create_policy",
+      "mod": "chaosaws.iam.actions",
+      "doc": "Create a new IAM policy",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "policy",
+          "type": "mapping"
+        },
+        {
+          "name": "path",
+          "default": "/",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "detach_role_policy",
+      "mod": "chaosaws.iam.actions",
+      "doc": "Detach a role from a policy.",
+      "arguments": [
+        {
+          "name": "arn",
+          "type": "string"
+        },
+        {
+          "name": "role_name",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "get_policy",
+      "mod": "chaosaws.iam.probes",
+      "doc": "Get a policy by its ARN",
+      "arguments": [
+        {
+          "name": "arn",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "action",
+      "name": "create_cluster",
+      "mod": "chaosaws.eks.actions",
+      "doc": "Create a new EKS cluster.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "role_arn",
+          "type": "string"
+        },
+        {
+          "name": "vpc_config",
+          "type": "mapping"
+        },
+        {
+          "name": "version",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "delete_cluster",
+      "mod": "chaosaws.eks.actions",
+      "doc": "Delete the given EKS cluster.",
+      "arguments": [
+        {
+          "name": "name",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "describe_cluster",
+      "mod": "chaosaws.eks.probes",
+      "doc": "Describe an EKS cluster.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "list_clusters",
+      "mod": "chaosaws.eks.probes",
+      "doc": "List EKS clusters available to the authenticated account.",
+      "arguments": [
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "delete_load_balancer",
+      "mod": "chaosaws.elbv2.actions",
+      "doc": "Deletes the provided load balancer(s).\n\nParameters:\n    - load_balancer_names: a list of load balancer names",
+      "arguments": [
+        {
+          "name": "load_balancer_names",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "deregister_target",
+      "mod": "chaosaws.elbv2.actions",
+      "doc": "Deregisters one random target from target group",
+      "arguments": [
+        {
+          "name": "tg_name",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "set_security_groups",
+      "mod": "chaosaws.elbv2.actions",
+      "doc": "Changes the security groups for the specified load balancer(s).\nThis action will replace the existing security groups on an application\nload balancer with the specified security groups.\n\nParameters:\n    - load_balancer_names: a list of load balancer names\n    - security_group_ids: a list of security group ids\n\nreturns:\n    [\n        {\n            'LoadBalancerArn': 'string',\n            'SecurityGroupIds': ['sg-0000000', 'sg-0000001']\n        },\n        ...\n    ]",
+      "arguments": [
+        {
+          "name": "load_balancer_names",
+          "type": "list"
+        },
+        {
+          "name": "security_group_ids",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "set_subnets",
+      "mod": "chaosaws.elbv2.actions",
+      "doc": "Changes the subnets for the specified application load balancer(s)\nThis action will replace the existing security groups on an application\nload balancer with the specified security groups.\n\nParameters:\n    - load_balancer_names: a list of load balancer names\n    - subnet_ids: a list of subnet ids\n\nreturns:\n    [\n        {\n            'LoadBalancerArn': 'string',\n            'AvailabilityZones': {\n                'ZoneName': 'string',\n                'SubnetId': 'string',\n                'LoadBalancerAddresses': [\n                    {\n                        'IpAddress': 'string',\n                        'AllocationId': 'string'\n                    }\n                ]\n            }\n        },\n        ...\n    ]",
+      "arguments": [
+        {
+          "name": "load_balancer_names",
+          "type": "list"
+        },
+        {
+          "name": "subnet_ids",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "probe",
+      "name": "all_targets_healthy",
+      "mod": "chaosaws.elbv2.probes",
+      "doc": "Return true/false based on if all targets for listed\ntarget groups are healthy",
+      "arguments": [
+        {
+          "name": "tg_names",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "targets_health_count",
+      "mod": "chaosaws.elbv2.probes",
+      "doc": "Count of healthy/unhealthy targets per targetgroup",
+      "arguments": [
+        {
+          "name": "tg_names",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "attach_volume",
+      "mod": "chaosaws.asg.actions",
+      "doc": "Attaches ebs volumes that have been previously detached by CTK\n\nParameters:\n    One of:\n        asg_names: list: one or more asg names\n        tags: list: key/value pairs to identify asgs by\n\n`tags` are expected as a list of dictionary objects:\n    [\n        {'Key': 'TagKey1', 'Value': 'TagValue1'},\n        {'Key': 'TagKey2', 'Value': 'TagValue2'},\n        ...\n    ]",
+      "arguments": [
+        {
+          "name": "asg_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "tags",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "change_subnets",
+      "mod": "chaosaws.asg.actions",
+      "doc": "Adds/removes subnets on autoscaling groups\n\nParameters:\n    One of:\n        asg_names: a list of one or more asg names\n        tags: a list of key/value pair to identify asg(s) by\n\n    subnets: a list of subnet IDs to associate to the ASG\n\n`tags` are expected as a list of dictionary objects:\n[\n    {'Key': 'TagKey1', 'Value': 'TagValue1'},\n    {'Key': 'TagKey2', 'Value': 'TagValue2'},\n    ...\n]",
+      "arguments": [
+        {
+          "name": "subnets",
+          "type": "list"
+        },
+        {
+          "name": "asg_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "tags",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "detach_random_instances",
+      "mod": "chaosaws.asg.actions",
+      "doc": "Detaches one or more random instances from an autoscaling group\n\nParameters:\n    One of:\n        asg_names: a list of one or more asg names\n        tags: a list of key/value pair to identify asg(s) by\n\n    One of:\n        instance_count: integer value of number of instances to detach\n        instance_percent: 1-100, percent of instances to detach\n\n    decrement_capacity: boolean value to determine if the desired capacity\n    of the autoscaling group should be decreased\n\n`tags` are expected as a list of dictionary objects:\n[\n    {'Key': 'TagKey1', 'Value': 'TagValue1'},\n    {'Key': 'TagKey2', 'Value': 'TagValue2'},\n    ...\n]",
+      "arguments": [
+        {
+          "name": "asg_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "tags",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "instance_count",
+          "default": null,
+          "type": "integer"
+        },
+        {
+          "name": "instance_percent",
+          "default": null,
+          "type": "integer"
+        },
+        {
+          "name": "decrement_capacity",
+          "default": false,
+          "type": "boolean"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "detach_random_volume",
+      "mod": "chaosaws.asg.actions",
+      "doc": "Detaches a random (non root) ebs volume from ec2 instances\nassociated to an ASG\n\nParameters:\n    One of:\n        asg_names: a list of one or more asg names\n        tags: a list of key/value pair to identify asg(s) by\n\n    force: force detach volume (default: true)\n\n`tags` are expected as a list of dictionary objects:\n[\n    {'Key': 'TagKey1', 'Value': 'TagValue1'},\n    {'Key': 'TagKey2', 'Value': 'TagValue2'},\n    ...\n]",
+      "arguments": [
+        {
+          "name": "asg_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "tags",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "force",
+          "default": true,
+          "type": "boolean"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "resume_processes",
+      "mod": "chaosaws.asg.actions",
+      "doc": "Resumes 1 or more suspended processes on a list of auto scaling groups.\n\nIf no process is specified, all suspended auto scaling\nprocesses will be resumed.\n\nFor a list of valid processes that can be suspended, reference:\nhttps://docs.aws.amazon.com/autoscaling/ec2/userguide/as-suspend-resume-processes.html\n\nParameters:\n    One of:\n        - asg_names: a list of one or more asg names to target\n        - tags: a list of key/value pairs to identify the asgs by\n\n`tags` are expected as a list of dictionary objects:\n[\n    {'Key': 'TagKey1', 'Value': 'TagValue1'},\n    {'Key': 'TagKey2', 'Value': 'TagValue2'},\n    ...\n]",
+      "arguments": [
+        {
+          "name": "asg_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "tags",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "process_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "stop_random_instances",
+      "mod": "chaosaws.asg.actions",
+      "doc": "Terminates one or more random healthy instances associated to an ALB\n\nA healthy instance is considered one with a status of 'InService'\n\nParameters:\n    - force: force stop the instances (default: False)\n\n    One Of:\n        - asg_names: a list of one or more asg names to target\n        - tags: a list of key/value pairs to identify the asgs by\n\n    One Of:\n        - instance_count: the number of instances to terminate\n        - instance_percent: the percentage of instances to terminate\n        - az: the availability zone to terminate instances\n\n`tags` are expected as a list of dictionary objects:\n[\n    {'Key': 'TagKey1', 'Value': 'TagValue1'},\n    {'Key': 'TagKey2', 'Value': 'TagValue2'},\n    ...\n]",
+      "arguments": [
+        {
+          "name": "asg_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "tags",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "instance_count",
+          "default": null,
+          "type": "integer"
+        },
+        {
+          "name": "instance_percent",
+          "default": null,
+          "type": "integer"
+        },
+        {
+          "name": "az",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "force",
+          "default": false,
+          "type": "boolean"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "suspend_processes",
+      "mod": "chaosaws.asg.actions",
+      "doc": "Suspends 1 or more processes on a list of auto scaling groups.\n\nIf no process is specified, all running auto scaling\nprocesses will be suspended.\n\nFor a list of valid processes that can be suspended, reference:\nhttps://docs.aws.amazon.com/autoscaling/ec2/userguide/as-suspend-resume-processes.html\n\nParameters:\n    One of:\n        - asg_names: a list of one or more asg names to target\n        - tags: a list of key/value pairs to identify the asgs by\n\n`tags` are expected as a list of dictionary objects:\n[\n    {'Key': 'TagKey1', 'Value': 'TagValue1'},\n    {'Key': 'TagKey2', 'Value': 'TagValue2'},\n    ...\n]",
+      "arguments": [
+        {
+          "name": "asg_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "tags",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "process_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "terminate_random_instances",
+      "mod": "chaosaws.asg.actions",
+      "doc": "Terminates one or more random healthy instances associated to an ALB\n\nA healthy instance is considered one with a status of 'InService'\n\nParameters:\n        One Of:\n            - asg_names: a list of one or more asg names to target\n            - tags: a list of key/value pairs to identify the asgs by\n\n        One Of:\n            - instance_count: the number of instances to terminate\n            - instance_percent: the percentage of instances to terminate\n            - az: the availability zone to terminate instances\n\n`tags` are expected as a list of dictionary objects:\n[\n    {'Key': 'TagKey1', 'Value': 'TagValue1'},\n    {'Key': 'TagKey2', 'Value': 'TagValue2'},\n    ...\n]",
+      "arguments": [
+        {
+          "name": "asg_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "tags",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "instance_count",
+          "default": null,
+          "type": "integer"
+        },
+        {
+          "name": "instance_percent",
+          "default": null,
+          "type": "integer"
+        },
+        {
+          "name": "az",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "probe",
+      "name": "describe_auto_scaling_groups",
+      "mod": "chaosaws.asg.probes",
+      "doc": "Returns AWS descriptions for provided ASG(s)\n\nParams:\n    OneOf:\n        - asg_names: a list of asg names to describe\n        - tags: a list of key/value pairs to collect ASG(s)\n\n`tags` are expected as a list of dictionary objects:\n[\n    {'Key': 'TagKey1', 'Value': 'TagValue1'},\n    {'Key': 'TagKey2', 'Value': 'TagValue2'},\n    ...\n]",
+      "arguments": [
+        {
+          "name": "asg_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "tags",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "desired_equals_healthy",
+      "mod": "chaosaws.asg.probes",
+      "doc": "If desired number matches the number of healthy instances\nfor each of the auto-scaling groups\n\nReturns: bool",
+      "arguments": [
+        {
+          "name": "asg_names",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "probe",
+      "name": "desired_equals_healthy_tags",
+      "mod": "chaosaws.asg.probes",
+      "doc": "If desired number matches the number of healthy instances\n\nfor each of the auto-scaling groups matching tags provided\n\n`tags` are  expected as:\n[{\n    'Key': 'KeyName',\n    'Value': 'KeyValue'\n},\n...\n]\n\nReturns: bool",
+      "arguments": [
+        {
+          "name": "tags",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "probe",
+      "name": "has_subnets",
+      "mod": "chaosaws.asg.probes",
+      "doc": "Determines if the provided autoscaling groups are in the provided subnets\n\n:returns boolean",
+      "arguments": [
+        {
+          "name": "subnets",
+          "type": "list"
+        },
+        {
+          "name": "asg_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "tags",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "probe",
+      "name": "is_scaling_in_progress",
+      "mod": "chaosaws.asg.probes",
+      "doc": "Check if there is any scaling activity in progress for ASG matching tags\n\nReturns: Boolean",
+      "arguments": [
+        {
+          "name": "tags",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "probe",
+      "name": "process_is_suspended",
+      "mod": "chaosaws.asg.probes",
+      "doc": "Determines if one or more processes on an ASG are suspended.\n\n:returns Boolean",
+      "arguments": [
+        {
+          "name": "asg_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "tags",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "process_names",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "probe",
+      "name": "wait_desired_equals_healthy",
+      "mod": "chaosaws.asg.probes",
+      "doc": "Wait until desired number matches the number of healthy instances\nfor each of the auto-scaling groups\n\nReturns: Integer (number of seconds it took to wait)\nor sys.maxsize in case of timeout",
+      "arguments": [
+        {
+          "name": "asg_names",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "timeout",
+          "default": 300,
+          "type": "object"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "integer"
+    },
+    {
+      "type": "probe",
+      "name": "wait_desired_equals_healthy_tags",
+      "mod": "chaosaws.asg.probes",
+      "doc": "Wait until desired number matches the number of healthy instances\nfor each of the auto-scaling groups matching tags provided\n\n`tags` are  expected as:\n[{\n    'Key': 'KeyName',\n    'Value': 'KeyValue'\n},\n...\n]\n\nReturns: Integer (number of seconds it took to wait)\nor sys.maxsize in case of timeout",
+      "arguments": [
+        {
+          "name": "tags",
+          "type": "list"
+        },
+        {
+          "name": "timeout",
+          "default": 300,
+          "type": "object"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "integer"
+    },
+    {
+      "type": "probe",
+      "name": "wait_desired_not_equals_healthy_tags",
+      "mod": "chaosaws.asg.probes",
+      "doc": "Wait until desired number doesn't match the number of healthy instances\nfor each of the auto-scaling groups matching tags provided\n\n`tags` are  expected as:\n[{\n    'Key': 'KeyName',\n    'Value': 'KeyValue'\n},\n...\n]\n\nReturns: Integer (number of seconds it took to wait)\nor sys.maxsize in case of timeout",
+      "arguments": [
+        {
+          "name": "tags",
+          "type": "list"
+        },
+        {
+          "name": "timeout",
+          "default": 300,
+          "type": "object"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "integer"
+    },
+    {
+      "type": "action",
+      "name": "delete_function_concurrency",
+      "mod": "chaosaws.awslambda.actions",
+      "doc": "Removes concurrency limit applied to the specified Lambda",
+      "arguments": [
+        {
+          "name": "function_name",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "invoke_function",
+      "mod": "chaosaws.awslambda.actions",
+      "doc": "Invokes Lambda.\n\nMore information about request arguments are available in the documentation\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/lambda.html#Lambda.Client.invoke",
+      "arguments": [
+        {
+          "name": "function_name",
+          "type": "string"
+        },
+        {
+          "name": "function_arguments",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "invocation_type",
+          "default": "RequestResponse",
+          "type": "string"
+        },
+        {
+          "name": "client_context",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "qualifier",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "put_function_concurrency",
+      "mod": "chaosaws.awslambda.actions",
+      "doc": "Throttles Lambda by setting reserved concurrency amount.",
+      "arguments": [
+        {
+          "name": "function_name",
+          "type": "string"
+        },
+        {
+          "name": "concurrent_executions",
+          "type": "integer"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "put_function_memory_size",
+      "mod": "chaosaws.awslambda.actions",
+      "doc": "Sets the function memory size.\n\nInput memory_size argument is specified in megabytes.",
+      "arguments": [
+        {
+          "name": "function_name",
+          "type": "string"
+        },
+        {
+          "name": "memory_size",
+          "type": "integer"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "put_function_timeout",
+      "mod": "chaosaws.awslambda.actions",
+      "doc": "Sets the function timeout.\n\nInput timeout argument is specified in seconds.",
+      "arguments": [
+        {
+          "name": "function_name",
+          "type": "string"
+        },
+        {
+          "name": "timeout",
+          "type": "integer"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "get_function_concurrency",
+      "mod": "chaosaws.awslambda.probes",
+      "doc": "Get configuration information of lambda by its function name",
+      "arguments": [
+        {
+          "name": "function_name",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "probe",
+      "name": "get_function_memory_size",
+      "mod": "chaosaws.awslambda.probes",
+      "doc": "Get the configured memory size of a lambda function.\n\nThe returned memory size is specified in megabytes.",
+      "arguments": [
+        {
+          "name": "function_name",
+          "type": "string"
+        },
+        {
+          "name": "qualifier",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "integer"
+    },
+    {
+      "type": "probe",
+      "name": "get_function_timeout",
+      "mod": "chaosaws.awslambda.probes",
+      "doc": "Get the configured timeout of a lambda function.\n\nThe returned timeout is specified in number of seconds.",
+      "arguments": [
+        {
+          "name": "function_name",
+          "type": "string"
+        },
+        {
+          "name": "qualifier",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "integer"
+    },
+    {
+      "type": "action",
+      "name": "delete_rule",
+      "mod": "chaosaws.cloudwatch.actions",
+      "doc": "Deletes a CloudWatch rule.\n\nAll rule targets must be removed before deleting the rule.\nSet input argument force to True to force all rule targets to be deleted.",
+      "arguments": [
+        {
+          "name": "rule_name",
+          "type": "string"
+        },
+        {
+          "name": "force",
+          "default": false,
+          "type": "boolean"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "disable_rule",
+      "mod": "chaosaws.cloudwatch.actions",
+      "doc": "Disables a CloudWatch rule.",
+      "arguments": [
+        {
+          "name": "rule_name",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "enable_rule",
+      "mod": "chaosaws.cloudwatch.actions",
+      "doc": "Enables a CloudWatch rule.",
+      "arguments": [
+        {
+          "name": "rule_name",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "put_rule",
+      "mod": "chaosaws.cloudwatch.actions",
+      "doc": "Creates or updates a CloudWatch event rule.\n\nPlease refer to https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/events.html#CloudWatchEvents.Client.put_rule\nfor details on input arguments.",
+      "arguments": [
+        {
+          "name": "rule_name",
+          "type": "string"
+        },
+        {
+          "name": "schedule_expression",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "event_pattern",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "state",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "role_arn",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "put_rule_targets",
+      "mod": "chaosaws.cloudwatch.actions",
+      "doc": "Creates or update CloudWatch event rule targets.\n\nPlease refer to https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/events.html#CloudWatchEvents.Client.put_targets\nfor details on input arguments.",
+      "arguments": [
+        {
+          "name": "rule_name",
+          "type": "string"
+        },
+        {
+          "name": "targets",
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "remove_rule_targets",
+      "mod": "chaosaws.cloudwatch.actions",
+      "doc": "Removes CloudWatch rule targets. If no target ids are provided all targets will be removed.",
+      "arguments": [
+        {
+          "name": "rule_name",
+          "type": "string"
+        },
+        {
+          "name": "target_ids",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "get_alarm_state_value",
+      "mod": "chaosaws.cloudwatch.probes",
+      "doc": "Return the state value of an alarm.\n\nThe possbile alarm state values are described in the documentation\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudwatch.html#CloudWatch.Client.describe_alarms",
+      "arguments": [
+        {
+          "name": "alarm_name",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "string"
+    },
+    {
+      "type": "probe",
+      "name": "get_metric_statistics",
+      "mod": "chaosaws.cloudwatch.probes",
+      "doc": "Get the value of a statistical calculation for a given metric.\n\nThe period for which the calculation will be performed is specified by a duration and\nan offset from the current time. Both are specified in seconds.\n\nExample: A duration of 60 seconds and an offset of 30 seconds will yield a\nstatistical value based on the time interval between 30 and 90 seconds in the past.\n\nMore information about input parameters are available in the documentation\nhttps://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudwatch.html#CloudWatch.Client.get_metric_statistics",
+      "arguments": [
+        {
+          "name": "namespace",
+          "type": "string"
+        },
+        {
+          "name": "metric_name",
+          "type": "string"
+        },
+        {
+          "name": "dimension_name",
+          "type": "string"
+        },
+        {
+          "name": "dimension_value",
+          "type": "string"
+        },
+        {
+          "name": "duration",
+          "default": 60,
+          "type": "integer"
+        },
+        {
+          "name": "offset",
+          "default": 0,
+          "type": "integer"
+        },
+        {
+          "name": "statistic",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "extended_statistic",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "unit",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "delete_db_cluster",
+      "mod": "chaosaws.rds.actions",
+      "doc": "Deletes an Aurora DB cluster\n\n- db_cluster_identifier: the identifier of the cluster to delete\n- skip_final_snapshot: boolean (true): determines whether or not to\n    perform a final snapshot of the cluster before deletion\n- db_snapshot_identifier: the identifier to give the final rds snapshot",
+      "arguments": [
+        {
+          "name": "db_cluster_identifier",
+          "type": "string"
+        },
+        {
+          "name": "skip_final_snapshot",
+          "default": true,
+          "type": "boolean"
+        },
+        {
+          "name": "db_snapshot_identifier",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "delete_db_cluster_endpoint",
+      "mod": "chaosaws.rds.actions",
+      "doc": "Deletes the custom endpoint of an Aurora cluster\n\n- db_cluster_identifier: the identifier of the cluster to delete the\n    endpoint from",
+      "arguments": [
+        {
+          "name": "db_cluster_identifier",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "delete_db_instance",
+      "mod": "chaosaws.rds.actions",
+      "doc": "Deletes a RDS instance\n\n- db_instance_identifier: the identifier of the RDS instance to delete\n- skip_final_snapshot: boolean (true): determines whether or not to\n    perform a final snapshot of the rds instance before deletion\n- db_snapshot_identifier: the identifier to give the final rds snapshot\n- delete_automated_backups: boolean (true): determines if the automated\n    backups of the rds instance are deleted immediately",
+      "arguments": [
+        {
+          "name": "db_instance_identifier",
+          "type": "string"
+        },
+        {
+          "name": "skip_final_snapshot",
+          "default": true,
+          "type": "boolean"
+        },
+        {
+          "name": "db_snapshot_identifier",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "delete_automated_backups",
+          "default": true,
+          "type": "boolean"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "failover_db_cluster",
+      "mod": "chaosaws.rds.actions",
+      "doc": "Forces a failover for a DB cluster.",
+      "arguments": [
+        {
+          "name": "db_cluster_identifier",
+          "type": "string"
+        },
+        {
+          "name": "target_db_instance_identifier",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "reboot_db_instance",
+      "mod": "chaosaws.rds.actions",
+      "doc": "Forces a reboot of your DB instance.",
+      "arguments": [
+        {
+          "name": "db_instance_identifier",
+          "type": "string"
+        },
+        {
+          "name": "force_failover",
+          "default": false,
+          "type": "boolean"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "stop_db_cluster",
+      "mod": "chaosaws.rds.actions",
+      "doc": "Stop a RDS Cluster\n\n- db_cluster_identifier: the identifier of the RDS cluster to stop",
+      "arguments": [
+        {
+          "name": "db_cluster_identifier",
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "stop_db_instance",
+      "mod": "chaosaws.rds.actions",
+      "doc": "Stops a RDS DB instance\n\n- db_instance_identifier: the instance identifier of the RDS instance\n- db_snapshot_identifier: the name of the DB snapshot made before stop",
+      "arguments": [
+        {
+          "name": "db_instance_identifier",
+          "type": "string"
+        },
+        {
+          "name": "db_snapshot_identifier",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "delete_cache_clusters",
+      "mod": "chaosaws.elasticache.actions",
+      "doc": "Deletes one or more cache clusters and creates a final snapshot\n\nParameters:\n     cluster_ids: list: a list of one or more cache cluster ids\n     final_snapshot_id: str: an identifier to give the final snapshot",
+      "arguments": [
+        {
+          "name": "cluster_ids",
+          "type": "list"
+        },
+        {
+          "name": "final_snapshot_id",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "delete_replication_groups",
+      "mod": "chaosaws.elasticache.actions",
+      "doc": "Deletes one or more replication groups and creates a final snapshot\n\nParameters:\n    group_ids: list: a list of one or more replication group ids\n    final_snapshot_id: str: an identifier to give the final snapshot\n    retain_primary_cluster: bool (default: True): delete only the read\n        replicas associated to the replication group, not the primary",
+      "arguments": [
+        {
+          "name": "group_ids",
+          "type": "list"
+        },
+        {
+          "name": "final_snapshot_id",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "retain_primary_cluster",
+          "default": true,
+          "type": "boolean"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "reboot_cache_clusters",
+      "mod": "chaosaws.elasticache.actions",
+      "doc": "Reboots one or more nodes in a cache cluster.\nIf no node ids are supplied, all nodes in the cluster will be rebooted\n\nParameters:\n    cluster_ids: list: a list of one or more cache cluster ids\n    node_ids: list: a list of one or more node ids in to the cluster",
+      "arguments": [
+        {
+          "name": "cluster_ids",
+          "type": "list"
+        },
+        {
+          "name": "node_ids",
+          "default": null,
+          "type": "list"
+        },
+        {
+          "name": "configuration",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "list"
+    }
+  ],
+  "system": null
+}

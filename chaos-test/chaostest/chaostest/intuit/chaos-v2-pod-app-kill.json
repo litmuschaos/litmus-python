@@ -1,0 +1,486 @@
+{
+    "version": "1.0.0",
+    "title": "System is resilient to provider's failures",
+    "description": "Can our consumer survive gracefully a provider's failure?",
+    "tags": [
+        "service",
+        "kubernetes",
+        "spring"
+    ],
+     "configuration": {
+        "app_name": {
+		"type" : "env",
+		"key" : "LABEL_NAME"
+	},
+        "name_space": {
+        	"type": "env",
+        	"key": "NAME_SPACE"
+          },
+        "service_url": {
+            "type": "env",
+            "key": "APP_ENDPOINT"
+        }
+    },
+    "steady-state-hypothesis": {
+        "title": "Application is normal",
+        "probes": [
+               {
+                "type": "probe",
+                "name": "application-must-respond-normally",
+                "tolerance": 200,
+                "provider": {
+                    "type": "http",
+                    "url": "https://${service_url}/health/full",
+                    "timeout": 0.5
+                }
+            },
+            {
+                  "type": "probe",
+                  "name": "addon-alb-ingress-controller-count-should-be-same",
+                  "tolerance": true,
+                  "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                      "label_selector": "app=alb-ingress-controller",
+                      "ns": "addon-alb-ingress-controller-ns"
+                    }
+                 }
+              },
+                {
+                  "type": "probe",
+                  "name": "addon-event-router-count-should-be-same",
+                  "tolerance": true,
+                  "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                      "label_selector": "app=event-router",
+                      "ns": "addon-event-router-ns"
+                    }
+                 }
+              },
+                {
+                  "type": "probe",
+                  "name": "addon-external-dns-count-should-be-same",
+                  "tolerance": true,
+                  "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                      "label_selector": "app=external-dns",
+                      "ns": "addon-external-dns-ns"
+                    }
+                 }
+              },
+                 {
+                  "type": "probe",
+                  "name": "addon-minion-manager-count-should-be-same",
+                  "tolerance": true,
+                  "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                      "label_selector": "app=minion-manager",
+                      "ns": "addon-minion-manager-ns"
+                    }
+                 }
+              },
+                {
+                  "type": "probe",
+                  "name": "addon-upgrademgr-count-should-be-same",
+                  "tolerance": true,
+                  "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                      "label_selector": "app=rolling-upgrade-controller",
+                      "ns": "addon-upgrademgr-ns"
+                    }
+                 }
+              },
+              {
+                  "type": "probe",
+                  "name": "addon-lifecycle-manager-count-should-be-same",
+                  "tolerance": true,
+                  "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                      "label_selector": "app=lifecycle-manager",
+                      "ns": "addon-lifecycle-manager-ns"
+                    }
+                 }
+              },
+                {
+                  "type": "probe",
+                  "name": "addon-wavefront-s3-adapter-count-should-be-same",
+                  "tolerance": true,
+                  "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                      "label_selector": "app=wavefront-s3-adapter",
+                      "ns": "addon-wavefront-s3-adapter-ns"
+                    }
+                 }
+              },
+              {
+                  "type": "probe",
+                  "name": "addon-wavefrontcollectors-count-should-be-same",
+                  "tolerance": {
+                    "type": "regex",
+                    "pattern": "[1-9]{1}"
+                  },
+                  "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "count_pods_string",
+                    "arguments": {
+                      "label_selector": "k8s-app=wavefront-collector",
+                      "ns": "addon-wavefrontcollectors-ns"
+                    }
+                 }
+              },
+               {
+                "type": "probe",
+                "name": "addon-fluentd-count-should-be-same",
+                "tolerance": {
+                    "type": "regex",
+                    "pattern": "[1-9]{1}"
+                },
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                     "func": "count_pods_string",
+                    "arguments": {
+                    "label_selector": "k8s-app=fluent-bit",
+                    "ns": "addon-oil-ns"
+                  }
+               }
+            },
+               {
+                "type": "probe",
+                "name": "addon-active-monitor-count-should-be-same",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "name=active-monitor-controller",
+                    "ns": "addon-active-monitor-ns"
+                  }
+               }
+            },
+           {
+                "type": "probe",
+                "name": "addon-active-monitor-workflow-controller-count-should-be-same",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "app.kubernetes.io/name=addon-active-monitor",
+                    "ns": "addon-active-monitor-ns"
+                  }
+               }
+            },
+              {
+                "type": "probe",
+                "name": "addon-manager-system-count-should-be-same",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "control-plane=addon-manager",
+                    "ns": "addon-manager-system"
+                  }
+               }
+            },
+               {
+                "type": "probe",
+                "name": "addon-manager-system-argo-count-should-be-same",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "app.kubernetes.io/name=addon-manager-argo-addon",
+                    "ns": "addon-manager-system"
+                  }
+               }
+            },
+              {
+                "type": "probe",
+                "name": "addon-cluster-autoscaler-count-should-be-same",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "app=cluster-autoscaler",
+                    "ns": "addon-cluster-autoscaler-ns"
+                  }
+               }
+            },
+              {
+                "type": "probe",
+                "name": "addon-alb-ingress-controller-count-should-be-same",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "app=default-http-backend",
+                    "ns": "addon-alb-ingress-controller-ns"
+                  }
+               }
+            },
+               {
+                "type": "probe",
+                "name": "argo-server-count-should-be-same",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "app=argo-server",
+                    "ns": "argo"
+                  }
+               }
+            },
+           {
+                "type": "probe",
+                "name": "kube-system-calico-typha-count-should-be-same",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "k8s-app=calico-typha",
+                    "ns": "kube-system"
+                  }
+               }
+            },
+               {
+                "type": "probe",
+                "name": "kube-system-calico-typha-autoscaler-count-should-be-same",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "k8s-app=calico-typha-autoscaler",
+                    "ns": "kube-system"
+                  }
+               }
+            },
+               {
+                "type": "probe",
+                "name": "kube-system-aws-node-count-should-be-same",
+                "tolerance": {
+                    "type": "regex",
+                    "pattern": "[1-9]{1}"
+                },
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "count_pods_string",
+                    "arguments": {
+                    "label_selector": "k8s-app=aws-node",
+                    "ns": "kube-system"
+                  }
+               }
+            },
+               {
+                "type": "probe",
+                "name": "instance-manager-count-should-be-same",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "app=instance-manager",
+                    "ns": "instance-manager"
+                  }
+               }
+            },
+              {
+                "type": "probe",
+                "name": "kube-system-k8s-kube-proxy-count-should-be-same",
+                "tolerance": {
+                    "type": "regex",
+                    "pattern": "[1-9]{1}"
+                },
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "count_pods_string",
+                    "arguments": {
+                    "label_selector": "k8s-app=kube-proxy",
+                    "ns": "kube-system"
+                  }
+               }
+            },
+              {
+                "type": "probe",
+                "name": "kube-system-kiam-server-role-count-should-be-same",
+                "tolerance": {
+                    "type": "regex",
+                    "pattern": "[1-9]{1}"
+                },
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "count_pods_string",
+                    "arguments": {
+                    "label_selector": "role=server",
+                    "ns": "kube-system"
+                  }
+               }
+            },
+              {
+                "type": "probe",
+                "name": "opa-count-should-be-same",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "app=opa",
+                    "ns": "opa"
+                  }
+               }
+            },
+              {
+                "type": "probe",
+                "name": "kube-system-kiam-agent-role-count-should-be-same",
+                "tolerance": {
+                    "type": "regex",
+                    "pattern": "[1-9]{1}"
+                },
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "count_pods_string",
+                    "arguments": {
+                    "label_selector": "role=agent",
+                    "ns": "kube-system"
+                  }
+               }
+            },
+          {
+                "type": "probe",
+                "name": "Verify prometheus app is running",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "app=prometheus",
+                    "ns": "addon-metricset-ns"
+                  }
+               }
+            },
+          {
+                "type": "probe",
+                "name": "Verify prometheus operator is running",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "k8s-app=prometheus-operator",
+                    "ns": "addon-metricset-ns"
+                  }
+               }
+            },
+          {
+                "type": "probe",
+                "name": "Verify prometheus push gateway is running",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "k8s-app=prometheus-pushgateway",
+                    "ns": "addon-metricset-ns"
+                  }
+               }
+            },
+            {
+                "type": "probe",
+                "name": "Verify HPA algo controller is running",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "control-plane=hpa-algo-controller",
+                    "ns": "addon-hpa-algo-ns"
+                  }
+               }
+            },
+          {
+                "type": "probe",
+                "name": "Verify Telegraf app is working",
+                "tolerance": true,
+                "provider": {
+                  "type": "python",
+                  "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                    "label_selector": "app=telegraf",
+                    "ns": "argo"
+                  }
+               }
+            }
+
+        ]
+    },
+    "method": [
+	    {
+            "type": "action",
+            "name": "Terminate_pod",
+            "provider": {
+                "type": "python",
+                "module": "chaosk8s.pod.actions",
+                "func": "terminate_pods",
+                "arguments": {
+                    "label_selector": "${app_name}",
+                    "ns": "${name_space}",
+                    "rand": true,
+                    "mode": "fixed",
+                    "qty": 1
+                }
+            },
+            "pauses": {
+                "after": 20
+            }
+        }
+    ],
+    "rollbacks": []
+}
