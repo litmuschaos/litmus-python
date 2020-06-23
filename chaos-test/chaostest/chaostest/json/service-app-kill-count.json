@@ -13,7 +13,7 @@
 	    },
         "service_url": {
             "type": "env",
-            "key": "APPLICATION_ENTRYPOINT_URL"
+            "key": "APP_ENDPOINT"
         },
 	   "name_space": {
         	"type": "env",
