@@ -1,0 +1,158 @@
+"""Script for Gathering all except master nodes and terminate them one by one. """
+import argparse
+import logging
+import os
+import time
+
+import boto3
+from boto3 import Session
+from chaostest.aws.awsutils import AwsUtils
+from chaostest.utils.chasotoolkit_utils import ChaosUtils, chaos_result_decorator, ChaosAction, \
+    environment_params_for_test, update_test_chaos_params
+from chaostest.utils.helper import Helper
+
+__author__ = 'Vijay Thomas'
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-accnumber",
+                    action=ChaosAction,
+                    required=False,
+                    default='331419223978',
+                    dest='aws_account',
+                    help="AWS account under usage")
+parser.add_argument("-local",
+                    action='store_true',
+                    required=False,
+                    default=True,
+                    dest='local',
+                    help="AWS local test")
+parser.add_argument("-role",
+                    action=ChaosAction,
+                    required=False,
+                    default='chaosec2experiment',
+                    dest='aws_role',
+                    help="AWS account under usage")
+parser.add_argument("-region",
+                    action=ChaosAction,
+                    dest='aws_region',
+                    required=False,
+                    default='us-west-2',
+                    help="AWS region under usage")
+parser.add_argument("-az",
+                    action=ChaosAction,
+                    required=False,
+                    default='us-west-2c',
+                    dest='aws_az',
+                    help="AWS aplication zone under usage")
+parser.add_argument("-chaosFile",
+                    action=ChaosAction,
+                    default="ec2-delete.json",
+                    dest="file",
+                    help="Chaos file to chose for execution"
+                    )
+parser.add_argument("-boto3Resource",
+                    action=ChaosAction,
+                    required=False,
+                    dest="aws_resource",
+                    default="ec2-iks",
+                    help="Chose aws resource to initialize boto3")
+parser.add_argument("-verifySSL",
+                    required=False,
+                    default="false",
+                    action=ChaosAction,
+                    dest='KUBERNETES_VERIFY_SSL',
+                    help="Kubernetes client ignore SSL")
+parser.add_argument("-kubeConfig",
+                    required=False,
+                    default="",
+                    dest='kubeconfig',
+                    help="Kubernetes client ignore SSL")
+parser.add_argument("-kubeContext",
+                    required=False,
+                    default=os.environ.get("KUBECONFIG", ""),
+                    dest='kubeContext',
+                    help="Kubernetes client ignore SSL")
+parser.add_argument('-report', action=ChaosAction,
+                    dest='report',
+                    default="false",
+                    help='Option to upload the result to report server')
+parser.add_argument('-report_endpoint', action=ChaosAction,
+                    dest='report_endpoint',
+                    default="none",
+                    help='Endpoint where the report kubernetes will be uploaded')
+parser.add_argument("-namespace", action=ChaosAction,
+                    required=True,
+                    default=None,
+                    dest="name_space",
+                    help="namespace for application"
+                    )
+parser.add_argument("-experiment", action=ChaosAction,
+                    required=False,
+                    dest="exp",
+                    default="experiment-aws",
+                    help="Experiment yaml name"
+                    )
+parser.add_argument("-testNamespace",
+                    required=False,
+                    default="none",
+                    dest='testnamespace',
+                    help="Kubernetes client ignore SSL")
+
+args = parser.parse_args()
+aws_account_number = args.aws_account
+aws_account_role = args.aws_role
+aws_region = args.aws_region
+aws_application_zone = args.aws_az
+chaos_file = args.file
+aws_boto3_resource = args.aws_resource
+local = args.local
+verifySSL = args.KUBERNETES_VERIFY_SSL
+kubecontext = args.kubeContext
+experiment = args.exp
+test_namespace = args.testnamespace
+
+INVALID_RESOURCE = "Not supported Resource"
+logger = logging.getLogger(__name__)
+# Enable below line if boto stream response has to be observed in logs
+# boto3.set_stream_logger(name='botocore')
+
+
+def aws_resource(aws_resource_with_env: str, session: Session):
+    aws_resources = {
+        "ec2-iks": AwsUtils.ec2_detach_eks(session, kubecontext)
+    }
+    return aws_resources.get(aws_resource_with_env, lambda: "Not supported Resource")
+
+
+@chaos_result_decorator
+def execute_test_kill_worker_ec2(account_number: str = None, account_role: str = None,
+                                 region: str = None,
+                                 file: str = None, experiment_name=None):
+    test_result = False
+    if 'CHAOSENGINE' in os.environ.keys():
+        experiment_name = os.environ['CHAOSENGINE'] + '-' + experiment_name
+
+    timestamp = str(int(time.time() * 1000))
+    result_name = experiment_name + "-" + timestamp
+
+    # noinspection PyBroadException
+    try:
+        if local:
+            session = AwsUtils.aws_init_local(account_number)
+        else:
+            session = AwsUtils.aws_init_by_role(account_number, account_role, region)
+        instance_id = aws_resource("ec2-iks", session)
+
+        Helper().chaos_result_tracker(result_name, 'Running', Helper.TEST_RESULT_STATUS.get('Running'), test_namespace)
+        chaos_utils = ChaosUtils()
+        update_test_chaos_params("EC2_INSTANCE_ID", instance_id)
+        test_result = chaos_utils.run_chaos_engine(file, environment_params_for_test, args.report, args.report_endpoint)
+        Helper().chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
+                                      test_namespace)
+    except Exception as ex:
+        Helper().chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
+                                      test_namespace)
+
+
+execute_test_kill_worker_ec2(aws_account_number, aws_account_role, aws_region, aws_application_zone, chaos_file,
+                             experiment)
