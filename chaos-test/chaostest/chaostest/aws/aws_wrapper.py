@@ -37,7 +37,7 @@ parser.add_argument("-accnumber",
 parser.add_argument("-local",
                     action='store_true',
                     required=False,
-                    default=False,
+                    default=True,
                     dest='local',
                     help="AWS local test")
 parser.add_argument("-role",
@@ -116,6 +116,12 @@ parser.add_argument("-appPodPattern",
                     default="appd-deployment",
                     dest='app_pod_pattern',
                     help="pod name patterns from which nodes have to be picked for deletion")
+parser.add_argument('-app', action=ChaosAction,
+                    required=False,
+                    dest='app_endpoint',
+                    default="localhost",
+                    help='Store the application health endpoint')
+
 
 args = parser.parse_args()
 aws_account_number = args.aws_account
