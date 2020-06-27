@@ -34,8 +34,6 @@ class Report(object):
 
         output_data = {}
         # Get namespace, appEndpoint, label and application from serializer
-        print("Reached json parser")
-        print(serializer)
         output_data['action'] = serializer['EXP']
         output_data['appEndpoint'] = serializer['APP_ENDPOINT']
         output_data['custom'] = {}
