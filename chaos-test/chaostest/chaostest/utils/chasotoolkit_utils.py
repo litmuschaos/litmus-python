@@ -122,16 +122,16 @@ class ChaosAction(argparse.Action):
         var_from_dest_env_variable = str(self.dest).upper()
         environment_from_dest_env_variable = os.environ.get(var_from_dest_env_variable, None)
         if environment_from_dest_env_variable is None and values is not None:
-            print("Environment variable %s override with value %s " % (var_from_dest_env_variable, str(values)))
+            logger.info("Environment variable %s override with value %s " % (var_from_dest_env_variable, str(values)))
             os.environ.setdefault(var_from_dest_env_variable, str(values))
             environment_params_for_test[var_from_dest_env_variable] = str(values)
         elif environment_from_dest_env_variable and values is not None:
-            print("Environment variable %s is set, override given -->  %s override with value %s "
+            logger.info("Environment variable %s is set, override given -->  %s override with value %s "
                   % (var_from_dest_env_variable, var_from_dest_env_variable, str(values)))
             os.environ[var_from_dest_env_variable] = str(values)
             environment_params_for_test[var_from_dest_env_variable] = str(values)
         elif environment_from_dest_env_variable and values is None:
-            print("Environment variable %s is set, value not  given -->  %s override with value %s "
+            logger.info("Environment variable %s is set, value not  given -->  %s override with value %s "
                   % (var_from_dest_env_variable, var_from_dest_env_variable, str(values)))
             values = environment_from_dest_env_variable
 
@@ -168,6 +168,7 @@ class ChaosUtils(object):
             logger.error(str(x))
             logger.debug(x)
             sys.exit(1)
+        logger.info("chaos json file found, proceeding with test")
         journal = run_experiment(experiment, settings=settings)
         has_deviated = journal.get("deviated", False)
         has_failed = journal["status"] != "completed"

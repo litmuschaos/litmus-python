@@ -2,6 +2,7 @@
 import argparse
 import logging
 import os
+import sys
 import time
 
 import boto3
@@ -12,6 +13,19 @@ from chaostest.utils.chasotoolkit_utils import ChaosUtils, chaos_result_decorato
 from chaostest.utils.helper import Helper
 
 __author__ = 'Vijay Thomas'
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    format="[%(asctime)s %(levelname)-2s] [%(module)s:%(lineno)s] %(message)s",
+    level=logging.DEBUG,
+    datefmt='%Y-%m-%d %H:%M:%S',
+    handlers=[
+        logging.FileHandler("chaostoolkit.log"),
+        logging.StreamHandler(sys.stdout)
+    ]
+    )
+# Enable below line if boto stream response has to be observed in logs
+# boto3.set_stream_logger(name='botocore')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-accnumber",
@@ -81,8 +95,8 @@ parser.add_argument('-report_endpoint', action=ChaosAction,
                     default="none",
                     help='Endpoint where the report kubernetes will be uploaded')
 parser.add_argument("-namespace", action=ChaosAction,
-                    required=True,
-                    default=None,
+                    required=False,
+                    default="dev-reliabilityiks3-usw2-qal",
                     dest="name_space",
                     help="namespace for application"
                     )
@@ -94,9 +108,15 @@ parser.add_argument("-experiment", action=ChaosAction,
                     )
 parser.add_argument("-testNamespace",
                     required=False,
-                    default="none",
+                    default="dev-reliabilityiks3-usw2-qal",
                     dest='testnamespace',
-                    help="Kubernetes client ignore SSL")
+                    help="Namespace on which chaos results will be persisted")
+parser.add_argument("-appPodPattern",
+                    required=False,
+                    default="appd-deployment",
+                    dest='app_pod_pattern',
+                    help="pod name patterns from which nodes have to be picked for deletion")
+
 
 args = parser.parse_args()
 aws_account_number = args.aws_account
@@ -110,16 +130,15 @@ verifySSL = args.KUBERNETES_VERIFY_SSL
 kubecontext = args.kubeContext
 experiment = args.exp
 test_namespace = args.testnamespace
+namespace = args.name_space
+pod_name_pattern = args.app_pod_pattern
 
 INVALID_RESOURCE = "Not supported Resource"
-logger = logging.getLogger(__name__)
-# Enable below line if boto stream response has to be observed in logs
-# boto3.set_stream_logger(name='botocore')
 
 
-def aws_resource(aws_resource_with_env: str, session: Session):
+def aws_resource(aws_resource_with_env: str, session: Session, namespace: str, pod_identifier_pattern):
     aws_resources = {
-        "ec2-iks": AwsUtils.ec2_detach_eks(session, kubecontext)
+        "ec2-iks": AwsUtils.ec2_detach_eks(session, kubecontext, namespace, pod_identifier_pattern)
     }
     return aws_resources.get(aws_resource_with_env, lambda: "Not supported Resource")
 
@@ -141,7 +160,7 @@ def execute_test_kill_worker_ec2(account_number: str = None, account_role: str =
             session = AwsUtils.aws_init_local(account_number)
         else:
             session = AwsUtils.aws_init_by_role(account_number, account_role, region)
-        instance_id = aws_resource("ec2-iks", session)
+        instance_id = aws_resource("ec2-iks", session, namespace, pod_name_pattern)
 
         Helper().chaos_result_tracker(result_name, 'Running', Helper.TEST_RESULT_STATUS.get('Running'), test_namespace)
         chaos_utils = ChaosUtils()
@@ -150,9 +169,9 @@ def execute_test_kill_worker_ec2(account_number: str = None, account_role: str =
         Helper().chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
                                       test_namespace)
     except Exception as ex:
+        logger.error("Tests failed , exception is " + str(ex))
         Helper().chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
                                       test_namespace)
 
 
-execute_test_kill_worker_ec2(aws_account_number, aws_account_role, aws_region, aws_application_zone, chaos_file,
-                             experiment)
+execute_test_kill_worker_ec2(aws_account_number, aws_account_role, aws_region, chaos_file, experiment)
