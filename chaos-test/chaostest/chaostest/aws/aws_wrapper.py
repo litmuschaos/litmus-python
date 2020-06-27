@@ -37,7 +37,7 @@ parser.add_argument("-accnumber",
 parser.add_argument("-local",
                     action='store_true',
                     required=False,
-                    default=True,
+                    default=False,
                     dest='local',
                     help="AWS local test")
 parser.add_argument("-role",
@@ -109,7 +109,7 @@ parser.add_argument("-experiment", action=ChaosAction,
 parser.add_argument("-testNamespace",
                     required=False,
                     default="dev-reliabilityiks3-usw2-qal",
-                    dest='testnamespace',
+                    dest='test_namespace',
                     help="Namespace on which chaos results will be persisted")
 parser.add_argument("-appPodPattern",
                     required=False,
@@ -129,7 +129,7 @@ local = args.local
 verifySSL = args.KUBERNETES_VERIFY_SSL
 kubecontext = args.kubeContext
 experiment = args.exp
-test_namespace = args.testnamespace
+test_namespace = args.test_namespace
 namespace = args.name_space
 pod_name_pattern = args.app_pod_pattern
 
