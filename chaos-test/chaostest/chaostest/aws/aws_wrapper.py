@@ -131,7 +131,6 @@ experiment = args.exp
 test_namespace = args.test_namespace
 namespace = args.name_space
 pod_name_pattern = args.app_pod_pattern
-app_end_point = args.app_endpoint
 report = args.report
 report_endpoint = args.report_endpoint
 
@@ -167,6 +166,8 @@ def execute_test_kill_worker_ec2(account_number: str = None, account_role: str =
         Helper().chaos_result_tracker(result_name, 'Running', Helper.TEST_RESULT_STATUS.get('Running'), test_namespace)
         chaos_utils = ChaosUtils()
         update_test_chaos_params("EC2_INSTANCE_ID", instance_id)
+        aws_arn = "arn:aws:iam::" + account_number + ":role/" + aws_account_role
+        update_test_chaos_params("AWS_ARN", aws_arn)
         test_result = chaos_utils.run_chaos_engine(file, environment_params_for_test, report, report_endpoint)
         Helper().chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
                                       test_namespace)

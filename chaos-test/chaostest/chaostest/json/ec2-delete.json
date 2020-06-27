@@ -17,7 +17,7 @@
     },
     "aws_assume_role_arn": {
             "type": "env",
-            "key" : "AWS_ROLE"
+            "key" : "AWS_ARN"
         },
     "aws_assume_role_session_name": "chaostest"
   },
