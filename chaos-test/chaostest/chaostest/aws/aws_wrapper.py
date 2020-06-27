@@ -116,6 +116,14 @@ parser.add_argument("-appPodPattern",
                     default="appd-deployment",
                     dest='app_pod_pattern',
                     help="pod name patterns from which nodes have to be picked for deletion")
+parser.add_argument('-app', action='store',
+                    dest='app_endpoint',
+                    default="localhost",
+                    help='Store the application health endpoint')
+parser.add_argument('-report', action='store',
+                    dest='report',
+                    default="false",
+                    help='Option to upload the result to report server')
 
 
 args = parser.parse_args()
@@ -132,6 +140,8 @@ experiment = args.exp
 test_namespace = args.test_namespace
 namespace = args.name_space
 pod_name_pattern = args.app_pod_pattern
+app_end_point = args.app_endpoint
+report = args.report
 
 INVALID_RESOURCE = "Not supported Resource"
 
@@ -165,7 +175,7 @@ def execute_test_kill_worker_ec2(account_number: str = None, account_role: str =
         Helper().chaos_result_tracker(result_name, 'Running', Helper.TEST_RESULT_STATUS.get('Running'), test_namespace)
         chaos_utils = ChaosUtils()
         update_test_chaos_params("EC2_INSTANCE_ID", instance_id)
-        test_result = chaos_utils.run_chaos_engine(file, environment_params_for_test, args.report, args.report_endpoint)
+        test_result = chaos_utils.run_chaos_engine(file, environment_params_for_test, report, app_end_point)
         Helper().chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
                                       test_namespace)
     except Exception as ex:
