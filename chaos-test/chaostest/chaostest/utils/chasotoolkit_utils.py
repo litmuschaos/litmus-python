@@ -144,7 +144,7 @@ class ChaosAction(argparse.Action):
 class ChaosUtils(object):
 
     def run_chaos_engine(self, file, env_params: dict, report: str, report_endpoint: str) -> bool:
-        environment_params_for_report = dict(env_params)
+        environment_params_for_report = env_params.copy()
         settings = ({}, os.environ.get("settings_path"))[os.environ.get("settings_path") is not None]
         has_deviated = False
         has_failed = False

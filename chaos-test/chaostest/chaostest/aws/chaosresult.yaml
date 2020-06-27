@@ -2,11 +2,11 @@
 apiVersion: litmuschaos.io/v1alpha1
 kind: ChaosResult
 metadata:
-  name: experiment-aws-1593216092390
+  name: experiment-aws-1593225729442
  
 spec:
   # holds the state of testcase,  manually updated by json merge patch
   # verdict is the useful value today, but anticipate phase use in future 
   experimentstatus: 
-    phase: Completed  
-    verdict: Success 
+    phase: Running  
+    verdict: Awaited 
