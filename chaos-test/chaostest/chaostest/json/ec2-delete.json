@@ -14,7 +14,12 @@
     "ec2_instance_id": {
       "type": "env",
       "key": "EC2_INSTANCE_ID"
-    }
+    },
+    "aws_assume_role_arn": {
+            "type": "env",
+            "key" : "AWS_ROLE"
+        },
+    "aws_assume_role_session_name": "chaostest"
   },
   "steady-state-hypothesis": {
     "title": "EC2 instance stopped and K8 recreating them",
