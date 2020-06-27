@@ -144,6 +144,7 @@ class ChaosAction(argparse.Action):
 class ChaosUtils(object):
 
     def run_chaos_engine(self, file, env_params: dict, report: str, report_endpoint: str) -> bool:
+        environment_params_for_report = dict(env_params)
         settings = ({}, os.environ.get("settings_path"))[os.environ.get("settings_path") is not None]
         has_deviated = False
         has_failed = False
@@ -181,7 +182,7 @@ class ChaosUtils(object):
                 journal, r, indent=2, ensure_ascii=False, default=encoder)
         r.close()
         if report == 'true':
-            self.create_report(env_params, journal, report_endpoint)
+            self.create_report(environment_params_for_report, journal, report_endpoint)
         if has_failed or has_deviated:
             logger.error("Test Failed")
             return has_failed or has_deviated
