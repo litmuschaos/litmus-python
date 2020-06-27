@@ -5,12 +5,10 @@ import os
 import sys
 import time
 
-import boto3
 from boto3 import Session
 from chaostest.aws.awsutils import AwsUtils
 from chaostest.utils.chasotoolkit_utils import ChaosUtils, chaos_result_decorator, ChaosAction, \
     environment_params_for_test, update_test_chaos_params
-from chaostest.utils.helper import Helper
 
 __author__ = 'Vijay Thomas'
 
