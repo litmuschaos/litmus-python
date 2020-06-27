@@ -169,18 +169,13 @@ def execute_test_kill_worker_ec2(account_number: str = None, account_role: str =
             session = AwsUtils.aws_init_by_role(account_number, account_role, region)
         instance_id = aws_resource("ec2-iks", session, namespace, pod_name_pattern)
 
-        Helper().chaos_result_tracker(result_name, 'Running', Helper.TEST_RESULT_STATUS.get('Running'), test_namespace)
         chaos_utils = ChaosUtils()
         update_test_chaos_params("EC2_INSTANCE_ID", instance_id)
         aws_arn = "arn:aws:iam::" + account_number + ":role/" + aws_account_role
         update_test_chaos_params("AWS_ARN", aws_arn)
         test_result = chaos_utils.run_chaos_engine(file, environment_params_for_test, report, report_endpoint)
-        Helper().chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
-                                      test_namespace)
     except Exception as ex:
         logger.error("Tests failed , exception is " + str(ex))
-        Helper().chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
-                                      test_namespace)
 
 
 execute_test_kill_worker_ec2(aws_account_number, aws_account_role, aws_region, chaos_file, experiment)

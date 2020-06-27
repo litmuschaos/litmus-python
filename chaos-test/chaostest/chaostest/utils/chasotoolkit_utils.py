@@ -6,6 +6,7 @@ import logging
 import os
 import site
 import sys
+import time
 
 import click
 from chaoslib.control import load_global_controls
@@ -37,21 +38,23 @@ def chaos_result_decorator(function):
     @functools.wraps(function)
     def inner(*args, **kwargs):
         experiment_name = os.environ.get("EXP", None)
+        timestamp = str(int(time.time() * 1000))
+        result_name = experiment_name + "-" + timestamp
         namespace = os.environ.get("NAME_SPACE", None)
         test_result = False
         if experiment_name and namespace:
             logger.info("Decorators are applied, will update chaos results from here:")
             helper = Helper()
-            helper.chaos_result_tracker(experiment_name, 'Running', Helper.TEST_RESULT_STATUS.get("Running"),
+            helper.chaos_result_tracker(result_name, 'Running', Helper.TEST_RESULT_STATUS.get("Running"),
                                         namespace)
             try:
                 test_result = function(*args, **kwargs)
                 return test_result
             except Exception as ex:
                 logger.error("Test Failed with exception " + str(ex))
-                helper.chaos_result_tracker(experiment_name, 'Completed', Helper.TEST_RESULT_STATUS.get(False),
+                helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(False),
                                             namespace)
-            helper.chaos_result_tracker(experiment_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
+            helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
                                         namespace)
         else:
 
