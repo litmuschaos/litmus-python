@@ -42,20 +42,20 @@ class AwsUtils(object):
         return session
 
     @staticmethod
-    def ec2_detach_eks(session: Session, kubecontext : str, namespace: str, pod_name : str) -> str:
+    def ec2_detach_eks(session: Session, kubecontext : str, namespace: str, label_name : str) -> str:
         logger.info("Getting list of  pods for namespace " + namespace)
         v1 = K8sUtils.init_k8s_client(kubecontext)
 
         ip_address_list = []
-        v1podlist = v1.list_namespaced_pod(namespace).items
+        v1podlist = v1.list_namespaced_pod(namespace, label_selector=label_name).items
         if len(v1podlist) == 0:
             raise ChaosTestException("List of pods is empty for namespace " + namespace)
         for v1pod in v1podlist:
-            if (v1pod.status.phase == "Running") and (pod_name in v1pod.metadata.name):
+            if v1pod.status.phase == "Running":
                 ip_address_list.append(v1pod.status.host_ip)
 
         if len(ip_address_list) == 0:
-            raise ChaosTestException("nodes are not present matching pod pattern " + pod_name)
+            raise ChaosTestException("nodes are not present matching pod label " + label_name)
         ip_address_list = list(dict.fromkeys(ip_address_list))
         # list_node_ip_addresses = []
         # http_nodes = v1.list_node(pretty='true')

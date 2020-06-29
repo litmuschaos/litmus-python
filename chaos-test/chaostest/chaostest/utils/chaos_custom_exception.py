@@ -7,4 +7,4 @@ class ChaosTestException(Exception):
         super(ChaosTestException, self).__init__(self.message)
 
     def __str__(self):
-        return "Chaos test exception==" + self.message
+        return "Chaos test exception=" + self.message
