@@ -172,7 +172,7 @@ def execute_test_kill_worker_ec2(account_number: str = None, account_role: str =
     update_test_chaos_params("EC2_INSTANCE_ID", instance_id)
     aws_arn = "arn:aws:iam::" + account_number + ":role/" + aws_account_role
     update_test_chaos_params("AWS_ARN", aws_arn)
-    chaos_utils.run_chaos_engine(file, environment_params_for_test, report, report_endpoint)
+    return chaos_utils.run_chaos_engine(file, environment_params_for_test, report, report_endpoint)
 
 
 execute_test_kill_worker_ec2(aws_account_number, aws_account_role, aws_region, chaos_file, experiment, namespace, label)

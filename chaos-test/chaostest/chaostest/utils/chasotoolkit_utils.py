@@ -49,8 +49,18 @@ def chaos_result_decorator(function):
                                         namespace)
             try:
                 test_result = function(*args, **kwargs)
-                helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
-                                            namespace)
+                logger.info("Test result status came as\n")
+                logger.info(test_result)
+                if not test_result:
+                    logger.info("Chaos results cant be updated if the calling function didnt return status true "
+                                "or false")
+                    helper.chaos_result_tracker(result_name, 'Completed', "Result Not returned",
+                                                namespace)
+                if not isinstance(test_result, bool):
+                    helper.chaos_result_tracker(result_name, 'Completed', test_result, namespace)
+                else:
+                    helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
+                                                namespace)
                 return test_result
             except Exception as ex:
                 logger.error("Test Failed with exception " + str(ex))
