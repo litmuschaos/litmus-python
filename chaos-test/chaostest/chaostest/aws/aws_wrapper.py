@@ -3,7 +3,6 @@ import argparse
 import logging
 import os
 import sys
-import time
 
 from boto3 import Session
 from chaostest.aws.awsutils import AwsUtils
@@ -113,11 +112,6 @@ parser.add_argument('-label', action='store',
                     dest='label',
                     default="app",
                     help='Store a label value')
-parser.add_argument('-app', action=ChaosAction,
-                    required=False,
-                    dest='app_endpoint',
-                    default="localhost",
-                    help='Store the application health endpoint')
 parser.add_argument('-app', action=ChaosAction,
                     required=False,
                     dest='app_endpoint',
