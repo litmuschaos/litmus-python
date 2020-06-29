@@ -154,14 +154,8 @@ def aws_resource(aws_resource_with_env: str, session: Session, namespace_under_t
 
 @chaos_result_decorator
 def execute_test_kill_worker_ec2(account_number: str = None, account_role: str = None,
-                                 region: str = None, file: str = None, experiment_name=None, namespace_under_test=None,
+                                 region: str = None, file: str = None, namespace_under_test=None,
                                  pod_label_under_test=None):
-    test_result = False
-    if 'CHAOSENGINE' in os.environ.keys():
-        experiment_name = os.environ['CHAOSENGINE'] + '-' + experiment_name
-
-    # noinspection PyBroadException
-
     if local:
         session = AwsUtils.aws_init_local(account_number)
     else:

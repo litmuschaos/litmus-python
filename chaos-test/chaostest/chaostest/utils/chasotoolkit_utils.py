@@ -49,12 +49,12 @@ def chaos_result_decorator(function):
                                         namespace)
             try:
                 test_result = function(*args, **kwargs)
-                logger.info("Test result status came as\n")
+                logger.info("Test result status came as")
                 logger.info(test_result)
                 if not test_result:
                     logger.info("Chaos results cant be updated if the calling function didnt return status true "
                                 "or false")
-                    helper.chaos_result_tracker(result_name, 'Completed', "Result Not returned",
+                    helper.chaos_result_tracker(result_name, 'Completed', "Result Not returned by test function",
                                                 namespace)
                 if not isinstance(test_result, bool):
                     helper.chaos_result_tracker(result_name, 'Completed', test_result, namespace)
@@ -70,14 +70,14 @@ def chaos_result_decorator(function):
         else:
 
             if not experiment_name:
-                logger.info("Experiment environment variable --> \"EXP\" not set")
+                logger.info("Experiment environment variable --> \"EXP\" not set quitting experiment")
             if not namespace:
                 logger.info("Namespace environment variable not set")
                 logger.info("Namespace environment variable --> \"NAME_SPACE\" not set")
-            logger.info("Please set experiment name and namespace in environment example \n"
-                        "EXPERIMENT=\"experiment_name\" \n"
-                        "NAME_SPACE=\"namespace\"\n"
-                        "Quitting experiment")
+                logger.info("Please set experiment name and namespace in environment example \n"
+                            "EXPERIMENT=\"experiment_name\" \n"
+                            "NAME_SPACE=\"namespace\"\n"
+                            "Quitting experiment")
         return test_result
 
     return inner
@@ -141,12 +141,12 @@ class ChaosAction(argparse.Action):
             environment_params_for_test[var_from_dest_env_variable] = str(values)
         elif environment_from_dest_env_variable and values is not None:
             logger.info("Environment variable %s is set, override given -->  %s override with value %s "
-                  % (var_from_dest_env_variable, var_from_dest_env_variable, str(values)))
+                        % (var_from_dest_env_variable, var_from_dest_env_variable, str(values)))
             os.environ[var_from_dest_env_variable] = str(values)
             environment_params_for_test[var_from_dest_env_variable] = str(values)
         elif environment_from_dest_env_variable and values is None:
             logger.info("Environment variable %s is set, value not  given -->  %s override with value %s "
-                  % (var_from_dest_env_variable, var_from_dest_env_variable, str(values)))
+                        % (var_from_dest_env_variable, var_from_dest_env_variable, str(values)))
             values = environment_from_dest_env_variable
 
         setattr(namespace, self.dest, values)
