@@ -161,20 +161,18 @@ def execute_test_kill_worker_ec2(account_number: str = None, account_role: str =
         experiment_name = os.environ['CHAOSENGINE'] + '-' + experiment_name
 
     # noinspection PyBroadException
-    try:
-        if local:
-            session = AwsUtils.aws_init_local(account_number)
-        else:
-            session = AwsUtils.aws_init_by_role(account_number, account_role, region)
-        instance_id = aws_resource("ec2-iks", session, namespace_under_test, pod_label_under_test)
 
-        chaos_utils = ChaosUtils()
-        update_test_chaos_params("EC2_INSTANCE_ID", instance_id)
-        aws_arn = "arn:aws:iam::" + account_number + ":role/" + aws_account_role
-        update_test_chaos_params("AWS_ARN", aws_arn)
-        chaos_utils.run_chaos_engine(file, environment_params_for_test, report, report_endpoint)
-    except Exception as ex:
-        logger.error("Tests failed , exception is " + str(ex))
+    if local:
+        session = AwsUtils.aws_init_local(account_number)
+    else:
+        session = AwsUtils.aws_init_by_role(account_number, account_role, region)
+    instance_id = aws_resource("ec2-iks", session, namespace_under_test, pod_label_under_test)
+
+    chaos_utils = ChaosUtils()
+    update_test_chaos_params("EC2_INSTANCE_ID", instance_id)
+    aws_arn = "arn:aws:iam::" + account_number + ":role/" + aws_account_role
+    update_test_chaos_params("AWS_ARN", aws_arn)
+    chaos_utils.run_chaos_engine(file, environment_params_for_test, report, report_endpoint)
 
 
 execute_test_kill_worker_ec2(aws_account_number, aws_account_role, aws_region, chaos_file, experiment, namespace, label)

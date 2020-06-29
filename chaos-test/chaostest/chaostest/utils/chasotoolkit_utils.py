@@ -49,13 +49,14 @@ def chaos_result_decorator(function):
                                         namespace)
             try:
                 test_result = function(*args, **kwargs)
+                helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
+                                            namespace)
                 return test_result
             except Exception as ex:
                 logger.error("Test Failed with exception " + str(ex))
                 helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(False),
                                             namespace)
-            helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
-                                        namespace)
+
         else:
 
             if not experiment_name:
