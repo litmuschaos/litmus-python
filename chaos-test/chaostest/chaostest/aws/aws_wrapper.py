@@ -108,8 +108,8 @@ parser.add_argument("-testNamespace",
                     default="dev-reliabilityiks3-usw2-qal",
                     dest='test_namespace',
                     help="Namespace on which chaos results will be persisted")
-parser.add_argument('-label', action='store',
-                    dest='label',
+parser.add_argument('-label', action=ChaosAction,
+                    dest='label_name',
                     default="app",
                     help='Store a label value')
 parser.add_argument('-app', action=ChaosAction,
@@ -137,10 +137,9 @@ kubecontext = args.kubeContext
 experiment = args.exp
 test_namespace = args.test_namespace
 namespace = args.name_space
-pod_name_pattern = args.app_pod_pattern
 report = args.report
 report_endpoint = args.report_endpoint
-label = args.label
+label = args.label_name
 
 
 INVALID_RESOURCE = "Not supported Resource"
