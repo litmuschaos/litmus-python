@@ -48,6 +48,9 @@ class AwsUtils(object):
 
         ip_address_list = []
         v1podlist = v1.list_namespaced_pod(namespace, label_selector=label_name).items
+
+        if not v1podlist:
+            raise ChaosTestException("No pods are there in the namespace which was provided " + namespace)
         if len(v1podlist) == 0:
             raise ChaosTestException("List of pods is empty for namespace " + namespace)
         for v1pod in v1podlist:
