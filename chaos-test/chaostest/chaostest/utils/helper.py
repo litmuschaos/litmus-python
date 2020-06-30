@@ -3,7 +3,7 @@ import os
 import subprocess
 import time
 
-from jinja2 import Environment, FileSystemLoader, select_autoescape, PackageLoader
+from jinja2 import Environment,  select_autoescape, PackageLoader
 
 __author__ = 'Sumit_Nagal@intuit.com'
 

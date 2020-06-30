@@ -96,7 +96,7 @@ namespace = os.environ['NAME_SPACE']
 experiment = os.environ['EXP']
 report = os.environ['REPORT']
 report_endpoint = os.environ['REPORT_ENDPOINT']
-test_namespace=os.environ['TEST_NAMESPACE']
+test_namespace = os.environ['TEST_NAMESPACE']
 
 # if the env CHAOSENGINE is defined, suffix it standard experiment name
 # to generate the fully-qualified chaos experiment/chaosresult name
