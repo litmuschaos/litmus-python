@@ -28,13 +28,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-accnumber",
                     action=ChaosAction,
                     required=False,
-                    default='331419223978',
+                    default='042515139796',
                     dest='aws_account',
                     help="AWS account under usage")
 parser.add_argument("-local",
                     action='store_true',
                     required=False,
-                    default=False,
+                    default=True,
                     dest='local',
                     help="AWS local test")
 parser.add_argument("-role",
@@ -149,19 +149,20 @@ def aws_resource(aws_resource_with_env: str, session: Session, namespace_under_t
     aws_resources = {
         "ec2-iks": AwsUtils.ec2_detach_eks(session, kubecontext, namespace_under_test, pod_identifier_pattern)
     }
-    return aws_resources.get(aws_resource_with_env, lambda: "Not supported Resource")
+    return aws_resources.get(aws_resource_with_env, lambda: INVALID_RESOURCE)
 
 
 @chaos_result_decorator
 def execute_test_kill_worker_ec2(account_number: str = None, account_role: str = None,
                                  region: str = None, file: str = None, namespace_under_test=None,
                                  pod_label_under_test=None):
+
     if local:
-        session = AwsUtils.aws_init_local(account_number)
+        session = AwsUtils.aws_init_local()
     else:
         session = AwsUtils.aws_init_by_role(account_number, account_role, region)
+    AwsUtils.validate_iam_role_for_chaos(aws_account_role, session)
     instance_id = aws_resource("ec2-iks", session, namespace_under_test, pod_label_under_test)
-
     chaos_utils = ChaosUtils()
     update_test_chaos_params("EC2_INSTANCE_ID", instance_id)
     aws_arn = "arn:aws:iam::" + account_number + ":role/" + aws_account_role
@@ -169,4 +170,4 @@ def execute_test_kill_worker_ec2(account_number: str = None, account_role: str =
     return chaos_utils.run_chaos_engine(file, environment_params_for_test, report, report_endpoint)
 
 
-execute_test_kill_worker_ec2(aws_account_number, aws_account_role, aws_region, chaos_file, experiment, namespace, label)
+execute_test_kill_worker_ec2(aws_account_number, aws_account_role, aws_region, chaos_file, namespace, label)

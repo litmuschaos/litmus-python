@@ -56,10 +56,11 @@ def chaos_result_decorator(function):
                                 "or false")
                     helper.chaos_result_tracker(result_name, 'Completed', "Result Not returned by test function",
                                                 namespace)
-                if not isinstance(test_result, bool):
+                if not isinstance(test_result, bool) or not isinstance(test_result, str):
                     helper.chaos_result_tracker(result_name, 'Completed', test_result, namespace)
                 else:
-                    helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
+                    helper.chaos_result_tracker(result_name, 'Completed',
+                                                Helper.TEST_RESULT_STATUS.get(test_result, lambda : test_result),
                                                 namespace)
                 return test_result
             except Exception as ex:

@@ -37,8 +37,8 @@ class AwsUtils(object):
         return session
 
     @staticmethod
-    def aws_init_local(account_number: str) -> Session:
-        session = boto3.Session(profile_name='default')
+    def aws_init_local(profile_name: str = "default") -> Session:
+        session = boto3.Session(profile_name=profile_name)
         return session
 
     @staticmethod
@@ -82,3 +82,15 @@ class AwsUtils(object):
         if not instance_id:
             raise Exception("Not able to get instance id, exiting")
         return instance_id
+
+    @staticmethod
+    def validate_iam_role_for_chaos(role_name: str, session: Session):
+        try:
+            client = session.client("iam")
+            response = client.get_role(
+                RoleName=role_name
+            )
+            return response
+        except Exception as ex:
+            raise ChaosTestException("Role provided " + role_name + " resulted in exception => " + str(ex) +
+                                     " Please create role with STS , and required privileges for the test")
