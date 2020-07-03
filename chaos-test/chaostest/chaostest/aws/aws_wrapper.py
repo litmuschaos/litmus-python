@@ -4,7 +4,6 @@ import logging
 import os
 import sys
 
-from boto3 import Session
 from chaostest.aws.awsutils import AwsUtils
 from chaostest.utils.chasotoolkit_utils import ChaosUtils, chaos_result_decorator, ChaosAction, \
     environment_params_for_test, update_test_chaos_params
@@ -142,27 +141,17 @@ report_endpoint = args.report_endpoint
 label = args.label_name
 
 
-INVALID_RESOURCE = "Not supported Resource"
-
-
-def aws_resource(aws_resource_with_env: str, session: Session, namespace_under_test: str, pod_identifier_pattern):
-    aws_resources = {
-        "ec2-iks": AwsUtils.ec2_detach_eks(session, kubecontext, namespace_under_test, pod_identifier_pattern)
-    }
-    return aws_resources.get(aws_resource_with_env, lambda: INVALID_RESOURCE)
-
-
 @chaos_result_decorator
 def execute_test_kill_worker_ec2(account_number: str = None, account_role: str = None,
                                  region: str = None, file: str = None, namespace_under_test=None,
                                  pod_label_under_test=None):
-
+    """Get an instance id which is associated with the pod in the namespace and terminates the same"""
     if local:
         session = AwsUtils.aws_init_local()
     else:
         session = AwsUtils.aws_init_by_role(account_number, account_role, region)
     AwsUtils.validate_iam_role_for_chaos(aws_account_role, session)
-    instance_id = aws_resource("ec2-iks", session, namespace_under_test, pod_label_under_test)
+    instance_id = AwsUtils().aws_resource("ec2-iks", kubecontext, session, namespace_under_test, pod_label_under_test)
     chaos_utils = ChaosUtils()
     update_test_chaos_params("EC2_INSTANCE_ID", instance_id)
     aws_arn = "arn:aws:iam::" + account_number + ":role/" + aws_account_role

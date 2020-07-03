@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 __author__ = 'Vijay Thomas'
 
+INVALID_RESOURCE = "Not supported Resource"
+
 
 class AwsUtils(object):
 
@@ -38,11 +40,21 @@ class AwsUtils(object):
 
     @staticmethod
     def aws_init_local(profile_name: str = "default") -> Session:
+        """Initializes boto3 client from local profile"""
         session = boto3.Session(profile_name=profile_name)
         return session
 
     @staticmethod
-    def ec2_detach_eks(session: Session, kubecontext : str, namespace: str, label_name : str) -> str:
+    def __ec2_detach_eks(session: Session, kubecontext: str, namespace: str, label_name: str) -> str:
+        """
+          Utility method to detach instance from a given namespace. This returns a node IP, gets instance ID from the
+          same and returns back the same for chaos operations
+        :param session:
+        :param kubecontext:
+        :param namespace:
+        :param label_name:
+        :return:
+        """
         logger.info("Getting list of  pods for namespace " + namespace)
         v1 = K8sUtils.init_k8s_client(kubecontext)
 
@@ -85,6 +97,12 @@ class AwsUtils(object):
 
     @staticmethod
     def validate_iam_role_for_chaos(role_name: str, session: Session):
+        """
+        Tries to gather IAM role for the aws account selected. Will throw custom exception if role can't be retrieved
+        :param role_name:
+        :param session:
+        :return:
+        """
         try:
             client = session.client("iam")
             response = client.get_role(
@@ -94,3 +112,19 @@ class AwsUtils(object):
         except Exception as ex:
             raise ChaosTestException("Role provided " + role_name + " resulted in exception => " + str(ex) +
                                      " Please create role with STS , and required privileges for the test")
+
+    def aws_resource(self, aws_resource_with_env: str, kubecontext, session: Session, namespace_under_test: str,
+                     pod_identifier_pattern):
+        """
+         A switcher for getting aws resource based on choices mainly between different aws environments
+        :param aws_resource_with_env:
+        :param kubecontext:
+        :param session:
+        :param namespace_under_test:
+        :param pod_identifier_pattern:
+        :return:
+        """
+        aws_resources = {
+            "ec2-iks": self.__ec2_detach_eks(session, kubecontext, namespace_under_test, pod_identifier_pattern)
+        }
+        return aws_resources.get(aws_resource_with_env, lambda: INVALID_RESOURCE)

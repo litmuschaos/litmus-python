@@ -35,6 +35,12 @@ def clear_test_chaos_params():
 
 
 def chaos_result_decorator(function):
+    """
+        For updating chaos results in tests, we would need to annotate this to test method. This would take care
+        of creating and updating chaosresult object before test run, and once the tests are completed.
+    :param function:
+    :return:
+    """
     @functools.wraps(function)
     def inner(*args, **kwargs):
         experiment_name = os.environ.get("EXP", None)
@@ -85,6 +91,12 @@ def chaos_result_decorator(function):
 
 
 class ChaosAction(argparse.Action):
+    """
+    The intent of a custom action class for Chaos tests is to translate environment variable into Argsparse variable.
+    If updated in actions in args parse, this will get the environment variable value and sets the same in args parse and
+    at the same time will override default value and required values in args parse, if environment variables are set.
+
+    """
     def __init__(self,
                  option_strings,
                  dest,
@@ -137,15 +149,28 @@ class ChaosAction(argparse.Action):
         var_from_dest_env_variable = str(self.dest).upper()
         environment_from_dest_env_variable = os.environ.get(var_from_dest_env_variable, None)
         if environment_from_dest_env_variable is None and values is not None:
+            """
+                If environment variable is not set but input args values are set, then the destination
+                variable will be converted to upper_case and will set the environment variabled with default value
+            """
             logger.info("Environment variable %s override with value %s " % (var_from_dest_env_variable, str(values)))
             os.environ.setdefault(var_from_dest_env_variable, str(values))
             environment_params_for_test[var_from_dest_env_variable] = str(values)
         elif environment_from_dest_env_variable and values is not None:
+            """
+                If environment variable is  set but input values are also set, then the environment variable will 
+                be set with the value from args parse input value 
+            """
             logger.info("Environment variable %s is set, override given -->  %s override with value %s "
                         % (var_from_dest_env_variable, var_from_dest_env_variable, str(values)))
             os.environ[var_from_dest_env_variable] = str(values)
             environment_params_for_test[var_from_dest_env_variable] = str(values)
         elif environment_from_dest_env_variable and values is None:
+            """
+                If environment variable is  set but input values are not set, then environment variable value will be 
+                set to default value
+            """
+
             logger.info("Environment variable %s is set, value not  given -->  %s override with value %s "
                         % (var_from_dest_env_variable, var_from_dest_env_variable, str(values)))
             values = environment_from_dest_env_variable
@@ -156,7 +181,14 @@ class ChaosAction(argparse.Action):
 class ChaosUtils(object):
 
     def run_chaos_engine(self, file, env_params: dict, report: str, report_endpoint: str) -> bool:
-
+        """
+        Runs chaos engine programmatically instead of using chaos binary
+        :param file:
+        :param env_params:
+        :param report:
+        :param report_endpoint:
+        :return:
+        """
         settings = ({}, os.environ.get("settings_path"))[os.environ.get("settings_path") is not None]
         has_deviated = False
         has_failed = False
