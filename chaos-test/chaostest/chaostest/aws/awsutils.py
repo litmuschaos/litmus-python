@@ -99,17 +99,20 @@ class AwsUtils(object):
 
     @staticmethod
     def validate_iam_role_for_chaos(session: Session):
-        role_name = requests.session().get(IAM_VALIDATE_URL)
-        if not role_name:
-            raise ChaosTestException("There is no role associated with pod quitting")
-        role = role_name.strip()
-
         """
         Tries to gather IAM role for the aws account selected. Will throw custom exception if role can't be retrieved
         :param role_name:
         :param session:
         :return:
         """
+
+        response = requests.session().get(IAM_VALIDATE_URL)
+        response.raise_for_status()
+        role_name = response.text.strip()
+        if not role_name:
+            raise ChaosTestException("There is no role associated with pod quitting")
+        role = role_name.strip()
+
         try:
             client = session.client("iam")
             response = client.get_role(
