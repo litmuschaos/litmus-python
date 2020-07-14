@@ -6,7 +6,7 @@ import logging
 import os
 import site
 import sys
-import time
+from datetime import datetime
 
 import click
 from chaoslib.control import load_global_controls
@@ -44,8 +44,10 @@ def chaos_result_decorator(function):
     @functools.wraps(function)
     def inner(*args, **kwargs):
         experiment_name = os.environ.get("EXP", None)
-        timestamp = str(int(time.time() * 1000))
-        result_name = experiment_name + "-" + timestamp
+        time_now = datetime.now()
+        time_string = time_now.strftime("%d-%m-%Y-%H-%M-%S-%p")
+
+        result_name = experiment_name + "-" + time_string
         namespace = os.environ.get("NAME_SPACE", None)
         test_result = False
         if experiment_name and namespace:
