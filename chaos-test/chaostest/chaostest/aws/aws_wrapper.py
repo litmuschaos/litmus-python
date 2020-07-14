@@ -33,7 +33,7 @@ parser.add_argument("-accnumber",
 parser.add_argument("-local",
                     action='store_true',
                     required=False,
-                    default=True,
+                    default=False,
                     dest='local',
                     help="AWS local test")
 parser.add_argument("-role",
