@@ -98,7 +98,7 @@ class AwsUtils(object):
         return instance_id
 
     @staticmethod
-    def validate_iam_role_for_chaos(session: Session):
+    def validate_iam_role_for_chaos():
         """
         Tries to gather IAM role for the aws account selected. Will throw custom exception if role can't be retrieved
         :param role_name:
@@ -112,16 +112,7 @@ class AwsUtils(object):
         if not role_name:
             raise ChaosTestException("There is no role associated with pod quitting")
         role = role_name.strip()
-
-        try:
-            client = session.client("iam")
-            response = client.get_role(
-                RoleName=role
-            )
-            return response
-        except Exception as ex:
-            raise ChaosTestException("Role provided " + role + " resulted in exception => " + str(ex) +
-                                     " Please create role with STS , and required privileges for the test")
+        logger.info("Role associated with pod under test " + role)
 
     def aws_resource(self, aws_resource_with_env: str, kubecontext, session: Session, namespace_under_test: str,
                      pod_identifier_pattern):
