@@ -46,6 +46,7 @@ def chaos_result_decorator(function):
         experiment_name = os.environ.get("EXP", None)
         time_now = datetime.now()
         time_string = time_now.strftime("%d-%m-%Y-%H-%M-%S-%p")
+        time_string = time_string.swapcase()
 
         result_name = experiment_name + "-" + time_string
         namespace = os.environ.get("NAME_SPACE", None)
