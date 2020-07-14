@@ -5,19 +5,21 @@ import logging
 import random
 
 import boto3
+import requests
 from boto3 import Session
 from chaostest.kubernetes.k8sutils import K8sUtils
 from chaostest.utils.chaos_custom_exception import ChaosTestException
-from kubernetes.client import V1Pod
 
 logger = logging.getLogger(__name__)
 
 __author__ = 'Vijay Thomas'
 
 INVALID_RESOURCE = "Not supported Resource"
+IAM_VALIDATE_URL = "http://169.254.169.254/latest/meta-data/iam/security-credentials/"
 
 
 class AwsUtils(object):
+
 
     @staticmethod
     def aws_init_by_role(account_number: str, role: str, region: str) -> Session:
@@ -96,7 +98,12 @@ class AwsUtils(object):
         return instance_id
 
     @staticmethod
-    def validate_iam_role_for_chaos(role_name: str, session: Session):
+    def validate_iam_role_for_chaos(session: Session):
+        role_name = requests.session().get(IAM_VALIDATE_URL)
+        if not role_name:
+            raise ChaosTestException("There is no role associated with pod quitting")
+        role = role_name.strip()
+
         """
         Tries to gather IAM role for the aws account selected. Will throw custom exception if role can't be retrieved
         :param role_name:
@@ -106,11 +113,11 @@ class AwsUtils(object):
         try:
             client = session.client("iam")
             response = client.get_role(
-                RoleName=role_name
+                RoleName=role
             )
             return response
         except Exception as ex:
-            raise ChaosTestException("Role provided " + role_name + " resulted in exception => " + str(ex) +
+            raise ChaosTestException("Role provided " + role + " resulted in exception => " + str(ex) +
                                      " Please create role with STS , and required privileges for the test")
 
     def aws_resource(self, aws_resource_with_env: str, kubecontext, session: Session, namespace_under_test: str,

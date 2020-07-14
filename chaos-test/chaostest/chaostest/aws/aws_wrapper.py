@@ -150,7 +150,7 @@ def execute_test_kill_worker_ec2(account_number: str = None, account_role: str =
         session = AwsUtils.aws_init_local()
     else:
         session = AwsUtils.aws_init_by_role(account_number, account_role, region)
-    AwsUtils.validate_iam_role_for_chaos(aws_account_role, session)
+        AwsUtils.validate_iam_role_for_chaos(session)
     instance_id = AwsUtils().aws_resource("ec2-iks", kubecontext, session, namespace_under_test, pod_label_under_test)
     chaos_utils = ChaosUtils()
     update_test_chaos_params("EC2_INSTANCE_ID", instance_id)
