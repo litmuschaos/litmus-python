@@ -40,28 +40,6 @@ class AwsUtils(object):
         return session
 
     @staticmethod
-    def aws_init_by_session(session: Session, role: str, account_number: str, region: str) -> Session:
-        """Initializing AWS client for Chaos instance related operations"""
-
-        sts_client = session.client('sts')
-        assumed_role_object = sts_client.assume_role(
-            DurationSeconds=3600,
-            RoleArn="arn:aws:iam::" + account_number + ":role/" + role,
-            RoleSessionName="ChaosSession" + str(int(round(time.time() * 1000)))
-        )
-        credentials = assumed_role_object['Credentials']
-
-        session = boto3.Session(
-            region_name=region,
-            aws_access_key_id=credentials['AccessKeyId'],
-            aws_secret_access_key=credentials['SecretAccessKey'],
-            aws_session_token=credentials['SessionToken'],
-        )
-        return session
-
-
-
-    @staticmethod
     def aws_init_local(profile_name: str = "default") -> Session:
         """Initializes boto3 client from local profile"""
         session = boto3.Session(profile_name=profile_name)
@@ -119,7 +97,7 @@ class AwsUtils(object):
         return instance_id
 
     @staticmethod
-    def validate_iam_role_for_chaos():
+    def validate_iam_role_for_chaos() -> str:
         """
         Tries to gather IAM role for the aws account selected. Will throw custom exception if role can't be retrieved
         :param role_name:
@@ -134,6 +112,7 @@ class AwsUtils(object):
             raise ChaosTestException("There is no role associated with pod quitting")
         role = role_name.strip()
         logger.info("Role associated with pod under test " + role)
+        return role
 
     def aws_resource(self, aws_resource_with_env: str, kubecontext, session: Session, namespace_under_test: str,
                      pod_identifier_pattern):
