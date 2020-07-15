@@ -50,12 +50,15 @@ def chaos_result_decorator(function):
 
         result_name = experiment_name + "-" + time_string
         namespace = os.environ.get("NAME_SPACE", None)
+
+        test_json = os.environ.get("FILE", None)
         test_result = False
-        if experiment_name and namespace:
+        if experiment_name and namespace and test_json:
             logger.info("Decorators are applied, will update chaos results from here:")
             helper = Helper()
+            journal_file_name = "journal-" + test_json
             helper.chaos_result_tracker(result_name, 'Running', Helper.TEST_RESULT_STATUS.get("Running"),
-                                        namespace)
+                                        namespace, journal_file_name)
             try:
                 test_result = function(*args, **kwargs)
                 logger.info("Test result status came as")
@@ -64,25 +67,28 @@ def chaos_result_decorator(function):
                     logger.info("Chaos results cant be updated if the calling function didnt return status true "
                                 "or false")
                     helper.chaos_result_tracker(result_name, 'Completed', "Result Not returned by test function",
-                                                namespace)
+                                                namespace, journal_file_name)
                 if not isinstance(test_result, bool) and isinstance(test_result, str):
-                    helper.chaos_result_tracker(result_name, 'Completed', test_result, namespace)
+                    helper.chaos_result_tracker(result_name, 'Completed', test_result, namespace, journal_file_name)
                 elif not isinstance(test_result, bool) and not isinstance(test_result, str):
-                    helper.chaos_result_tracker(result_name, 'Completed', "test_result_not_a_readable_return", namespace)
+                    helper.chaos_result_tracker(result_name, 'Completed', "test_result_not_a_readable_return",
+                                                namespace, journal_file_name)
                 else:
                     helper.chaos_result_tracker(result_name, 'Completed',
                                                 Helper.TEST_RESULT_STATUS.get(test_result, lambda : test_result),
-                                                namespace)
+                                                namespace, journal_file_name)
                 return test_result
             except Exception as ex:
                 logger.error("Test Failed with exception " + str(ex))
                 helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(False),
-                                            namespace)
+                                            namespace, journal_file_name)
 
         else:
 
             if not experiment_name:
                 logger.info("Experiment environment variable --> \"EXP\" not set quitting experiment")
+            if not test_json:
+                logger.info("File to pick up for chaos json --> \"FILE\" not set quitting experiment")
             if not namespace:
                 logger.info("Namespace environment variable not set")
                 logger.info("Namespace environment variable --> \"NAME_SPACE\" not set")

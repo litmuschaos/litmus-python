@@ -30,7 +30,7 @@ class Helper(object):
         run_cmd = subprocess.Popen(cmd_arg_list, stdout=subprocess.PIPE, env=os.environ.copy())
         run_cmd.communicate()
 
-    def chaos_result_tracker(self, exp_name, exp_phase, exp_verdict, ns):
+    def chaos_result_tracker(self, exp_name, exp_phase, exp_verdict, ns, jornal_file_name = None):
         """
         chaos_result_tracker() creates/patches the litmus chaosresult custom resource in the provided namespace.
         Typically invoked before and after chaos, and takes the .spec.phase, .spec.verdict & namespace as as args.
@@ -40,14 +40,14 @@ class Helper(object):
                                autoescape=select_autoescape(['yaml']))
         template = env_tmpl.get_template('chaos-result.j2')
 
-        journal_file = "journal-" + exp_name + ".json"
         events = None
-        if os.path.exists(journal_file):
-            with open("journal-" + exp_name + ".json", "r") as file:
-                yaml_content = yaml.dump(json.load(file))
-                if not yaml_content:
-                    events = "\n" + yaml_content
-            file.close()
+        if jornal_file_name:
+            if os.path.exists(jornal_file_name):
+                with open(jornal_file_name, "r") as file:
+                    yaml_content = yaml.dump(json.load(file))
+                    if not yaml_content:
+                        events = "\n" + yaml_content
+                file.close()
         updated_chaosresult_template = template.render(c_experiment=exp_name, phase=exp_phase, verdict=exp_verdict,
                                                        events=events)
         with open('chaosresult.yaml', "w+") as f:
