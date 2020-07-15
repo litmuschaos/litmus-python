@@ -20,10 +20,9 @@ IAM_VALIDATE_URL = "http://169.254.169.254/latest/meta-data/iam/security-credent
 
 class AwsUtils(object):
 
-
     @staticmethod
     def aws_init_by_role(account_number: str, role: str, region: str) -> Session:
-        """Initializing AWS client for Chaos instance related operations"""
+        """Initializing AWS client with the role given for pod"""
         sts_client = boto3.client('sts')
         assumed_role_object = sts_client.assume_role(
             DurationSeconds=3600,
@@ -39,6 +38,28 @@ class AwsUtils(object):
             aws_session_token=credentials['SessionToken'],
         )
         return session
+
+    @staticmethod
+    def aws_init_by_session(session: Session, role: str, account_number: str, region: str) -> Session:
+        """Initializing AWS client for Chaos instance related operations"""
+
+        sts_client = session.client('sts')
+        assumed_role_object = sts_client.assume_role(
+            DurationSeconds=3600,
+            RoleArn="arn:aws:iam::" + account_number + ":role/" + role,
+            RoleSessionName="ChaosSession" + str(int(round(time.time() * 1000)))
+        )
+        credentials = assumed_role_object['Credentials']
+
+        session = boto3.Session(
+            region_name=region,
+            aws_access_key_id=credentials['AccessKeyId'],
+            aws_secret_access_key=credentials['SecretAccessKey'],
+            aws_session_token=credentials['SessionToken'],
+        )
+        return session
+
+
 
     @staticmethod
     def aws_init_local(profile_name: str = "default") -> Session:
