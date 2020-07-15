@@ -44,7 +44,7 @@ class Helper(object):
         events = None
         if os.path.exists(journal_file):
             with open("journal-" + exp_name + ".json", "r") as file:
-                yaml_content = yaml.load(json.load(file))
+                yaml_content = yaml.dump(json.load(file))
                 if not yaml_content:
                     events = "\n" + yaml_content
             file.close()
