@@ -2,7 +2,6 @@ import logging
 import os
 import subprocess
 import time
-
 from jinja2 import Environment,  select_autoescape, PackageLoader
 
 __author__ = 'Sumit_Nagal@intuit.com'
@@ -38,7 +37,17 @@ class Helper(object):
         env_tmpl = Environment(loader=PackageLoader('chaostest', 'templates'), trim_blocks=True, lstrip_blocks=True,
                                    autoescape=select_autoescape(['yaml']))
         template = env_tmpl.get_template('chaos-result.j2')
-        updated_chaosresult_template = template.render(c_experiment=exp_name, phase=exp_phase, verdict=exp_verdict)
+
+        journal_file = "journal-" + exp_name + ".json"
+        if os.path.exists():
+            with open("journal-" + exp_name + ".json", "r") as file:
+                file_content= file.read(journal_file)
+            file.close()
+        events = None
+        if not file_content:
+            events = "\n" + file_content
+        updated_chaosresult_template = template.render(c_experiment=exp_name, phase=exp_phase, verdict=exp_verdict,
+                                                       events=events)
         with open('chaosresult.yaml', "w+") as f:
             f.write(updated_chaosresult_template)
         chaosresult_update_cmd_args_list = ['kubectl', 'apply', '-f', 'chaosresult.yaml', '-n', ns]
