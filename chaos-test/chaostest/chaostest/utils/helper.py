@@ -39,7 +39,7 @@ class Helper(object):
         template = env_tmpl.get_template('chaos-result.j2')
 
         journal_file = "journal-" + exp_name + ".json"
-        if os.path.exists():
+        if os.path.exists(journal_file):
             with open("journal-" + exp_name + ".json", "r") as file:
                 file_content= file.read(journal_file)
             file.close()
