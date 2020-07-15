@@ -45,7 +45,7 @@ class Helper(object):
             if os.path.exists(jornal_file_name):
                 with open(jornal_file_name, "r") as file:
                     yaml_content = yaml.dump(json.load(file))
-                    if not yaml_content:
+                    if yaml_content:
                         events = "\n" + yaml_content
                 file.close()
         updated_chaosresult_template = template.render(c_experiment=exp_name, phase=exp_phase, verdict=exp_verdict,
