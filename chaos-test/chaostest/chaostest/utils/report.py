@@ -4,6 +4,7 @@ import threading
 import time
 import requests
 from datetime import datetime
+import random
 
 __author__ = 'Sumit_Nagal@intuit.com'
 
@@ -45,9 +46,9 @@ class Report(object):
         output_data['transaction'] = self.get_value(data, 'experiment', 'method', 'provider', 'func')
         output_data['timestamp'] = data.get('start') or 'NA'
         output_data['status'] = data.get('status') or 'NA'
-        #rand = datetime.now()
-        #dateint = int(rand.strftime("%Y%m%d%H%M%S"))
-        output_data['run_id'] = "journal" + serializer['EXP'] + '-'
+        rand = datetime.now()
+        dateint = int(rand.strftime("%Y%m%d%H%M%S"))
+        output_data['run_id'] = "journal" + serializer['EXP'] + '-' + str(dateint)
 
         if output_data['status'] == 'failed':
             output_data['run_status'] = 'failed'
