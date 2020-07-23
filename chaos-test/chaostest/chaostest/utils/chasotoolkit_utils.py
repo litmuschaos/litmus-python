@@ -6,7 +6,7 @@ import logging
 import os
 import site
 import sys
-import time
+from datetime import datetime
 
 import click
 from chaoslib.control import load_global_controls
@@ -35,42 +35,60 @@ def clear_test_chaos_params():
 
 
 def chaos_result_decorator(function):
+    """
+        For updating chaos results in tests, we would need to annotate this to test method. This would take care
+        of creating and updating chaosresult object before test run, and once the tests are completed.
+    :param function:
+    :return:
+    """
     @functools.wraps(function)
     def inner(*args, **kwargs):
         experiment_name = os.environ.get("EXP", None)
-        timestamp = str(int(time.time() * 1000))
-        result_name = experiment_name + "-" + timestamp
+        time_now = datetime.now()
+        time_string = time_now.strftime("%d-%m-%Y-%H-%M-%S-%p")
+        time_string = time_string.swapcase()
+
+        result_name = experiment_name + "-" + time_string
         namespace = os.environ.get("NAME_SPACE", None)
+
+        test_json = os.environ.get("FILE", None)
         test_result = False
-        if experiment_name and namespace:
+        if experiment_name and namespace and test_json:
             logger.info("Decorators are applied, will update chaos results from here:")
             helper = Helper()
+            journal_file_name = "journal-" + test_json
+            if os.path.exists(journal_file_name):
+                logger.info("Pre existing journal file for the experiment, renaming the same")
+                backup_journal_file = journal_file_name + "-" + time_string
+                logger.info("Renaming existing journal file " + journal_file_name + " to " + backup_journal_file)
+                os.rename(journal_file_name, journal_file_name + "-" + time_string)
             helper.chaos_result_tracker(result_name, 'Running', Helper.TEST_RESULT_STATUS.get("Running"),
-                                        namespace)
+                                        namespace, journal_file_name)
             try:
                 test_result = function(*args, **kwargs)
                 logger.info("Test result status came as")
                 logger.info(test_result)
-                if not test_result:
-                    logger.info("Chaos results cant be updated if the calling function didnt return status true "
-                                "or false")
-                    helper.chaos_result_tracker(result_name, 'Completed', "Result Not returned by test function",
-                                                namespace)
-                if not isinstance(test_result, bool):
-                    helper.chaos_result_tracker(result_name, 'Completed', test_result, namespace)
+                if not isinstance(test_result, bool) and isinstance(test_result, str):
+                    helper.chaos_result_tracker(result_name, 'Completed', test_result, namespace, journal_file_name)
+                elif not isinstance(test_result, bool) and not isinstance(test_result, str):
+                    helper.chaos_result_tracker(result_name, 'Completed', "test_result_not_a_readable_return",
+                                                namespace, journal_file_name)
                 else:
-                    helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result),
-                                                namespace)
+                    helper.chaos_result_tracker(result_name, 'Completed',
+                                                Helper.TEST_RESULT_STATUS.get(test_result, lambda : test_result),
+                                                namespace, journal_file_name)
                 return test_result
             except Exception as ex:
                 logger.error("Test Failed with exception " + str(ex))
                 helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(False),
-                                            namespace)
+                                            namespace, journal_file_name)
 
         else:
 
             if not experiment_name:
                 logger.info("Experiment environment variable --> \"EXP\" not set quitting experiment")
+            if not test_json:
+                logger.info("File to pick up for chaos json --> \"FILE\" not set quitting experiment")
             if not namespace:
                 logger.info("Namespace environment variable not set")
                 logger.info("Namespace environment variable --> \"NAME_SPACE\" not set")
@@ -84,6 +102,12 @@ def chaos_result_decorator(function):
 
 
 class ChaosAction(argparse.Action):
+    """
+    The intent of a custom action class for Chaos tests is to translate environment variable into Argsparse variable.
+    If updated in actions in args parse, this will get the environment variable value and sets the same in args parse and
+    at the same time will override default value and required values in args parse, if environment variables are set.
+
+    """
     def __init__(self,
                  option_strings,
                  dest,
@@ -136,15 +160,28 @@ class ChaosAction(argparse.Action):
         var_from_dest_env_variable = str(self.dest).upper()
         environment_from_dest_env_variable = os.environ.get(var_from_dest_env_variable, None)
         if environment_from_dest_env_variable is None and values is not None:
+            """
+                If environment variable is not set but input args values are set, then the destination
+                variable will be converted to upper_case and will set the environment variabled with default value
+            """
             logger.info("Environment variable %s override with value %s " % (var_from_dest_env_variable, str(values)))
             os.environ.setdefault(var_from_dest_env_variable, str(values))
             environment_params_for_test[var_from_dest_env_variable] = str(values)
         elif environment_from_dest_env_variable and values is not None:
+            """
+                If environment variable is  set but input values are also set, then the environment variable will 
+                be set with the value from args parse input value 
+            """
             logger.info("Environment variable %s is set, override given -->  %s override with value %s "
                         % (var_from_dest_env_variable, var_from_dest_env_variable, str(values)))
             os.environ[var_from_dest_env_variable] = str(values)
             environment_params_for_test[var_from_dest_env_variable] = str(values)
         elif environment_from_dest_env_variable and values is None:
+            """
+                If environment variable is  set but input values are not set, then environment variable value will be 
+                set to default value
+            """
+
             logger.info("Environment variable %s is set, value not  given -->  %s override with value %s "
                         % (var_from_dest_env_variable, var_from_dest_env_variable, str(values)))
             values = environment_from_dest_env_variable
@@ -155,7 +192,14 @@ class ChaosAction(argparse.Action):
 class ChaosUtils(object):
 
     def run_chaos_engine(self, file, env_params: dict, report: str, report_endpoint: str) -> bool:
-
+        """
+        Runs chaos engine programmatically instead of using chaos binary
+        :param file:
+        :param env_params:
+        :param report:
+        :param report_endpoint:
+        :return:
+        """
         settings = ({}, os.environ.get("settings_path"))[os.environ.get("settings_path") is not None]
         has_deviated = False
         has_failed = False
@@ -196,7 +240,7 @@ class ChaosUtils(object):
             self.create_report(os.environ, journal, report_endpoint)
         if has_failed or has_deviated:
             logger.error("Test Failed")
-            return has_failed or has_deviated
+            return has_failed and has_deviated
         else:
             logger.info("Test Passed")
             return True
