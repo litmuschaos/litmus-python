@@ -46,8 +46,6 @@ author_email = 'sumit_nagal@intuit.com'
 license = 'Apache License Version 2.0'
 packages = [
 	'chaostest',
-	'chaostest.kubernetes',
-	'chaostest.aws',
 	'chaostest.utils'
 ]
 needs_pytest = set(['pytest', 'test']).intersection(sys.argv)

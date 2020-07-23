@@ -9,7 +9,7 @@ help:
 	@echo ""
 	@echo "Usage:-"
 	@echo "\tmake deps              -- will verify build dependencies are installed"
-	@echo "\tmake chaostoolkit      -- will build and push python experiment images 
+	@echo "\tmake chaostest      -- will build and push python experiment images
 	@echo ""
 
 _build_check_docker:
@@ -24,13 +24,13 @@ deps: _build_check_docker
 	@echo ""
 	@echo "INFO:\tverifying dependencies for litmus-python ..."
 
-_build_tests_chaostoolkit_image:
+_build_tests_chaostest_image:
 	@echo "INFO: Building container image for performing chaostoolkit tests"
-	cd chaostoolkit && docker build -t litmuschaos/chaostoolkit .
+	cd chaos-test && docker build -t litmuschaos/chaos-test .
 
-_push_tests_chaostoolkit_image:
-	@echo "INFO: Publish container litmuschaos/chaostoolkit"
-	cd chaostoolkit/buildscripts && ./push
+_push_tests_chaostest_image:
+	@echo "INFO: Publish container litmuschaos/chaos-test"
+	cd chaos-test/buildscripts && ./push
 
-chaostoolkit: deps _build_tests_chaostoolkit_image _push_tests_chaostoolkit_image 
+chaostest: deps _build_tests_chaostest_image _push_tests_chaostest_image
 

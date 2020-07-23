@@ -1,7 +1,7 @@
-FROM docker.intuit.com/oicp/standard/external/python:3.7-stretch-20.06.03
+FROM python:3.7-stretch
 
 LABEL maintainer="sumit nagal"
-LABEL name=chaostoolkit
+LABEL name=chaostest
 
 
 
@@ -74,8 +74,8 @@ ENV LANG=C.UTF-8
 
 ### Setup chaostoolkit packages
 ADD chaostest /app/chaos
-ADD chaostoolkit-aws /app/chaostoolkit-aws
-ADD chaostoolkit-kubernetes /app/chaostoolkit-kubernetes
+# ADD chaostoolkit-aws /app/chaostoolkit-aws
+# ADD chaostoolkit-kubernetes /app/chaostoolkit-kubernetes
 # ADD install.sh install.sh
 ADD install.sh install.sh
 RUN chmod +x install.sh

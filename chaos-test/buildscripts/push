@@ -10,5 +10,5 @@ then
   docker tag ${IMAGEID} litmuschaos/chaos-test:latest
   docker push litmuschaos/chaos-test:latest;
 else
-  echo "No docker credentials provided. Skip uploading litmuschaos/chaostoolkit:latest to docker hub";
+  echo "No docker credentials provided. Skip uploading litmuschaos/chaostest:latest to docker hub";
 fi;
