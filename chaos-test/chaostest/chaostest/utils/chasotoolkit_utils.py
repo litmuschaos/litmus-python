@@ -51,17 +51,17 @@ def chaos_result_decorator(function):
         result_name = experiment_name + "-" + time_string
         namespace = os.environ.get("NAME_SPACE", None)
 
-        test_json = os.environ.get("FILE", None)
+        test_json = os.environ.get("FILE", "")
         test_result = False
         if experiment_name and namespace and test_json:
             logger.info("Decorators are applied, will update chaos results from here:")
             helper = Helper()
             journal_file_name = "journal-" + test_json
-            if os.path.exists(journal_file_name):
-                logger.info("Pre existing journal file for the experiment, renaming the same")
-                backup_journal_file = journal_file_name + "-" + time_string
-                logger.info("Renaming existing journal file " + journal_file_name + " to " + backup_journal_file)
-                os.rename(journal_file_name, journal_file_name + "-" + time_string)
+            # if os.path.exists(journal_file_name):
+            #     logger.info("Pre existing journal file for the experiment, renaming the same")
+            #     backup_journal_file = journal_file_name + "-" + time_string
+            #     logger.info("Renaming existing journal file " + journal_file_name + " to " + backup_journal_file)
+            #     os.rename(journal_file_name, journal_file_name + "-" + time_string)
             helper.chaos_result_tracker(result_name, 'Running', Helper.TEST_RESULT_STATUS.get("Running"),
                                         namespace, journal_file_name)
             try:

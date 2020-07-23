@@ -41,13 +41,13 @@ class Helper(object):
         template = env_tmpl.get_template('chaos-result.j2')
 
         events = None
-        if jornal_file_name:
-            if os.path.exists(jornal_file_name):
-                with open(jornal_file_name, "r") as file:
-                    yaml_content = yaml.dump(json.load(file))
-                    if yaml_content:
-                        events = "\n" + yaml_content
-                file.close()
+        # if jornal_file_name:
+        #     if os.path.exists(jornal_file_name):
+        #         with open(jornal_file_name, "r") as file:
+        #             yaml_content = yaml.dump(json.load(file))
+        #             if yaml_content:
+        #                 events = "\n" + yaml_content
+        #         file.close()
         updated_chaosresult_template = template.render(c_experiment=exp_name, phase=exp_phase, verdict=exp_verdict,
                                                        events=events)
         with open('chaosresult.yaml', "w+") as f:
