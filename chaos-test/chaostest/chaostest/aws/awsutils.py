@@ -5,21 +5,24 @@ import logging
 import random
 
 import boto3
+import requests
 from boto3 import Session
 from chaostest.kubernetes.k8sutils import K8sUtils
 from chaostest.utils.chaos_custom_exception import ChaosTestException
-from kubernetes.client import V1Pod
 
 logger = logging.getLogger(__name__)
 
 __author__ = 'Vijay Thomas'
+
+INVALID_RESOURCE = "Not supported Resource"
+IAM_VALIDATE_URL = "http://169.254.169.254/latest/meta-data/iam/security-credentials/"
 
 
 class AwsUtils(object):
 
     @staticmethod
     def aws_init_by_role(account_number: str, role: str, region: str) -> Session:
-        """Initializing AWS client for Chaos instance related operations"""
+        """Initializing AWS client with the role given for pod"""
         sts_client = boto3.client('sts')
         assumed_role_object = sts_client.assume_role(
             DurationSeconds=3600,
@@ -37,12 +40,22 @@ class AwsUtils(object):
         return session
 
     @staticmethod
-    def aws_init_local(account_number: str) -> Session:
-        session = boto3.Session(profile_name='default')
+    def aws_init_local(profile_name: str = "default") -> Session:
+        """Initializes boto3 client from local profile"""
+        session = boto3.Session(profile_name=profile_name)
         return session
 
     @staticmethod
-    def ec2_detach_eks(session: Session, kubecontext : str, namespace: str, label_name : str) -> str:
+    def __ec2_detach_eks(session: Session, kubecontext: str, namespace: str, label_name: str) -> str:
+        """
+          Utility method to detach instance from a given namespace. This returns a node IP, gets instance ID from the
+          same and returns back the same for chaos operations
+        :param session:
+        :param kubecontext:
+        :param namespace:
+        :param label_name:
+        :return:
+        """
         logger.info("Getting list of  pods for namespace " + namespace)
         v1 = K8sUtils.init_k8s_client(kubecontext)
 
@@ -82,3 +95,37 @@ class AwsUtils(object):
         if not instance_id:
             raise Exception("Not able to get instance id, exiting")
         return instance_id
+
+    @staticmethod
+    def validate_iam_role_for_chaos() -> str:
+        """
+        Tries to gather IAM role for the aws account selected. Will throw custom exception if role can't be retrieved
+        :param role_name:
+        :param session:
+        :return:
+        """
+
+        response = requests.session().get(IAM_VALIDATE_URL)
+        response.raise_for_status()
+        role_name = response.text.strip()
+        if not role_name:
+            raise ChaosTestException("There is no role associated with pod quitting")
+        role = role_name.strip()
+        logger.info("Role associated with pod under test " + role)
+        return role
+
+    def aws_resource(self, aws_resource_with_env: str, kubecontext, session: Session, namespace_under_test: str,
+                     pod_identifier_pattern):
+        """
+         A switcher for getting aws resource based on choices mainly between different aws environments
+        :param aws_resource_with_env:
+        :param kubecontext:
+        :param session:
+        :param namespace_under_test:
+        :param pod_identifier_pattern:
+        :return:
+        """
+        aws_resources = {
+            "ec2-iks": self.__ec2_detach_eks(session, kubecontext, namespace_under_test, pod_identifier_pattern)
+        }
+        return aws_resources.get(aws_resource_with_env, lambda: INVALID_RESOURCE)
