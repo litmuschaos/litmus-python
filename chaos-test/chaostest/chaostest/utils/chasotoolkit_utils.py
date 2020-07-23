@@ -51,7 +51,7 @@ def chaos_result_decorator(function):
         result_name = experiment_name + "-" + time_string
         namespace = os.environ.get("NAME_SPACE", None)
 
-        test_json = os.environ.get("FILE", None)
+        test_json = os.environ.get("FILE", "")
         test_result = False
         if experiment_name and namespace and test_json:
             logger.info("Decorators are applied, will update chaos results from here:")
