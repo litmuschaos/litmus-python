@@ -5,3 +5,5 @@ jsonpath-rw-ext==1.2.2
 chaostoolkit-kubernetes
 chaostoolkit
 jsonpath2
+jinja2>=2.11.2
+boto3>=1.14.10
