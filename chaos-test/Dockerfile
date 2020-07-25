@@ -41,30 +41,6 @@ RUN chmod +x ./kops-linux-amd64
 RUN mv ./kops-linux-amd64 /usr/local/bin/kops
 ### Setup kops
 
-### Setup kubectl
-WORKDIR /app/kubectl/
-RUN curl -Lsf -o kubectl https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-RUN chmod +x ./kubectl
-RUN mv ./kubectl /usr/local/bin/kubectl
-### Setup kubectl
-
-#### Other Packages
-#RUN export DEBIAN_FRONTEND=noninteractive \
-#    && apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-latex-extra \
-#    vim \
-#    net-tools \
-#    libcairo2-dev \
-#    && curl -Lvf -o pandoc.deb https://github.com/jgm/pandoc/releases/download/2.2.1/pandoc-2.2.1-1-amd64.deb \
-#    && dpkg -i pandoc.deb \
-#    && apt-get remove -y curl \
-#    texlive-latex-extra-doc \
-#    texlive-latex-recommended-doc \
-#    texlive-latex-base-doc \
-#    texlive-fonts-recommended-doc \
-#    texlive-pstricks-doc \
-#    texlive-pictures-doc \
-#    && apt-get autoremove || true \
-#    && apt-get autoclean || true
 
 RUN rm -rf /tmp/* /root/.cache
 
