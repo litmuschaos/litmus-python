@@ -1,0 +1,10 @@
+chaostoolkit-lib>=0.13.0
+requests
+coloredlogs
+jsonpath-rw-ext==1.2.2
+chaostoolkit-kubernetes
+chaostoolkit
+jsonpath2
+jinja2>=2.11.2
+boto3>=1.14.10
+PyYAML
