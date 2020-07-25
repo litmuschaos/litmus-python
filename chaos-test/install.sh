@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Preserve order for chaos-test and lib in the beginning, thats the core
+
 declare -a chaosexperiments=("chaostoolkit" "chaostoolkit-lib" "chaostoolkit-reporting" "chaostoolkit-kubernetes" "chaostoolkit-aws")
+
 for chaosexperiment in "${chaosexperiments[@]}"
 do
   pip install --no-cache-dir -U "$chaosexperiment"
@@ -16,6 +18,7 @@ do
 done
 
 # Chaos toolkit litmus local package installation
+
 declare -a chaos_litmus_packages=("chaos" )
 for chaos_litmus_package in "${chaos_litmus_packages[@]}"
 do
