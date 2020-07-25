@@ -3,29 +3,6 @@ FROM python:3.7-stretch
 LABEL maintainer="sumit nagal"
 LABEL name=chaostest
 
-
-
-#USER root
-#RUN apt-get -y update
-#ENV PYTHON_VERSION=3.7
-#ENV PYTHON_SUBVERSION=3
-#RUN apt-get install -y gnupg build-essential wget curl zlib1g-dev libffi6 libffi-dev libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
-#RUN wget -O Python-${PYTHON_VERSION}.${PYTHON_SUBVERSION}.tar.tgz "https://www.python.org/ftp/python/${PYTHON_VERSION}.${PYTHON_SUBVERSION}/Python-${PYTHON_VERSION}.${PYTHON_SUBVERSION}.tgz"
-#RUN tar -zxvf Python-${PYTHON_VERSION}.${PYTHON_SUBVERSION}.tar.tgz
-#WORKDIR Python-${PYTHON_VERSION}.${PYTHON_SUBVERSION}
-#RUN ls -lrt
-#RUN ./configure --prefix=/usr/local/bin/python-${PYTHON_VERSION}.${PYTHON_SUBVERSION}
-#RUN make
-#RUN make install
-#WORKDIR /home/appuser/
-#RUN rm -rf Python-${PYTHON_VERSION}.${PYTHON_SUBVERSION}.tar.tgz Python-${PYTHON_VERSION}.${PYTHON_SUBVERSION}
-#ENV PATH=/usr/local/bin/python-${PYTHON_VERSION}.${PYTHON_SUBVERSION}/bin:$PATH
-#ENV VENV=/usr/local/python${PYTHON_VERSION}.${PYTHON_SUBVERSION}/
-#RUN python${PYTHON_VERSION} -m venv  $VENV
-#ENV PATH="$VENV/bin:$PATH"
-#RUN chmod -R 777 /usr/local/*
-#RUN . /usr/local/python${PYTHON_VERSION}.${PYTHON_SUBVERSION}/bin/activate
-
 ### upgrade and setup python
 RUN apt-get update \
     && apt-get -y install gcc python-pip python3-pip python-dev curl \
