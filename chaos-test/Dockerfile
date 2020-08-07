@@ -50,9 +50,9 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
 ### Setup chaostoolkit packages
-ADD chaostest /app/chaos
-# ADD chaostoolkit-aws /app/chaostoolkit-aws
-# ADD chaostoolkit-kubernetes /app/chaostoolkit-kubernetes
+ADD chaostest /app/chaostest
+ADD chaostoolkit-aws /app/chaostoolkit-aws
+ADD chaostoolkit-kubernetes /app/chaostoolkit-kubernetes
 # ADD install.sh install.sh
 ADD install.sh install.sh
 RUN chmod +x install.sh
