@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite errors="0" failures="0" hostname="INTUL173d0c0c8" name="pytest" skipped="0" tests="47" time="38.808" timestamp="2019-10-08T18:21:11.404577"><testcase classname="tests.test_actions" file="tests/test_actions.py" line="12" name="test_cannot_process_other_than_yaml_and_json" time="0.004"></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="21" name="test_create_node" time="0.464"><system-err>[D 191008 18:21:13 actions:167] Node &apos;mynode&apos; created
+</system-err></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="46" name="test_create_node_may_fail" time="0.368"></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="69" name="test_delete_nodes" time="0.463"><system-err>[D 191008 18:21:14 actions:53] Filtering nodes by label k=mynode
+[D 191008 18:21:14 actions:55] Found 1 nodes
+[D 191008 18:21:14 actions:87] Picked nodes &apos;mynode&apos;
+</system-err></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="95" name="test_cordon_node_by_name" time="0.369"><system-err>[D 191008 18:21:14 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:14 actions:51] Found 1 nodes
+[D 191008 18:21:14 actions:87] Picked nodes &apos;mynode&apos;
+</system-err></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="122" name="test_uncordon_node_by_name" time="0.406"><system-err>[D 191008 18:21:15 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:15 actions:51] Found 1 nodes
+[D 191008 18:21:15 actions:87] Picked nodes &apos;mynode&apos;
+</system-err></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="149" name="test_drain_nodes_by_name" time="10.408"><system-err>[D 191008 18:21:15 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:15 actions:51] Found 1 nodes
+[D 191008 18:21:15 actions:87] Picked nodes &apos;mynode&apos;
+[D 191008 18:21:15 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:15 actions:51] Found 1 nodes
+[D 191008 18:21:15 actions:87] Picked nodes &apos;mynode&apos;
+[D 191008 18:21:15 actions:266] Found 1 pods on node &apos;mynode&apos;
+[D 191008 18:21:15 actions:318] Found 1 pods to evict
+[D 191008 18:21:15 actions:338] Waiting for 1 pods to go
+[D 191008 18:21:15 actions:356] Pod &apos;apod&apos; still around in phase: &lt;MagicMock name=&apos;mock.status.phase&apos; id=&apos;4527249896&apos;&gt;
+[D 191008 18:21:25 actions:338] Waiting for 1 pods to go
+[D 191008 18:21:25 actions:363] Evicted all pods we could
+</system-err></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="194" name="test_daemonsets_cannot_be_drained" time="0.377"><system-err>[D 191008 18:21:25 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:25 actions:51] Found 1 nodes
+[D 191008 18:21:25 actions:87] Picked nodes &apos;mynode&apos;
+[D 191008 18:21:25 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:25 actions:51] Found 1 nodes
+[D 191008 18:21:25 actions:87] Picked nodes &apos;mynode&apos;
+[D 191008 18:21:25 actions:266] Found 1 pods on node &apos;mynode&apos;
+[D 191008 18:21:25 actions:307] Pod &apos;apod&apos; on node &apos;mynode&apos; is owned by a DaemonSet. Will not evict it
+[D 191008 18:21:25 actions:315] No pods to evict. Let&apos;s return.
+</system-err></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="230" name="test_pod_with_local_volume_cannot_be_drained" time="0.473"><system-err>[D 191008 18:21:26 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:26 actions:51] Found 1 nodes
+[D 191008 18:21:26 actions:87] Picked nodes &apos;mynode&apos;
+[D 191008 18:21:26 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:26 actions:51] Found 1 nodes
+[D 191008 18:21:26 actions:87] Picked nodes &apos;mynode&apos;
+[D 191008 18:21:26 actions:266] Found 1 pods on node &apos;mynode&apos;
+[D 191008 18:21:26 actions:288] Pod &apos;apod&apos; on node &apos;mynode&apos; has a volume made of a local storage
+[D 191008 18:21:26 actions:290] Not evicting a pod with local storage
+[D 191008 18:21:26 actions:315] No pods to evict. Let&apos;s return.
+</system-err></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="269" name="test_pod_with_local_volume_cannot_be_drained_unless_forced" time="10.415"><system-err>[D 191008 18:21:26 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:26 actions:51] Found 1 nodes
+[D 191008 18:21:26 actions:87] Picked nodes &apos;mynode&apos;
+[D 191008 18:21:26 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:26 actions:51] Found 1 nodes
+[D 191008 18:21:26 actions:87] Picked nodes &apos;mynode&apos;
+[D 191008 18:21:26 actions:266] Found 1 pods on node &apos;mynode&apos;
+[D 191008 18:21:26 actions:318] Found 1 pods to evict
+[D 191008 18:21:26 actions:338] Waiting for 1 pods to go
+[D 191008 18:21:26 actions:356] Pod &apos;apod&apos; still around in phase: &lt;MagicMock name=&apos;mock.status.phase&apos; id=&apos;4577939296&apos;&gt;
+[D 191008 18:21:36 actions:338] Waiting for 1 pods to go
+[D 191008 18:21:36 actions:363] Evicted all pods we could
+</system-err></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="315" name="test_mirror_pod_cannot_be_drained" time="0.490"><system-err>[D 191008 18:21:37 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:37 actions:51] Found 1 nodes
+[D 191008 18:21:37 actions:87] Picked nodes &apos;mynode&apos;
+[D 191008 18:21:37 actions:49] Filtering nodes by name mynode
+[D 191008 18:21:37 actions:51] Found 1 nodes
+[D 191008 18:21:37 actions:87] Picked nodes &apos;mynode&apos;
+[D 191008 18:21:37 actions:266] Found 1 pods on node &apos;mynode&apos;
+[D 191008 18:21:37 actions:282] Not deleting mirror pod &apos;apod&apos; on node &apos;mynode&apos;
+[D 191008 18:21:37 actions:315] No pods to evict. Let&apos;s return.
+</system-err></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="354" name="test_killing_microservice_deletes_deployment" time="0.639"><system-err>[D 191008 18:21:37 actions:62] Found 1 deployments named &apos;mydeployment&apos;
+[D 191008 18:21:37 actions:76] Found 0 replica sets named &apos;mydeployment&apos;
+[D 191008 18:21:37 actions:90] Found 0 pods named &apos;mydeployment&apos;
+</system-err></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="377" name="test_killing_microservice_deletes_rs" time="0.591"><system-err>[D 191008 18:21:38 actions:62] Found 0 deployments named &apos;mydeployment&apos;
+[D 191008 18:21:38 actions:76] Found 1 replica sets named &apos;mydeployment&apos;
+[D 191008 18:21:38 actions:90] Found 0 pods named &apos;mydeployment&apos;
+</system-err></testcase><testcase classname="tests.test_actions" file="tests/test_actions.py" line="400" name="test_killing_microservice_deletes_pod" time="0.671"><system-err>[D 191008 18:21:39 actions:62] Found 0 deployments named &apos;mydeployment&apos;
+[D 191008 18:21:39 actions:76] Found 0 replica sets named &apos;mydeployment&apos;
+[D 191008 18:21:39 actions:90] Found 1 pods named &apos;mydeployment&apos;
+</system-err></testcase><testcase classname="tests.test_client" file="tests/test_client.py" line="7" name="test_client_can_be_created_from_environ" time="0.001"></testcase><testcase classname="tests.test_client" file="tests/test_client.py" line="35" name="test_client_can_be_created_from_secrets" time="0.002"></testcase><testcase classname="tests.test_client" file="tests/test_client.py" line="49" name="test_client_can_provide_a_context" time="0.003"><system-err>[D 191008 18:21:39 __init__:69] Using Kubernetes context: minikube
+</system-err></testcase><testcase classname="tests.test_discovery" file="tests/test_discovery.py" line="5" name="test_discover_extension_capabilities" time="0.003"><system-err>[I 191008 18:21:39 __init__:120] Discovering capabilities from chaostoolkit-kubernetes
+[I 191008 18:21:39 discover:73] Searching for actions
+[I 191008 18:21:39 discover:81] Searching for probes
+[D 191008 18:21:39 discover:182] &apos;typing.Tuple[typing.Dict[str, typing.Any], typing.Dict[str, typing.Any]]&apos; could not be ported to something meaningful
+[D 191008 18:21:39 discover:182] &apos;typing.Union[bool, NoneType]&apos; could not be ported to something meaningful
+[D 191008 18:21:39 discover:182] &apos;typing.Union[str, NoneType]&apos; could not be ported to something meaningful
+[I 191008 18:21:39 discover:73] Searching for actions
+[I 191008 18:21:39 discover:81] Searching for probes
+[D 191008 18:21:39 discover:182] &apos;typing.Union[str, NoneType]&apos; could not be ported to something meaningful
+[I 191008 18:21:39 discover:73] Searching for actions
+[D 191008 18:21:39 discover:182] &apos;&lt;class &apos;kubernetes.client.models.v1_node.V1Node&apos;&gt;&apos; could not be ported to something meaningful
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="11" name="test_terminate_pods_by_name_pattern" time="0.440"><system-err>[D 191008 18:21:39 actions:71] Found 2 pods in ns &apos;default&apos;
+[D 191008 18:21:39 actions:80] Pod &apos;my-app-1&apos; match pattern
+[D 191008 18:21:39 actions:99] Picked pods &apos;my-app-1&apos; to be terminated
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="36" name="test_terminate_pods_by_name_pattern_all" time="0.424"><system-err>[D 191008 18:21:40 actions:71] Found 3 pods in ns &apos;default&apos;
+[D 191008 18:21:40 actions:80] Pod &apos;my-app-1&apos; match pattern
+[D 191008 18:21:40 actions:80] Pod &apos;my-app-2&apos; match pattern
+[D 191008 18:21:40 actions:99] Picked pods &apos;my-app-1,my-app-2&apos; to be terminated
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="65" name="test_terminate_pods_by_name_pattern_rand" time="0.379"><system-err>[D 191008 18:21:40 actions:71] Found 4 pods in ns &apos;default&apos;
+[D 191008 18:21:40 actions:80] Pod &apos;my-app-1&apos; match pattern
+[D 191008 18:21:40 actions:80] Pod &apos;my-app-2&apos; match pattern
+[D 191008 18:21:40 actions:80] Pod &apos;my-app-3&apos; match pattern
+[D 191008 18:21:40 actions:99] Picked pods &apos;my-app-3&apos; to be terminated
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="98" name="test_terminate_pods_all" time="0.460"><system-err>[D 191008 18:21:40 actions:71] Found 2 pods in ns &apos;default&apos;
+[D 191008 18:21:40 actions:99] Picked pods &apos;some-app,some-db&apos; to be terminated
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="124" name="test_terminate_pods_rand" time="0.427"><system-err>[D 191008 18:21:41 actions:71] Found 2 pods in ns &apos;default&apos;
+[D 191008 18:21:41 actions:99] Picked pods &apos;some-db&apos; to be terminated
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="151" name="test_terminate_pods_when_no_params_given" time="0.457"><system-err>[D 191008 18:21:41 actions:71] Found 2 pods in ns &apos;default&apos;
+[D 191008 18:21:41 actions:99] Picked pods &apos;some-app&apos; to be terminated
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="176" name="test_terminate_pods_when_grace_period_is_set" time="0.393"><system-err>[D 191008 18:21:42 actions:71] Found 1 pods in ns &apos;default&apos;
+[D 191008 18:21:42 actions:99] Picked pods &apos;some-app&apos; to be terminated
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="199" name="test_terminate_pods_by_given_percentage" time="0.463"><system-err>[D 191008 18:21:42 actions:71] Found 4 pods in ns &apos;default&apos;
+[D 191008 18:21:42 actions:99] Picked pods &apos;some-app-1,some-db-1&apos; to be terminated
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="231" name="test_terminate_pods_by_given_percentage_rand" time="0.380"><system-err>[D 191008 18:21:43 actions:71] Found 4 pods in ns &apos;default&apos;
+[D 191008 18:21:43 actions:99] Picked pods &apos;some-app-2,some-db-2&apos; to be terminated
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="265" name="test_terminate_pods_when_qty_grt_than_pods_selected" time="0.428"><system-err>[D 191008 18:21:43 actions:71] Found 2 pods in ns &apos;default&apos;
+[D 191008 18:21:43 actions:99] Picked pods &apos;some-app,some-db&apos; to be terminated
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="291" name="test_terminate_pods_should_fail_when_qty_less_than_pods_selected" time="0.414"></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="317" name="test_terminate_pods_should_fail_when_mode_not_present" time="0.466"></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="343" name="test_pods_in_phase" time="0.372"><system-err>[D 191008 18:21:44 probes:97] Found 1 pods matching label &apos;app=mysvc&apos; in ns &apos;default&apos;
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="361" name="test_pods_should_have_been_phase" time="0.472"><system-err>[D 191008 18:21:45 probes:97] Found 1 pods matching label &apos;app=mysvc&apos; in ns &apos;default&apos;
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="383" name="test_pods_not_in_phase" time="0.418"><system-err>[D 191008 18:21:45 probes:171] Found 1 pods matching label &apos;app=mysvc&apos; in ns &apos;default&apos;
+</system-err></testcase><testcase classname="tests.test_pod" file="tests/test_pod.py" line="402" name="test_pods_in_conditions" time="0.438"><system-err>[D 191008 18:21:46 probes:130] Found 1 pods matching label &apos;app=mysvc&apos; in ns &apos;default&apos;
+[D 191008 18:21:46 probes:130] Found 1 pods matching label &apos;app=mysvc&apos; in ns &apos;default&apos;
+[D 191008 18:21:46 probes:130] Found 1 pods matching label &apos;app=mysvc&apos; in ns &apos;default&apos;
+[D 191008 18:21:46 probes:130] Found 1 pods matching label &apos;app=mysvc&apos; in ns &apos;default&apos;
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="16" name="test_unhealthy_system_should_be_reported" time="0.397"><system-err>[D 191008 18:21:46 probes:41] Found 1 failed and 0 not ready pods
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="36" name="test_succeeded_and_running_pods_should_be_considered_healthy" time="0.404"><system-err>[D 191008 18:21:46 probes:41] Found 0 failed and 0 not ready pods
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="60" name="test_expecting_healthy_microservice_should_be_reported_when_not" time="0.169"><system-err>[D 191008 18:21:47 probes:72] Found 0 deployment(s) named &apos;mysvc&apos; in ns &apos;default&apos;
+[D 191008 18:21:47 probes:72] Found 1 deployment(s) named &apos;mysvc&apos; in ns &apos;default&apos;
+[D 191008 18:21:47 probes:80] Deployment has &apos;1&apos; available replicas
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="88" name="test_expecting_microservice_is_there_when_it_should_not" time="0.435"><system-err>[D 191008 18:21:47 probes:109] Found 1 pod(s) named &apos;mysvc&apos; in ns &apos;default
+[D 191008 18:21:47 probes:114] Pod &apos;&lt;MagicMock name=&apos;mock.metadata.name&apos; id=&apos;4583042128&apos;&gt;&apos; has status &apos;Running&apos;
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="108" name="test_expecting_service_endpoint_should_be_initialized" time="0.388"><system-err>[D 191008 18:21:47 probes:139] Found 1 service(s) named &apos;mysvc&apos; ins ns &apos;default&apos;
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="125" name="test_unitialized_or_not_existing_service_endpoint_should_not_be_available" time="0.454"><system-err>[D 191008 18:21:48 probes:139] Found 0 service(s) named &apos;mysvc&apos; ins ns &apos;default&apos;
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="143" name="test_deployment_is_not_fully_available" time="0.101"><system-err>[D 191008 18:21:48 probes:166] Watching events for 30s
+[D 191008 18:21:48 probes:182] Deployment &apos;&lt;MagicMock name=&apos;mock.metadata.name&apos; id=&apos;4578598640&apos;&gt;&apos; ADDED: Ready Replicas 1 - Unavailable Replicas &lt;MagicMock name=&apos;mock.status.unavailable_replicas&apos; id=&apos;4578467792&apos;&gt; - Desired Replicas 2
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="161" name="test_deployment_is_fully_available_when_it_should_not" time="0.107"><system-err>[D 191008 18:21:48 probes:166] Watching events for 30s
+[D 191008 18:21:48 probes:190] Timed out!
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="184" name="test_deployment_is_fully_available" time="0.104"><system-err>[D 191008 18:21:48 probes:166] Watching events for 30s
+[D 191008 18:21:48 probes:182] Deployment &apos;&lt;MagicMock name=&apos;mock.metadata.name&apos; id=&apos;4580295512&apos;&gt;&apos; ADDED: Ready Replicas 2 - Unavailable Replicas &lt;MagicMock name=&apos;mock.status.unavailable_replicas&apos; id=&apos;4580385848&apos;&gt; - Desired Replicas 2
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="202" name="test_deployment_is_not_fully_available_when_it_should" time="0.092"><system-err>[D 191008 18:21:48 probes:166] Watching events for 30s
+[D 191008 18:21:48 probes:190] Timed out!
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="225" name="test_fetch_last_logs" time="0.498"><system-err>[D 191008 18:21:49 probes:54] Found 1 pods: [myapp-1235] in ns &apos;default&apos;
+[D 191008 18:21:49 probes:76] Fetching logs for pod &apos;myapp-1235&apos;
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="247" name="test_can_select_by_label" time="0.413"><system-err>[D 191008 18:21:49 probes:139] Found 1 service(s) named &apos;mysvc&apos; ins ns &apos;default&apos;
+</system-err></testcase><testcase classname="tests.test_probes" file="tests/test_probes.py" line="266" name="test_can_select_nodes_by_label" time="0.454"></testcase></testsuite></testsuites>
