@@ -16,7 +16,7 @@ do
 done
 
 # Chaos toolkit litmus local package installation
-declare -a chaos_litmus_packages=("chaos" )
+declare -a chaos_litmus_packages=("chaos")
 for chaos_litmus_package in "${chaos_litmus_packages[@]}"
 do
   pwd
