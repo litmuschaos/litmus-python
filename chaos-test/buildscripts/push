@@ -12,7 +12,7 @@ then
   exit 1
 fi
 
-IIMAGEID=$( sudo docker images -q ${REPONAME}/${IMGNAME}:${IMGTAG} )
+IMAGEID=$( sudo docker images -q ${REPONAME}/${IMGNAME}:${IMGTAG} )
 
 if [ ! -z "${DNAME}" ] && [ ! -z "${DPASS}" ]; 
 then 
