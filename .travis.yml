@@ -9,9 +9,7 @@ env:
     - GOARCH=amd64
 before_install:
   - sleep 15
-  - sudo apt-get install -y
-  - sudo apt-get install -y curl
-  - sudo apt-get install -y shellcheck
+  - sudo apt-get install -y curl shellcheck
 
 jobs:
   include:
@@ -24,7 +22,7 @@ jobs:
     - stage: build chaos-test images
       name: build docker image chaos-test
       script:
-      - make chaos-test
+      - make chaostest
 
 notifications:
   email:
