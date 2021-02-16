@@ -1,64 +1,65 @@
 {
-	"version": "1.0.0",
-	"title": "My application is resilient to microservice death",
-	"description": "Can my application maintain itself when a micoservice dies",
-	"tags": [
-		"platform:kubernetes",
-		"service:pod"
-	],
-	"configuration": {
-		"app_name": {
-			"type": "env",
-			"key": "LABEL_NAME"
-		},
-		"service_url": {
-			"type": "env",
-			"key": "APP_ENDPOINT"
-		},
-		"name_space": {
-			"type": "env",
-			"key": "NAME_SPACE"
-		}
-	},
-	"contributions": {
-		"availability": "high",
-		"reliability": "high",
-		"safety": "none",
-		"security": "none",
-		"performability": "none"
-	},
-	"steady-state-hypothesis": {
-		"title": "Application is normal",
-		"probes": [{
-			"type": "probe",
-			"name": "there-should-be-at-least-2-running-app-replicas",
-			"tolerance": 3,
-			"provider": {
-				"type": "python",
-				"module": "chaosk8s.pod.probes",
-				"func": "count_pods",
-				"arguments": {
-					"label_selector": "`${app_name}",
-					"ns": "${name_space}"
-				}
-			}
-		}]
-	},
-	"method": [{
-		"type": "action",
-		"name": "kill-microservice",
-		"provider": {
-			"module": "chaosk8s.actions",
-			"type": "python",
-			"func": "kill_microservice",
-			"arguments": {
-				"label_selector": "app=${app_name}",
-				"name": "${app_name}",
-				"ns": "${name_space}"
-			}
-		},
-		"pauses": {
-			"after": 2
-		}
-	}]
+  "version": "1.0.0",
+  "title": "My application is resilient to microservice death",
+  "description": "Can my application maintain itself when a micoservice dies",
+  "tags": ["platform:kubernetes", "service:pod"],
+  "configuration": {
+    "app_name": {
+      "type": "env",
+      "key": "LABEL_NAME"
+    },
+    "service_url": {
+      "type": "env",
+      "key": "APP_ENDPOINT"
+    },
+    "name_space": {
+      "type": "env",
+      "key": "NAME_SPACE"
+    }
+  },
+  "contributions": {
+    "availability": "high",
+    "reliability": "high",
+    "safety": "none",
+    "security": "none",
+    "performability": "none"
+  },
+  "steady-state-hypothesis": {
+    "title": "Application is normal",
+    "probes": [
+      {
+        "type": "probe",
+        "name": "there-should-be-at-least-2-running-app-replicas",
+        "tolerance": 3,
+        "provider": {
+          "type": "python",
+          "module": "chaosk8s.pod.probes",
+          "func": "count_pods",
+          "arguments": {
+            "label_selector": "`${app_name}",
+            "ns": "${name_space}"
+          }
+        }
+      }
+    ]
+  },
+  "method": [
+    {
+      "type": "action",
+      "name": "kill-microservice",
+      "provider": {
+        "module": "chaosk8s.actions",
+        "type": "python",
+        "func": "kill_microservice",
+        "arguments": {
+          "label_selector": "app=${app_name}",
+          "name": "${app_name}",
+          "ns": "${name_space}"
+        }
+      },
+      "pauses": {
+        "after": 2
+      }
+    }
+  ]
 }
