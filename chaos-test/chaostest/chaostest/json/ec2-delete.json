@@ -2,7 +2,10 @@
   "version": "1.0.0",
   "title": "EC2 instances Going from K8 cluster",
   "description": "Do instances come up automatically from K8. It's expected this experiment will likely always pass based on time",
-  "tags": ["platform:aws", "service:ec2"],
+  "tags": [
+    "platform:aws",
+    "service:ec2"
+  ],
   "configuration": {
     "aws_region": {
       "type": "env",
@@ -13,41 +16,38 @@
       "key": "EC2_INSTANCE_ID"
     },
     "aws_assume_role_arn": {
-      "type": "env",
-      "key": "AWS_ARN"
-    },
+            "type": "env",
+            "key" : "AWS_ARN"
+        },
     "aws_assume_role_session_name": {
-      "type": "env",
-      "key": "AWS_SESSION_NAME"
+            "type": "env",
+            "key" : "AWS_SESSION_NAME"
     }
   },
   "steady-state-hypothesis": {
     "title": "EC2 instance stopped and K8 recreating them",
     "probes": [
-      {
-        "type": "probe",
-        "name": "instance_selected_should_be running",
-        "tolerance": {
-          "type": "jsonpath",
-          "path": "$.Reservations[0].Instances[0].State.Name",
-          "expect": "running"
-        },
-        "provider": {
-          "type": "python",
-          "module": "chaosaws.ec2.probes",
-          "func": "describe_instances",
-          "arguments": {
-            "filters": [
-              {
-                "Name": "instance-state-name",
-                "Values": ["running"]
-              }
-            ]
-          }
-        }
-      }
-    ]
-  },
+            {
+                "type": "probe",
+                "name": "instance_selected_should_be running",
+                "tolerance": {
+                    "type": "jsonpath",
+                    "path": "$.Reservations[0].Instances[0].State.Name",
+                    "expect": "running"
+                },
+                "provider": {
+                    "type": "python",
+                    "module": "chaosaws.ec2.probes",
+                    "func": "describe_instances",
+                    "arguments": {
+                        "filters": [
+                            {"Name": "instance-state-name", "Values": ["running"]}
+                        ]
+                    }
+                }
+            }
+        ]
+    },
   "method": [
     {
       "type": "action",
@@ -61,7 +61,9 @@
           "filters": [
             {
               "Name": "instance-state-name",
-              "Values": ["running"]
+              "Values": [
+                "running"
+              ]
             }
           ]
         }

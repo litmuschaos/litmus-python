@@ -12,6 +12,10 @@
       "type": "env",
       "key": "APP_ENDPOINT"
     },
+    "service_healthcheck": {
+      "type": "env",
+      "key": "APP_HEALTHCHECK"
+    },
     "name_space": {
       "type": "env",
       "key": "NAME_SPACE"
@@ -33,7 +37,7 @@
         "tolerance": 200,
         "provider": {
           "type": "http",
-          "url": "https://${service_url}/health/full",
+          "url": "https://${service_url}${service_healthcheck}",
           "timeout": 0.5
         }
       }

@@ -14,7 +14,7 @@
     },
     "service_healthcheck": {
       "type": "env",
-      "key": "/health/full"
+      "key": "APP_HEALTHCHECK"
     },
     "service_url": {
       "type": "env",
