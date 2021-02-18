@@ -20,14 +20,17 @@ popular tools like chaostoolkit.
     * checkout the project using `git clone git@github.com:sumitnagal/litmus-python.git`
     * go to your folder `cd litmus-python`
     * add upstream for main and intuit repo
-    * `git remote add upstream git@github.com:litmuschaos/litmus-python.git`
-    * `git remote add intuit git@github.**.com:**/litmus-python.git`
-    * `git pull upstream master`
-    * `git checkout -b <branch name>`
+    ```
+    git remote add upstream git@github.com:litmuschaos/litmus-python.git
+    git pull upstream master
+    git checkout -b <branch name>
+    ```
     * Make the changes
-    * `git add .`
-    * `git commit -s -m "<message>"`
-    * `git push origin <branch>>`
+    ```
+    git add .
+    git commit -s -m "<message>"
+    git push origin <branch>
+    ```
 
 ### Appendix
 - This repo moved from existing location of [test-tools/chaostoolkit] (https://github.com/litmuschaos/test-tools/tree/master/chaostoolkit) to better serve as stand-alone project
