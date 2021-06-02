@@ -1,20 +1,7 @@
-# package environment
-
-# import (
-# 	"strconv"
-
-# 	clientTypes "k8s.io/apimachinery/pkg/types"
-
-# 	experimentTypes "github.com/litmuschaos/litmus-go/pkg/generic/pod-delete/types"
-# 	"github.com/litmuschaos/litmus-go/pkg/types"
-# 	"github.com/litmuschaos/litmus-go/pkg/utils/os"
-# )
-# getenv fetch the env and set the default value, if any
-
 import os
 from kubernetes import type
 from pkg.generic.podDelete.types import AppDetails
-
+UID = ''
 #GetENV fetches all the env variables from the runner pod
 def GetENV(experimentDetails):
 	experimentDetails.ExperimentName =  os.getenv("EXPERIMENT_NAME", "pod-delete")
@@ -28,7 +15,7 @@ def GetENV(experimentDetails):
 	experimentDetails.AppNS = os.getenv("APP_NAMESPACE", "")
 	experimentDetails.AppLabel = os.getenv("APP_LABEL", "")
 	experimentDetails.AppKind = os.getenv("APP_KIND", "")
-	experimentDetails.ChaosUID = type.UID(os.getenv("CHAOS_UID", ""))
+	experimentDetails.ChaosUID = UID(os.getenv("CHAOS_UID", ""))
 	experimentDetails.InstanceID = os.getenv("INSTANCE_ID", "")
 	experimentDetails.ChaosPodName = os.getenv("POD_NAME", "")
 	experimentDetails.Force, _ = str.ParseBool(os.getenv("FORCE", "false"))

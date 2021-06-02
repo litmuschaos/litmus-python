@@ -19,7 +19,7 @@ StoppedVerdict = "Stopped"
 
 
 class ResultDetails(object):
-	def __init__(self, Name, Verdict, FailStep, Phase,  ProbeDetails, PassedProbeCount, ProbeArtifacts):
+	def __init__(self, Name=None, Verdict=None, FailStep=None, Phase=None,  ProbeDetails=None, PassedProbeCount=None, ProbeArtifacts=None):
 		self.Name             = Name
 		self.Verdict          = Verdict
 		self.FailStep         = FailStep
@@ -27,7 +27,7 @@ class ResultDetails(object):
 		self.ResultUID        = type.UID
 		self.ProbeDetails     = ProbeDetails
 		self.PassedProbeCount = PassedProbeCount
-		self.ProbeArtifacts   = ProbeArtifact  
+		self.ProbeArtifacts   = ProbeArtifacts
 
 
 # ProbeArtifact contains the probe artifacts
@@ -38,13 +38,13 @@ class ProbeArtifact(object):
 
 # RegisterDetails contains the output of the corresponding probe
 class RegisterDetails(object):
-	def __init__(self, Register):
+	def __init__(self, Register=None):
 		self.Register = Register
 
 
 # ProbeDetails is for collecting all the probe details
 class RegisterDetails(object):
-	def __init__(self, Name, Type, RunID, RunCount, error, status):
+	def __init__(self, Name=None, Type=None, RunID=None, RunCount=None, error=None, status=None):
 		self.Name                   = Name
 		self.Type                   = Type
 		self.Status                 = status
@@ -55,7 +55,7 @@ class RegisterDetails(object):
 
 # EventDetails is for collecting all the events-related details
 class EventDetails(object):
-	def __init__(self, Message, Reason, ResourceName, ResourceUID, Type):
+	def __init__(self, Message=None, Reason=None, ResourceName=None, ResourceUID=None, Type=None):
 		self.Message      = Message
 		self.Reason       = Reason
 		self.ResourceName = ResourceName
@@ -65,7 +65,8 @@ class EventDetails(object):
 
 # ChaosDetails is for collecting all the global variables
 class ChaosDetails(object):
-	def __init__(self, ChaosPodName, ChaosNamespace, EngineName, InstanceID, ExperimentName, Timeout, Delay, ChaosDuration, JobCleanupPolicy, ProbeImagePullPolicy, Randomness):
+	def __init__(self, ChaosPodName=None, ChaosNamespace=None, EngineName=None, InstanceID=None, ExperimentName=None, Timeout=None, 
+	Delay=None, ChaosDuration=None, JobCleanupPolicy=None, ProbeImagePullPolicy=None, Randomness=None, AppDetails=None):
 		self.ChaosUID             = type.UID
 		self.ChaosNamespace       = ChaosNamespace
 		self.ChaosPodName         = ChaosPodName
@@ -83,7 +84,7 @@ class ChaosDetails(object):
 
 # AppDetails contains all the application related envs
 class AppDetails(object):
-	def __init__(self, Namespace, Label, Kind, AnnotationCheck, AnnotationKey, AnnotationValue):
+	def __init__(self, Namespace=None, Label=None, Kind=None, AnnotationCheck=None, AnnotationKey=None, AnnotationValue=None):
 		self.Namespace       = Namespace
 		self.Label           = Label
 		self.Kind            = Kind

@@ -79,12 +79,10 @@ def GenerateEvents(eventsDetails, clients, chaosDetails, kind):
 		event.Count = event.Count + 1
 		event.Source.Component = chaosDetails.ChaosPodName
 		event.Message = eventsDetails.Message
-		_, err = api_instance.patch_namespaced_event()  #s.KubeClient.CoreV1().Events(chaosDetails.ChaosNamespace).Update(event)
 		try:
 			api_response = api_instance.patch_namespaced_event(eventName, chaosDetails.ChaosNamespace, event)
 			pprint(api_response)
 		except ApiException as e:
 			return e
-		
 		return None
 	return None
