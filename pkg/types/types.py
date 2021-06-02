@@ -54,7 +54,7 @@ class RegisterDetails(object):
 
 
 # EventDetails is for collecting all the events-related details
-class RegisterDetails(object):
+class EventDetails(object):
 	def __init__(self, Message, Reason, ResourceName, ResourceUID, Type):
 		self.Message      = Message
 		self.Reason       = Reason
