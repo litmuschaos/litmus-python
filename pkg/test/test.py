@@ -14,35 +14,62 @@ from datetime import datetime
 
 #import "github.com/litmuschaos/litmus-go/pkg/types"
 #import k8serrors "k8s.io/apimachinery/pkg/api/errors"
+def deployment():
+    #api_instance = client.CoreV1Api()
+    with kubernetes.client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+        api_instance = kubernetes.client.AppsV1Api(api_client)
+	#try:
+    deployList = api_instance.list_namespaced_deployment(namespace="litmus")
+    pprint("DeploymentList :", deployList)
+	#except ApiException as e:
+	#	return False, logger.Errorf("no deployment found with matching label, err: %v", e) 
+	
+    for deploy in range(deployList):
+    	pprint(" List ", deploy)
+    # if deploy.ObjectMeta.Annotations[chaosDetails.AppDetail.AnnotationKey] == chaosDetails.AppDetail.AnnotationValue:
+    # 		rsOwnerRef = targetPod.OwnerReferences
+	# 	for own in range(rsOwnerRef) :
+	# 		if own.Kind == "ReplicaSet" :
+	# 			err = clients.KubeClient.AppsV1().ReplicaSets(chaosDetails.AppDetail.Namespace).Get(own.Name, v1.GetOptions{})
+	# 			if err != None:
+	# 				return False, err
+				
+	# 			ownerRef = rs.OwnerReferences
+	# 			for _, own in range(ownerRef):
+	# 				if own.Kind == "Deployment" & own.Name == deploy.Name:
+	# 					log.Infof("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, deploy.Name, deploy.Namespace)
+	# 					return True, None
 
-#GetENV fetches all the env variables from the runner pod
-def GetENV(experimentDetails):
-	experimentDetails.ExperimentName =  "pod-delete"
-	experimentDetails.ChaosNamespace =  {
-				'APIVersion': "litmuschaos.io/v1alpha1",
-				'Kind':       "kind",
-				'Name':       "eventsDetails.ResourceName",
-				'Namespace':  "chaosDetails.ChaosNamespace",
-				'UID':        "eventsDetails.ResourceUID",
-			}
+deployment()
+# #GetENV fetches all the env variables from the runner pod
+# def GetENV(experimentDetails):
+# 	experimentDetails.ExperimentName =  "pod-delete"
+# 	experimentDetails.ChaosNamespace =  {
+# 				'APIVersion': "litmuschaos.io/v1alpha1",
+# 				'Kind':       "kind",
+# 				'Name':       "eventsDetails.ResourceName",
+# 				'Namespace':  "chaosDetails.ChaosNamespace",
+# 				'UID':        "eventsDetails.ResourceUID",
+# 			}
     
 
-class ExperimentDetails(object):
-	def __init__(self, ExperimentName=None, ChaosNamespace=None):
-		self.ExperimentName          = ExperimentName
-		self.ChaosNamespace          = ChaosNamespace
+# class ExperimentDetails(object):
+# 	def __init__(self, ExperimentName=None, ChaosNamespace=None):
+# 		self.ExperimentName          = ExperimentName
+# 		self.ChaosNamespace          = ChaosNamespace
 
 
-expe = ExperimentDetails(ChaosNamespace={
-				'APIVersion': "litmuschaos.io/v1alpha1",
-				'Kind':       "kind",
-				'Name':       "eventsDetails.ResourceName",
-				'Namespace':  "chaosDetails.ChaosNamespace",
-				'UID':        "eventsDetails.ResourceUID",
-			})
-print("Experiment Details : ", expe.ChaosNamespace)
-GetENV(expe)
-print("Experiment Details : ", expe.ChaosNamespace)
+# expe = ExperimentDetails(ChaosNamespace={
+# 				'APIVersion': "litmuschaos.io/v1alpha1",
+# 				'Kind':       "kind",
+# 				'Name':       "eventsDetails.ResourceName",
+# 				'Namespace':  "chaosDetails.ChaosNamespace",
+# 				'UID':        "eventsDetails.ResourceUID",
+# 			})
+# print("Experiment Details : ", expe.ChaosNamespace)
+# GetENV(expe)
+# print("Experiment Details : ", expe.ChaosNamespace)
 # #CreateEvents create the events in the desired resource
 # api_instance = client.CoreV1Api()
 # now = datetime.now()

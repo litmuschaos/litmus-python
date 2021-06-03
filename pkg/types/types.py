@@ -94,7 +94,7 @@ class AppDetails(object):
 
 
 #SetResultAttributes initialise all the chaos result ENV
-def SetResultAttributes(*ResultDetails , ChaosDetails):
+def SetResultAttributes(ResultDetails , ChaosDetails):
 	ResultDetails.Verdict = "Awaited"
 	ResultDetails.Phase = "Running"
 	ResultDetails.FailStep = "N/A"

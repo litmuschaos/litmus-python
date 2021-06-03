@@ -8,23 +8,20 @@ import time
 #import kubernetes.client
 from kubernetes.client.rest import ApiException
 from pprint import pprint
-from dagster_k8s.client import (
-    DagsterK8sAPIRetryLimitExceeded,
-    DagsterK8sError,
-    DagsterK8sPipelineStatusException,
-    DagsterK8sTimeoutError,
-    DagsterK8sUnrecoverableAPIError,
-)
+import logging
+logger = logging.getLogger(__name__)
+from chaosk8s import create_k8s_api_client
+
 from datetime import datetime
 
 
 def deployment(clients, targetPod, chaosDetails):
-	api_instance = client.CoreV1Api(clients)
-	
+	api = create_k8s_api_client(secrets = None)
+	v1 = client.AppsV1beta1Api(api)
 	try:
-		deployList = api_instance.list_namespaced_deployment(chaosDetails.AppDetail.Namespace, label_selector=chaosDetails.AppDetail.Label)
+		deployList = v1.list_namespaced_deployment(chaosDetails.AppDetail.Namespace, label_selector=chaosDetails.AppDetail.Label)
 	except ApiException as e:
-		return False, errors.Errorf("no deployment found with matching label, err: %v", e) 
+		return False, logger.Errorf("no deployment found with matching label, err: %v", e) 
 	
 	for deploy in range(deployList):
 		if deploy.ObjectMeta.Annotations[chaosDetails.AppDetail.AnnotationKey] == chaosDetails.AppDetail.AnnotationValue:
@@ -38,112 +35,101 @@ def deployment(clients, targetPod, chaosDetails):
 					ownerRef = rs.OwnerReferences
 					for _, own in range(ownerRef):
 						if own.Kind == "Deployment" & own.Name == deploy.Name:
-							log.Infof("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, deploy.Name, deploy.Namespace)
+							logging.info("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, deploy.Name, deploy.Namespace)
 							return True, None
 						
-					
-				
-			
-		
-	
 
 def statefulset(clients, targetPod, chaosDetails):
-	stsList, err := clients.KubeClient.AppsV1().StatefulSets(chaosDetails.AppDetail.Namespace).List(v1.ListOptions{LabelSelector: chaosDetails.AppDetail.Label})
-	if err != nil || len(stsList.Items) == 0 {
-		return false, errors.Errorf("no statefulset found with matching label, err: %v", err)
-	}
-	for _, sts := range stsList.Items {
-		if sts.ObjectMeta.Annotations[chaosDetails.AppDetail.AnnotationKey] == chaosDetails.AppDetail.AnnotationValue {
-			ownerRef := targetPod.OwnerReferences
-			for _, own := range ownerRef {
-				if own.Kind == "StatefulSet" && own.Name == sts.Name {
-					log.Infof("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, sts.Name, sts.Namespace)
-					return true, nil
-				}
-			}
-		}
-	}
+	api = create_k8s_api_client(secrets = None)
+	v1 = client.AppsV1beta1Api(api)
+	
+	stsList = clients.KubeClient.AppsV1().StatefulSets(chaosDetails.AppDetail.Namespace).List(v1.ListOptions{LabelSelector: chaosDetails.AppDetail.Label})
+	if err != None or len(stsList.items) == 0:
+		return false, logging.Errorf("no statefulset found with matching label, err: %v", err)
+	
+	for sts in range(stsList.items):
+		if sts.ObjectMeta.Annotations[chaosDetails.AppDetail.AnnotationKey] == chaosDetails.AppDetail.AnnotationValue :
+			ownerRef = targetPod.OwnerReferences
+			for own in range(ownerRef):
+				if own.Kind == "StatefulSet" & own.Name == sts.Name:
+					logging.Infof("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, sts.Name, sts.Namespace)
+					return true, None
 
 def daemonset(clients, targetPod, chaosDetails):
-	dsList, err := clients.KubeClient.AppsV1().DaemonSets(chaosDetails.AppDetail.Namespace).List(v1.ListOptions{LabelSelector: chaosDetails.AppDetail.Label})
-	if err != nil || len(dsList.Items) == 0 {
-		return false, errors.Errorf("no daemonset found with matching label, err: %v", err)
-	}
-	for _, ds := range dsList.Items {
-		if ds.ObjectMeta.Annotations[chaosDetails.AppDetail.AnnotationKey] == chaosDetails.AppDetail.AnnotationValue {
-			ownerRef := targetPod.OwnerReferences
-			for _, own := range ownerRef {
-				if own.Kind == "DaemonSet" && own.Name == ds.Name {
-					log.Infof("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, ds.Name, ds.Namespace)
-					return true, nil
-				}
-			}
-		}
-	}
+	api = create_k8s_api_client(secrets = None)
+	v1 = client.AppsV1beta1Api(api)
+	
+	dsList, err = clients.KubeClient.AppsV1().DaemonSets(chaosDetails.AppDetail.Namespace).List(v1.ListOptions{LabelSelector: chaosDetails.AppDetail.Label})
+	if err != None or len(dsList.items) == 0:
+		return false, logging.Errorf("no daemonset found with matching label, err: %v", err)
+	
+	for ds in range(dsList.items):
+		if ds.ObjectMeta.Annotations[chaosDetails.AppDetail.AnnotationKey] == chaosDetails.AppDetail.AnnotationValue:
+			ownerRef = targetPod.OwnerReferences
+			for own in range(ownerRef):
+				if own.Kind == "DaemonSet" & own.Name == ds.Name:
+					logging.info("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, ds.Name, ds.Namespace)
+					return true, None
 
 def deploymentconfig(clients, targetPod, chaosDetails):
-	gvrdc := schema.GroupVersionResource{
+	api = create_k8s_api_client(secrets = None)
+	v1 = client.AppsV1beta1Api(api)
+	
+	gvrdc = schema.GroupVersionResource{
 		Group:    "apps.openshift.io",
 		Version:  "v1",
 		Resource: "deploymentconfigs",
 	}
-	deploymentConfigList, err := clients.DynamicClient.Resource(gvrdc).Namespace(chaosDetails.AppDetail.Namespace).List(v1.ListOptions{LabelSelector: chaosDetails.AppDetail.Label})
-	if err != nil || len(deploymentConfigList.Items) == 0 {
-		return false, errors.Errorf("no deploymentconfig found with matching labels, err: %v", err)
-	}
-	for _, dc := range deploymentConfigList.Items {
-		annotations := dc.GetAnnotations()
-		if annotations[chaosDetails.AppDetail.AnnotationKey] == chaosDetails.AppDetail.AnnotationValue {
-			rcOwnerRef := targetPod.OwnerReferences
-			for _, own := range rcOwnerRef {
-				if own.Kind == "ReplicationController" {
-					rc, err := clients.KubeClient.CoreV1().ReplicationControllers(chaosDetails.AppDetail.Namespace).Get(own.Name, v1.GetOptions{})
-					if err != nil {
+	deploymentConfigList, err = clients.DynamicClient.Resource(gvrdc).Namespace(chaosDetails.AppDetail.Namespace).List(v1.ListOptions{LabelSelector: chaosDetails.AppDetail.Label})
+	if err != None or len(deploymentConfigList.items) == 0:
+		return false, logging.Errorf("no deploymentconfig found with matching labels, err: %v", err)
+	
+	for dc in range(eploymentConfigList.items):
+		annotations = dc.GetAnnotations()
+		if annotations[chaosDetails.AppDetail.AnnotationKey] == chaosDetails.AppDetail.AnnotationValue:
+			rcOwnerRef = targetPod.OwnerReferences
+			for _, own in range(rcOwnerRef):
+				if own.Kind == "ReplicationController":
+					rc = clients.KubeClient.CoreV1().ReplicationControllers(chaosDetails.AppDetail.Namespace).Get(own.Name, v1.GetOptions{})
+					if err != None :
 						return false, err
-					}
-					ownerRef := rc.OwnerReferences
-					for _, own := range ownerRef {
-						if own.Kind == "DeploymentConfig" && own.Name == dc.GetName() {
-							log.Infof("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, dc.GetName(), dc.GetNamespace())
-							return true, nil
-						}
-					}
-				}
-			}
-		}
-	}
+					
+					ownerRef = rc.OwnerReferences
+					for own in range(ownerRef):
+						if own.Kind == "DeploymentConfig" & own.Name == dc.GetName():
+							loging.Infof("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, dc.GetName(), dc.GetNamespace())
+							return true, None
+
 
 def rollout(clients, targetPod, chaosDetails):
-	gvrro := schema.GroupVersionResource{
+	api = create_k8s_api_client(secrets = None)
+	v1 = client.AppsV1beta1Api(api)
+	
+	gvrro = schema.GroupVersionResource{
 		Group:    "argoproj.io",
 		Version:  "v1alpha1",
 		Resource: "rollouts",
 	}
-	rolloutList, err := clients.DynamicClient.Resource(gvrro).Namespace(chaosDetails.AppDetail.Namespace).List(v1.ListOptions{LabelSelector: chaosDetails.AppDetail.Label})
-	if err != nil || len(rolloutList.Items) == 0 {
-		return false, errors.Errorf("no rollouts found with matching labels, err: %v", err)
-	}
-	for _, ro := range rolloutList.Items {
-		annotations := ro.GetAnnotations()
-		if annotations[chaosDetails.AppDetail.AnnotationKey] == chaosDetails.AppDetail.AnnotationValue {
-			rsOwnerRef := targetPod.OwnerReferences
-			for _, own := range rsOwnerRef {
-				if own.Kind == "ReplicaSet" {
-					rs, err := clients.KubeClient.AppsV1().ReplicaSets(chaosDetails.AppDetail.Namespace).Get(own.Name, v1.GetOptions{})
-					if err != nil {
+	rolloutList, err = clients.DynamicClient.Resource(gvrro).Namespace(chaosDetails.AppDetail.Namespace).List(v1.ListOptions{LabelSelector: chaosDetails.AppDetail.Label})
+	if err != None or len(rolloutList.items) == 0:
+		return false, logging.Errorf("no rollouts found with matching labels, err: %v", err)
+	
+	for ro in rolloutList.items :
+		annotations = ro.GetAnnotations()
+		if annotations[chaosDetails.AppDetail.AnnotationKey] == chaosDetails.AppDetail.AnnotationValue:
+			rsOwnerRef = targetPod.OwnerReferences
+			for own in range(rsOwnerRef) :
+				if own.Kind == "ReplicaSet":
+					rs, err = clients.KubeClient.AppsV1().ReplicaSets(chaosDetails.AppDetail.Namespace).Get(own.Name, v1.GetOptions{})
+					if err != None :
 						return false, err
-					}
-					ownerRef := rs.OwnerReferences
-					for _, own := range ownerRef {
-						if own.Kind == "Rollout" && own.Name == ro.GetName() {
-							log.Infof("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, ro.GetName(), ro.GetNamespace())
-							return true, nil
-						}
-					}
-				}
-			}
-		}
-	}
+					
+					ownerRef = rs.OwnerReferences
+					for own in range(ownerRef):
+						if own.Kind == "Rollout" & own.Name == ro.GetName():
+							logging.Infof("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, ro.GetName(), ro.GetNamespace())
+							return true, None
+
 
 def numbers_to_strings(argument, clients, targetPod,chaosDetails):
     switcher = {
