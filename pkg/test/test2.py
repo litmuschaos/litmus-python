@@ -32,3 +32,22 @@ try:
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling AppsV1Api->list_namespaced_deployment: %s\n" % e)
+class Application(object):
+    	def __init__(self, appNs=None, appLabel=None, containerName=None, timeout=None, delay=None, clients=None, chaosDetails=None, 
+	AuxiliaryAppDetails=None, states=None, duration=None, podName=None , ContainerStatuses=None):
+		self.appNs                   = appNs
+		self.appLabel                = appLabel
+		self.containerName           = containerName
+		self.timeout                 = timeout
+		self.chaosDetails            = chaosDetails
+		self.delay                   = delay
+		self.clients                 = clients
+		self.states                  = states
+		self.AuxiliaryAppDetails     = AuxiliaryAppDetails
+		self.duration                = duration             
+		self.podName                 = podName
+		self.ContainerStatuses       = ContainerStatuses
+		self.AnnotatedApplicationsStatusCheck = retry(exceptions=Exception,max_delay=self.timeout,tries=self.timeout/delay, delay=delay, backoff=0)(self.AnnotatedApplicationsStatusCheck)
+		self.CheckPodStatusPhase = retry(exceptions=Exception,max_delay=self.timeout,tries=self.timeout/self.delay, delay=delay, backoff=0)(self.CheckPodStatusPhase)
+		self.CheckContainerStatus = retry(exceptions=Exception,max_delay=self.timeout,tries=self.timeout/self.delay, delay=self.delay, backoff=0)(self.CheckContainerStatus)
+		self.WaitForCompletion = retry(exceptions=Exception,max_delay=self.timeout,tries=self.timeout/self.delay, delay=self.delay, backoff=0)(self.WaitForCompletion)

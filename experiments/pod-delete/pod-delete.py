@@ -1,6 +1,6 @@
 import pkg.types.types  as types
-from pkg.generic.podDelete.types import experimentTypes
-from pkg.generic.podDelete.environment import GetENV, InitialiseChaosVariables
+from pkg.generic.podDelete.types.types import ExperimentDetails
+from pkg.generic.podDelete.environment.environment import GetENV, InitialiseChaosVariables
 from pkg.events.events import GenerateEvents
 import logging
 logger = logging.getLogger(__name__)
@@ -9,17 +9,17 @@ logger = logging.getLogger(__name__)
 # PodDelete inject the pod-delete chaos
 def PodDelete(clients):
 
-	experimentsDetails = experimentTypes.ExperimentDetails()
+	experimentsDetails = ExperimentDetails()
 	resultDetails = types.ResultDetails()
 	eventsDetails = types.EventDetails()
 	chaosDetails = types.ChaosDetails()
 
 	#Fetching all the ENV passed from the runner pod
 	logger.info("[PreReq]: Getting the ENV for the %v experiment", experimentsDetails.ExperimentName)
-	experimentEnv = GetENV(experimentsDetails)
+	GetENV(experimentsDetails)
 
 	# Intialise the chaos attributes
-	experimentEnv = InitialiseChaosVariables(chaosDetails, experimentsDetails)
+	InitialiseChaosVariables(chaosDetails, experimentsDetails)
 
 	# Intialise Chaos Result Parameters
 	types.SetResultAttributes(resultDetails, chaosDetails)
@@ -37,7 +37,7 @@ def PodDelete(clients):
 	err = result.ChaosResult(chaosDetails, clients, resultDetails, "SOT")
 	
 	if err != None:
-    	logger.Errorf("Unable to Create the Chaos Result, err: %v", err)
+		logger.Errorf("Unable to Create the Chaos Result, err: %v", err)
 		failStep = "Updating the chaos result of pod-delete experiment (SOT)"
 		result.RecordAfterFailure(chaosDetails, resultDetails, failStep, clients, eventsDetails)
 		return err

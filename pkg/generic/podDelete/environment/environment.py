@@ -1,15 +1,26 @@
 import os
 from kubernetes import type
-from pkg.generic.podDelete.types import AppDetails
-UID = ''
+from pkg.types.types import AppDetails
+from pkg.generic.podDelete.types.types import ExperimentDetails
+
+def atoi(string):
+    res = 0
+ 
+    # Iterate through all characters of
+    #  input string and update result
+    for i in range(len(string)):
+        res = res * 10 + (ord(string[i]) - ord('0'))
+ 
+    return res
+
 #GetENV fetches all the env variables from the runner pod
 def GetENV(experimentDetails):
 	experimentDetails.ExperimentName =  os.getenv("EXPERIMENT_NAME", "pod-delete")
 	experimentDetails.ChaosNamespace = os.getenv("CHAOS_NAMESPACE", "litmus")
 	experimentDetails.EngineName = os.getenv("CHAOSENGINE", "")
-	experimentDetails.ChaosDuration, _ = str.Atoi(os.getenv("TOTAL_CHAOS_DURATION", "30"))
+	experimentDetails.ChaosDuration = atoi(os.getenv("TOTAL_CHAOS_DURATION", "30"))
 	experimentDetails.ChaosInterval = os.getenv("CHAOS_INTERVAL", "10")
-	experimentDetails.RampTime, _ = str.Atoi(os.getenv("RAMP_TIME", "0"))
+	experimentDetails.RampTime = atoi(os.getenv("RAMP_TIME", "0"))
 	experimentDetails.ChaosLib = os.getenv("LIB", "litmus")
 	experimentDetails.ChaosServiceAccount = os.getenv("CHAOS_SERVICE_ACCOUNT", "")
 	experimentDetails.AppNS = os.getenv("APP_NAMESPACE", "")
@@ -18,11 +29,11 @@ def GetENV(experimentDetails):
 	experimentDetails.ChaosUID = UID(os.getenv("CHAOS_UID", ""))
 	experimentDetails.InstanceID = os.getenv("INSTANCE_ID", "")
 	experimentDetails.ChaosPodName = os.getenv("POD_NAME", "")
-	experimentDetails.Force, _ = str.ParseBool(os.getenv("FORCE", "false"))
-	experimentDetails.Delay, _ = str.Atoi(os.getenv("STATUS_CHECK_DELAY", "2"))
-	experimentDetails.Timeout, _ = str.Atoi(os.getenv("STATUS_CHECK_TIMEOUT", "180"))
+	experimentDetails.Force = bool(os.getenv("FORCE", "false"))
+	experimentDetails.Delay = atoi(os.getenv("STATUS_CHECK_DELAY", "2"))
+	experimentDetails.Timeout = atoi(os.getenv("STATUS_CHECK_TIMEOUT", "180"))
 	experimentDetails.TargetPods = os.getenv("TARGET_PODS", "")
-	experimentDetails.PodsAffectedPerc, _ = str.Atoi(os.getenv("PODS_AFFECTED_PERC", "0"))
+	experimentDetails.PodsAffectedPerc = atoi(os.getenv("PODS_AFFECTED_PERC", "0"))
 	experimentDetails.Sequence = os.getenv("SEQUENCE", "parallel")
 	experimentDetails.TargetContainer = os.getenv("TARGET_CONTAINER", "")
 

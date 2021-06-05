@@ -11,6 +11,7 @@ from pprint import pprint
 import logging
 logger = logging.getLogger(__name__)
 from chaosk8s import create_k8s_api_client
+from chaoslib.types import MicroservicesStatus, Secrets
 
 from datetime import datetime
 
