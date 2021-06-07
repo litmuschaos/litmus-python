@@ -7,11 +7,11 @@ import logging
 from pkg.utils.annotation.annotation import IsPodParentAnnotated
 logger = logging.getLogger(__name__)
 from chaosk8s import create_k8s_api_client
-from chaoslib.types import MicroservicesStatus, Secrets
+
 # AUTStatusCheck checks the status of application under test
 # if annotationCheck is True, it will check the status of the annotated pod only
 # else it will check status of all pods with matching label
-class Application(object):
+class Pods(object):
 	def __init__(self, namespace=None, podLabel=None, containerName=None, timeout=None, delay=None, clients=None, chaosDetails=None, 
 	targetPods=None, duration=None, podName=None , name=None, podList=None, targetContainer=None, appNamespace=None, targetPod=None, nonChaosPods=None, appName=None):
 		self.namespace               = namespace
@@ -41,9 +41,9 @@ class Application(object):
 		try:
 			podSpec = v1.list_namespaced_pod(self.namespace, label_selector=self.podLabel)
 			if len(podSpec.items) == 0:
-				logging.Errorf("no pods found with matching labels") 
+				logging.error("no pods found with matching labels") 
 		except:
-			logging.Errorf("no pods found with matching labels")
+			logging.error("no pods found with matching labels")
 		return None
 	
 	def DeleteAllPodRetry(self):
@@ -52,9 +52,9 @@ class Application(object):
 		try:
 			podSpec = v1.list_namespaced_pod(self.namespace, label_selector=self.podLabel)
 			if len(podSpec.items) == 0:
-				logging.Errorf("no pods found with matching labels") 
+				logging.error("no pods found with matching labels") 
 		except:
-			logging.Errorf("no pods found with matching labels")
+			logging.error("no pods found with matching labels")
 		return None
 	
 	#DeletePod deletes the specified pod and wait until it got terminated
@@ -65,7 +65,7 @@ class Application(object):
 		try:
 			v1.delete_namespaced_pod(self.podName, self.namespace)
 		except Exception as e:
-			return False,logger.Errorf("no pod found with matching label, err: %v", e)
+			return False,logger.error("no pod found with matching label, err: %v", e)
 		# waiting for the termination of the pod
 		return self.DeletePodRetry()
 	
@@ -78,7 +78,7 @@ class Application(object):
 		try:
 			v1.delete_collection_namespaced_pod(self.namespace, label_selector=self.podLabel)
 		except Exception as e:
-			return False,logger.Errorf("no pod found with matching label, err: %v", e)
+			return logger.error("no pod found with matching label, err: %v", e)
 		# waiting for the termination of the pod
 		return self.DeleteAllPodRetry()
 
@@ -90,7 +90,7 @@ class Application(object):
 		try:
 			pod = v1.read_namespaced_pod(self.podName, self.namespace)
 		except Exception as e:
-			return e
+			return None, e
 		return pod.metadata.annotations, None
 	
 
@@ -102,8 +102,8 @@ class Application(object):
 		try:
 			pod = v1.read_namespaced_pod(self.podName, self.namespace)
 		except Exception as e:
-			return e
-		return pod.Spec.ImagePullSecrets, None
+			return None, e
+		return pod.spec.imagePullSecrets, None
 	
 
 	# GetChaosPodResourceRequirements will return the resource requirements on chaos pod
@@ -114,9 +114,7 @@ class Application(object):
 		try:
 			pod = v1.read_namespaced_pod(self.podName, self.namespace)
 		except Exception as e:
-			return e, e 
-		#if err != None :
-		#	return core_v1.ResourceRequirements{}, err
+			return client.V1ResourceRequirements, e 
 		
 		for  container in pod.spec.containers:
 			# The name of chaos container is always same as job name
@@ -124,7 +122,7 @@ class Application(object):
 			if container.name == self.containerName:
 				return container.resources, None
 		
-		return None, logger.Errorf("No container found with %v name in target pod", self.containerName)
+		return client.V1ResourceRequirements, logger.error("No container found with %v name in target pod", self.containerName)
 	
 
 	# VerifyExistanceOfPods check the availibility of list of pods
@@ -148,31 +146,32 @@ class Application(object):
 	def GetPodList(self):
 		api = create_k8s_api_client(secrets = None)
 		v1 = client.CoreV1Api(api)
+		realpods = client.V1PodList()
 		try:
 			podList = v1.list_namespaced_pod(self.chaosDetails.AppDetail.Namespace, label_selector=self.chaosDetails.AppDetail.Label)
 		except Exception as e:
-			return e
-		if len(podList.Items) == 0:
-    			return False,logger.Wrapf("Failed to find the pod with matching labels in {} namespace", self.chaosDetails.AppDetail.Namespace)
+			return client.V1PodList, e
+		if len(podList.items) == 0:
+    			return False,logger.error("Failed to find the pod with matching labels in {} namespace", self.chaosDetails.AppDetail.Namespace)
 		
 		isPodsAvailable, err = self.VerifyExistanceOfPods(self.chaosDetails.AppDetail.Namespace, self.targetPods, self.clients)
 		if err != None:
-			return False, err
+			return client.V1PodList, err
 		
 		# getting the pod, if the target pods is defined
 		# else select a random target pod from the specified labels
 		if isPodsAvailable == True:
 			podList, err = self.GetTargetPodsWhenTargetPodsENVSet(self.targetPods, self.clients, self.chaosDetails)
 			if err != None:
-				return False, err
+				return client.V1PodList, err
 			
-			#realpods.Items = append(realpods.Items, podList.Items...)
+			realpods.items = realpods.items.append(podList.items)
 		else:
 			nonChaosPods = self.FilterNonChaosPods(podList, self.chaosDetails)
-			realpods, err = self.GetTargetPodsWhenTargetPodsENVNotSet(self.podAffPerc, self.clients, self.nonChaosPods, self.chaosDetails)
+			realpods, err = self.GetTargetPodsWhenTargetPodsENVNotSet(self.podAffPerc, self.clients, nonChaosPods, self.chaosDetails)
 			if err != None:
-				return core_v1.PodList, err
-		logger.infof("[Chaos]:Number of pods targeted: %v", len(realpods.Items))
+				return client.V1PodList, err
+		logger.info("[Chaos]:Number of pods targeted: %v", len(realpods.items))
 		return realpods, None
 	
 
@@ -204,7 +203,7 @@ class Application(object):
 			# ignore chaos pods
 			for index, pod in self.podList.items:
 				if (pod.Labels["chaosUID"] != (self.chaosDetails.ChaosUID) or pod.Labels["name"] == "chaos-operator"):
-					nonChaosPods = nonChaosPods.update(self.podList.Items[index])
+					nonChaosPods = nonChaosPods.update(self.podList.items[index])
 					
 			return nonChaosPods
 		return self.podList
@@ -236,7 +235,7 @@ class Application(object):
 							return {}, err
 						
 						if isPodAnnotated == False:
-							return {},logger.Errorf("%v target pods are not annotated", self.targetPods)
+							return {},logger.error("%v target pods are not annotated", self.targetPods)
 
 
 					realPods = realPods.update(pod)
@@ -257,11 +256,11 @@ class Application(object):
 					return {}, err
 				
 				if isPodAnnotated == True:
-					filteredPods.Items = filteredPods.update(pod)
+					filteredPods.items = filteredPods.update(pod)
 				
 			
 			if len(filteredPods) == 0:
-				return filteredPods,logger.Errorf("No annotated target pod found")
+				return filteredPods,logger.error("No annotated target pod found")
 			
 		else:
 			filteredPods = nonChaosPods
@@ -272,10 +271,10 @@ class Application(object):
 
 		# it will generate the random podlist
 		# it starts from the random index and choose requirement no of pods next to that index in a circular way.
-		index = rand.Intn(len(filteredPods.Items))
+		index = rand.Intn(len(filteredPods.items))
 		for i in newPodListLength:
-			realPods = realPods.update(filteredPods.Items[index])
-			index = (index + 1) % len(filteredPods.Items)
+			realPods = realPods.update(filteredPods.items[index])
+			index = (index + 1) % len(filteredPods.items)
 		
 		return realPods, None
 
@@ -284,10 +283,10 @@ class Application(object):
 	def DeleteHelperPodBasedOnJobCleanupPolicy(self):
 
 		if self.chaosDetails.JobCleanupPolicy == "delete":
-			logger.Infof("[Cleanup]: Deleting %v helper pod", self.podName)
+			logger.info("[Cleanup]: Deleting %v helper pod", self.podName)
 			err = self.DeletePod(self.podName, self.podLabel, self.chaosDetails.ChaosNamespace, self.chaosDetails.Timeout, self.chaosDetails.Delay, self.clients)
 			if err != None:
-				logger.Errorf("Unable to delete the helper pod, err: %v", err)
+				logger.error("Unable to delete the helper pod, err: %v", err)
 			
 		
 	
@@ -299,7 +298,7 @@ class Application(object):
 			logger.Info("[Cleanup]: Deleting all the helper pods")
 			err = self.DeleteAllPod(self.podLabel, self.chaosDetails.ChaosNamespace, self.chaosDetails.Timeout, self.chaosDetails.Delay, self.clients)
 			if err != None :
-				logger.Errorf("Unable to delete the helper pods, err: %v", err)
+				logger.error("Unable to delete the helper pods, err: %v", err)
 
 
 
@@ -350,7 +349,7 @@ class Application(object):
 				containerID = container.ContainerID.split("//")[1]
 				break
 
-		logger.Infof("container ID of %v container, containerID: %v", self.targetContainer, containerID)
+		logger.info("container ID of %v container, containerID: %v", self.targetContainer, containerID)
 		return containerID, None
 	
 
@@ -363,11 +362,11 @@ class Application(object):
 			try:
 				pod = v1.read_namespaced_pod(self.appName, self.appNamespace)
 			except Exception as e:
-				return logger.Errorf("unable to find the pod with name :", self.appName), e
+				return logger.error("unable to find the pod with name :", self.appName), e
 		
 			for container in pod.status.containerStatuses:
 				if container.Ready == False:
-					return logger.Errorf("containers are not yet in running state")
+					return logger.error("containers are not yet in running state")
 				logger.InfoWithValues("The running status of container are as follows",
 					"container :", container.Name, "Pod :", pod.Name, "Status :", pod.Status.Phase)
 			return None
