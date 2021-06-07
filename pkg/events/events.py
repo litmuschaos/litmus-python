@@ -3,9 +3,6 @@ from kubernetes import client, config
 import kubernetes.client
 from kubernetes.client.rest import ApiException
 from pprint import pprint
-from dagster_k8s.client import (
-    DagsterK8sError,
-)
 from datetime import datetime
 
 configuration = kubernetes.client.Configuration()

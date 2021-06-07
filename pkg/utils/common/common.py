@@ -27,7 +27,7 @@ def atoi(string):
     #  input and update result
     for i in range(len(string)):
         res = res * 10 + (ord(string[i]) - ord('0'))
- 
+
     return res
 
 # RandomInterval wait for the random interval lies between lower & upper bounds

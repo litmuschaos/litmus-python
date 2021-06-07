@@ -2,9 +2,10 @@ import pkg.types.types  as types
 from pkg.generic.podDelete.types.types import ExperimentDetails
 from pkg.generic.podDelete.environment.environment import GetENV, InitialiseChaosVariables
 from pkg.events.events import GenerateEvents
+from pkg.status.application import Application
 import logging
 logger = logging.getLogger(__name__)
-
+from chaoslib.litmus.poddelete.lib.podDelete import *
 
 # PodDelete inject the pod-delete chaos
 def PodDelete(clients):
@@ -13,7 +14,7 @@ def PodDelete(clients):
 	resultDetails = types.ResultDetails()
 	eventsDetails = types.EventDetails()
 	chaosDetails = types.ChaosDetails()
-
+	status = Application()
 	#Fetching all the ENV passed from the runner pod
 	logger.info("[PreReq]: Getting the ENV for the %v experiment", experimentsDetails.ExperimentName)
 	GetENV(experimentsDetails)
@@ -52,14 +53,14 @@ def PodDelete(clients):
 	GenerateEvents(eventsDetails, clients, chaosDetails, "ChaosResult")
 
 	#DISPLAY THE APP INFORMATION
-	logger.infolist("The application information is as follows", {
+	logger.info("The application information is as follows", {
 		"Namespace": experimentsDetails.AppNS,
 		"Label":     experimentsDetails.AppLabel,
 		"Ramp Time": experimentsDetails.RampTime,
 	})
 
 	# Calling AbortWatcher go routine, it will continuously watch for the abort signal and generate the required and result
-	go common.AbortWatcher(experimentsDetails.ExperimentName, clients, resultDetails, chaosDetails, eventsDetails)
+	#go common.AbortWatcher(experimentsDetails.ExperimentName, clients, resultDetails, chaosDetails, eventsDetails)
 
 	#PRE-CHAOS APPLICATION STATUS CHECK
 	logger.Info("[Status]: Verify that the AUT (Application Under Test) is running (pre-chaos)")
@@ -96,29 +97,20 @@ def PodDelete(clients):
 	
 
 	# Including the litmus lib for pod-delete
-	switch (experimentsDetails.ChaosLib) {
-	case "litmus":
-		err = litmusLIB.PreparePodDelete(experimentsDetails, clients, resultDetails, eventsDetails, chaosDetails)
+	if experimentsDetails.ChaosLib == "litmus" :
+		err = PreparePodDelete(experimentsDetails, clients, resultDetails, eventsDetails, chaosDetails)
 		if err != None:
 			logger.Errorf("Chaos injection failed, err: %v", err)
 			failStep = "failed in chaos injection phase"
 			result.RecordAfterFailure(chaosDetails, resultDetails, failStep, clients, eventsDetails)
 			return
 		
-	case "powerfulseal":
-		err = powerfulseal.PreparePodDelete(experimentsDetails, clients, resultDetails, eventsDetails, chaosDetails)
-		if err != None:
-			logger.Errorf("Chaos injection failed, err: %v", err)
-			failStep = "failed in chaos injection phase"
-			result.RecordAfterFailure(chaosDetails, resultDetails, failStep, clients, eventsDetails)
-			return
-		
-	default:
+	else:
 		logger.Error("[Invalid]: Please Provide the correct LIB")
 		failStep = "no match found for specified lib"
 		result.RecordAfterFailure(chaosDetails, resultDetails, failStep, clients, eventsDetails)
 		return
-	}
+	
 
 	logger.info("[Confirmation]: %v chaos has been injected successfully", experimentsDetails.ExperimentName)
 	resultDetails.Verdict = "Pass"
