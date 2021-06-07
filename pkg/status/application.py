@@ -75,32 +75,32 @@ class Application(object):
 				if isPodAnnotated:
 					if containerName == "":
 					
-						for  container in pod.status.ContainerStatuses: 
-							if container.State.Terminated == None: 
+						for  container in pod.status.container_statuses:
+							if container.state.terminated == None: 
 								return logger.Errorf("container is in terminated state")
 							
-							if container.Ready == False:
+							if container.ready == False:
 								return logger.Errorf("containers are not yet in running state")
 							
 							logger.info("[status]: The Container status are as follows", 
-								"container :", container.name, "Pod :", pod.name, "Readiness :", container.Ready)
+								"container :", container.name, "Pod :", pod.metadata.name, "Readiness :", container.ready)
 						
 					else:
-						for container in pod.status.ContainerStatuses:
+						for container in pod.status.container_statuses:
 							if containerName == container.name:
-								if container.State.Terminated != None:
+								if container.state.terminated != None:
 									return logger.Errorf("container is in terminated state")
 								
-								if container.Ready == False:
+								if container.ready == False:
 									return logger.Errorf("containers are not yet in running state")
 								
-								logger.InfoWithValues("[status]: The Container status are as follows", "container :", container.name, "Pod :", pod.name, "Readiness :", container.Ready)
+								logger.InfoWithValues("[status]: The Container status are as follows", "container :", container.name, "Pod :", pod.metadata.name, "Readiness :", container.ready)
 							
-					if pod.status.Phase != "Running":
-						return logger.Errorf("%v pod is not yet in running state", pod.name)
+					if pod.status.phase != "Running":
+						return logger.Errorf("%v pod is not yet in running state", pod.metadata.name)
 					
 					logger.InfoWithValues("[status]: The status of Pods are as follows",
-						"Pod :", pod.name, "status :", pod.status.Phase)
+						"Pod :", pod.metadata.name, "status :", pod.status.phase)
 		except:
 			raise Exception
 		return None
@@ -159,7 +159,7 @@ class Application(object):
 					return logger.Errorf("Pod is not yet in %v state(s)", states)
 				
 				logger.InfoWithValues("[status]: The status of Pods are as follows", 
-					"Pod :", pod.name, "status :", pod.status.Phase)
+					"Pod :", pod.metadata.name, "status :", pod.status.phase)
 			
 		except:
 			raise Exception
@@ -189,11 +189,11 @@ class Application(object):
 				return e
 			for pod in podList.items:
 				if containerName == "":
-					err = self.validateAllContainerStatus(pod.Name, pod.Status.ContainerStatuses)
+					err = self.validateAllContainerStatus(pod.Name, pod.status.container_statuses)
 					if err != None:
 						return err
 				else:
-					err = self.validateContainerStatus(containerName, pod.name, pod.status.containerStatuses); 
+					err = self.validateContainerStatus(containerName, pod.metadata.name, pod.status.container_statuses); 
 					if err != None:
 						return err
 		except:
@@ -204,14 +204,14 @@ class Application(object):
 	def validateContainerStatus(self, containerName, podName, ContainerStatuses):
 		for container in ContainerStatuses:
 			if container.name == containerName:
-				if container.State.Terminated != None :
+				if container.state.terminated != None :
 					return logger.Errorf("container is in terminated state")
 				
-				if container.Ready == False :
+				if container.ready == False :
 					return logger.Errorf("containers are not yet in running state")
 				
 				logger.InfoWithValues("[status]: The Container status are as follows", 
-					"container :", container.name, "Pod :", podName, "Readiness :", container.Ready)
+					"container :", container.name, "Pod :", podName, "Readiness :", container.ready)
 		return None
 	
 
@@ -242,18 +242,18 @@ class Application(object):
 			# we will retry till it met the self.timeout(chaos duration)
 			failedPods = 0
 			for pod in podList.items :
-				podStatus = str(pod.status.Phase)
+				podStatus = str(pod.status.phase)
 				logger.Infof("helper pod status: %v", podStatus)
 				if podStatus != "Succeeded" & podStatus != "Failed":
-					for container in pod.status.ContainerStatuses:
-						if container.name == containerName & container.Ready:
+					for container in pod.status.container_statuses:
+						if container.name == containerName & container.ready:
 							return logger.Errorf("Container is not completed yet")
 				
 				if podStatus == "Pending" :
 					return logger.Errorf("pod is in pending state")
 				
 				logger.InfoWithValues("[status]: The running status of Pods are as follows", 
-					"Pod :", pod.name, "status :", podStatus)
+					"Pod :", pod.metadata.name, "status :", podStatus)
 				if podStatus == "Failed":
 					failedPods = failedPods + 1
 		except:
@@ -273,15 +273,15 @@ class Application(object):
 			except Exception as e:
 				return e
 			for  pod in podList.items:
-				podStatus = str(pod.status.Phase)
+				podStatus = str(pod.status.phase)
 				if podStatus.lower() == "running" or podStatus.lower() == "succeeded":
-					logger.Infof("%v helper pod is in %v state", pod.name, podStatus)
+					logger.Infof("%v helper pod is in %v state", pod.metadata.name, podStatus)
 				else:
-					return logger.Errorf("%v pod is in %v state", pod.name, podStatus)
+					return logger.Errorf("%v pod is in %v state", pod.metadata.name, podStatus)
 				
-				for container in pod.status.ContainerStatuses:
-					if container.State.Terminated & container.State.Terminated.Reason != "Completed" :
-						return logger.Errorf("container is terminated with %v reason", container.State.Terminated.Reason)
+				for container in pod.status.container_statuses:
+					if container.state.terminated & pod.status.phase != "Completed" :
+						return logger.Errorf("container is terminated with %v reason", pod.status.reason)
 					
 		except:
 			raise Exception	
