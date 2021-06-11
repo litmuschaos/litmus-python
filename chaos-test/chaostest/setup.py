@@ -75,7 +75,6 @@ setup_params = dict(
 	python_requires='>=3.5.*'
 )
 
-
 def main():
 	"""Package installation entry point."""
 	setuptools.setup(**setup_params)

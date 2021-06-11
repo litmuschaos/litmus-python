@@ -65,21 +65,21 @@ def receive_signal(signum, stack):
 
 # AbortWatcher continuosly watch for the abort signals
 # it will update chaosresult w/ failed step and create an abort event, if it recieved abort signal during chaos
-def AbortWatcher(expname, clients, resultDetails, chaosDetails, eventsDetails):
-	AbortWatcherWithoutExit(expname, clients, resultDetails, chaosDetails, eventsDetails)
+def AbortWatcher(expname, resultDetails, chaosDetails, eventsDetails):
+	AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails)
 	os.Exit(1)
 
 
 # AbortWatcherWithoutExit continuosly watch for the abort signals
-def AbortWatcherWithoutExit(expname, clients, resultDetails, chaosDetails, eventsDetails):
+def AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails):
 
 	# signChan channel is used to transmit signal notifications.
 	#signChan = make(chan signal.signal, 1)
 	# Catch and relay certain signal(s) to signChan channel.
-	signal.signal(signal.SIGTERM, receive_signal)
+	#signal.signal(signal.SIGTERM, receive_signal)
 	# waiting until the abort signal recieved
-	while True:
-		time.sleep(3)
+	#while True:
+	#	time.sleep(3)
 
 	logger.Info("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
 	# updating the chaosresult after stopped
@@ -89,11 +89,11 @@ def AbortWatcherWithoutExit(expname, clients, resultDetails, chaosDetails, event
 	# generating summary event in chaosengine
 	msg = expname + " experiment has been aborted"
 	types.SetEngineEventAttributes(eventsDetails, types.Summary, msg, "Warning", chaosDetails)
-	events.GenerateEvents(eventsDetails, clients, chaosDetails, "ChaosEngine")
+	events.GenerateEvents(eventsDetails, chaosDetails, "ChaosEngine")
 
 	# generating summary event in chaosresult
 	types.SetResultEventAttributes(eventsDetails, types.Summary, msg, "Warning", resultDetails)
-	events.GenerateEvents(eventsDetails, clients, chaosDetails, "ChaosResult")
+	events.GenerateEvents(eventsDetails, chaosDetails, "ChaosResult")
 
 #GetIterations derive the iterations value from given parameters
 def GetIterations(duration, interval):

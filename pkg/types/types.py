@@ -30,6 +30,7 @@ class ProbeDetail(object):
 		self.IsProbeFailedWithError = error
 		self.RunID                  = RunID
 		self.RunCount               = RunCount
+		
 
 #ResultDetails is for collecting all the chaos-result-related details
 class ResultDetails(object):
@@ -40,9 +41,12 @@ class ResultDetails(object):
 		self.FailStep         = FailStep
 		self.Phase            = Phase
 		self.ResultUID        = UID
-		self.ProbeDetails     = ProbeDetail(Name, Type, Status, IsProbeFailedWithError, RunID, RunCount)
+		self.ProbeDetails     = []
 		self.PassedProbeCount = PassedProbeCount
 		self.ProbeArtifacts   = ProbeArtifact(Register)
+
+		def append(self, Name, Type, Status, IsProbeFailedWithError, RunID, RunCount):
+			self.ProbeDetails.append(ProbeDetail(Name, Type, Status, IsProbeFailedWithError, RunID, RunCount))
 
 # RegisterDetails contains the output of the corresponding probe
 class RegisterDetails(object):
@@ -77,6 +81,21 @@ class ChaosDetails(object):
 		self.JobCleanupPolicy     = JobCleanupPolicy
 		self.ProbeImagePullPolicy = ProbeImagePullPolicy
 		self.Randomness           = Randomness
+
+# ProbeStatus defines information about the status and result of the probes
+class ProbeStatus(object):
+	def __init__(self, Name=None, Type=None, Status=None):
+		self.Name    = Name
+		self.Type    = Type
+		self.Status  = Status
+
+		# ENVDetails contains the ENV details
+class ENVDetails(object):
+	def __init__(self):
+		self.ENV = []
+
+	def append(self, value):
+		self.ENV.append(value)
 
 # AppDetails contains all the application related envs
 class AppDetails(object):

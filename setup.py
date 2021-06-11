@@ -20,7 +20,6 @@ def get_version_from_package() -> str:
 				version = version.replace("'", "").strip()
 				return version
 
-
 name = 'litmus-python'
 desc = ''
 
@@ -41,17 +40,17 @@ classifiers = [
 	'Programming Language :: Python :: Implementation',
 	'Programming Language :: Python :: Implementation :: CPython'
 ]
-author = 'oum kale'
-author_email = 'oumkale@chaosnative.com'
 license = 'Apache License Version 2.0'
 packages = [
 	'chaoslib',
 	'chaoslib/',
-	'chaoslib/litmus',
-	'chaoslib/litmus/poddelete',
-	'chaoslib/litmus/poddelete/lib',
+	'chaoslib/litmus/',
+	'chaoslib/litmus/poddelete/',
+	'chaoslib/litmus/poddelete/lib/',
 	'pkg',
 	'pkg/',
+	'pkg/result',
+	'pkg/templates',
 	'pkg/types',
 	'pkg/status',
 	'pkg/utils',
@@ -82,8 +81,6 @@ setup_params = dict(
 	long_description=long_desc,
 	long_description_content_type='text/markdown',
 	classifiers=classifiers,
-	author=author,
-	author_email=author_email,
 	license=license,
 	packages=packages,
 	package_data=package_data,
