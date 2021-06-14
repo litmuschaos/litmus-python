@@ -11,11 +11,11 @@ spec:
     instanceID: 12345
 status:
     experimentStatus: 
-        phase: Running
-        verdict: Awaited
-        ProbeSuccessPercentage: Awaited
+        phase: Completed
+        verdict: Fail
+        ProbeSuccessPercentage: 0
     probeStatus: []
     history:
         passedRuns: 0
-        failedRuns: 0
+        failedRuns: 1
         stoppedRuns: 0

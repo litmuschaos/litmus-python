@@ -169,7 +169,7 @@ class ChaosResults(object):
 			return err
 
 	# #RecordAfterFailure update the chaosresult and create the summary events
-	def RecordAfterFailure(self, chaosDetails, resultDetails , failStep, clients , eventsDetails):
+	def RecordAfterFailure(self, chaosDetails, resultDetails , failStep , eventsDetails):
 
 		# update the chaos result
 		types.SetResultAfterCompletion(resultDetails, "Fail", "Completed", failStep)

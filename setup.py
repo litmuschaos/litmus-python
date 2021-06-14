@@ -42,11 +42,10 @@ classifiers = [
 ]
 license = 'Apache License Version 2.0'
 packages = [
-	'chaoslib',
-	'chaoslib/',
-	'chaoslib/litmus/',
-	'chaoslib/litmus/poddelete/',
-	'chaoslib/litmus/poddelete/lib/',
+	'chaosLib',
+	'chaosLib/litmus',
+	'chaosLib/litmus/poddelete',
+	'chaosLib/litmus/poddelete/lib',
 	'pkg',
 	'pkg/',
 	'pkg/result',
@@ -62,8 +61,11 @@ packages = [
 	'pkg/generic/podDelete/types',
 	'pkg/generic/podDelete/environment',
 	'pkg/status',
+	'bin',
+	'bin/',
 	'experiments',
-	'experiments/'
+	'experiments/generic',
+	'experiments/generic/podDelete',
 ]
 needs_pytest = set(['pytest', 'test']).intersection(sys.argv)
 package_data = {

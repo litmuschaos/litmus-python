@@ -18,7 +18,7 @@ def deployment(targetPod,chaosDetails):
 	 	return False, logger.error("no deployment found with matching label, err: {}".format(e))
 	
 	for deploy in deployList.items:
-		if str(deploy.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'True')):
+		if str(deploy.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'False')):
 			rsOwnerRef = targetPod.metadata.owner_references
 			for own in rsOwnerRef :
 				if own.kind == "ReplicaSet" :
@@ -29,7 +29,7 @@ def deployment(targetPod,chaosDetails):
 					ownerRef = rs.metadata.owner_references
 					for own in ownerRef:
 						if own.kind == "Deployment" and own.name == deploy.metadata.name:
-							logger.info("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, deploy.metadata.name, deploy.metadata.namespace))
+							print("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, deploy.metadata.name, deploy.metadata.namespace))
 							return True, None
 	return False, False
 def statefulset(targetPod,chaosDetails):
@@ -48,7 +48,7 @@ def statefulset(targetPod,chaosDetails):
 			ownerRef = targetPod.metadata.owner_references
 			for own in ownerRef:
 				if own.kind == "StatefulSet" and own.name == sts.name:
-					logger.info("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, sts.metadata.name, sts.metadata.namespace))
+					print("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, sts.metadata.name, sts.metadata.namespace))
 					return True, None
 
 def daemonset(targetPod, chaosDetails):
@@ -67,7 +67,7 @@ def daemonset(targetPod, chaosDetails):
 			ownerRef = targetPod.metadata.owner_references
 			for own in ownerRef:
 				if own.kind == "DaemonSet" and own.name == ds.name:
-					logger.info("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, ds.metadata.name, ds.metadata.namespace))
+					print("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, ds.metadata.name, ds.metadata.namespace))
 					return True, None
 
 def deploymentconfig(targetPod, chaosDetails):
@@ -97,7 +97,7 @@ def deploymentconfig(targetPod, chaosDetails):
 					ownerRef = rc.metadata.owner_references
 					for own in ownerRef:
 						if own.kind == "DeploymentConfig" and own.name == dc.GetName():
-							logger.info("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, dc.metadata.name, dc.metadata.namespace))
+							print("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, dc.metadata.name, dc.metadata.namespace))
 							return True, None
 
 def rollout(targetPod, chaosDetails):
@@ -125,19 +125,24 @@ def rollout(targetPod, chaosDetails):
 					ownerRef = rs.metadata.owner_references
 					for own in ownerRef:
 						if own.kind == "Rollout" and own.name == ro.metadata.name:
-							logger.info("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, ro.metadata.name, ro.metadata.namespace))
+							print("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, ro.metadata.name, ro.metadata.namespace))
 							return True, None
 
 # PodParentAnnotated is helper method to check whether the target pod's parent is annotated or not
 def PodParentAnnotated(argument, targetPod,chaosDetails):
-	switcher = {
-		"Deployment": deployment(targetPod,chaosDetails),
-		"Statefulset": statefulset(targetPod,chaosDetails),
-		"Daemonset": daemonset(targetPod,chaosDetails),
-		"DeploymentConfig": deploymentconfig(targetPod,chaosDetails),
-		"Rollout" : rollout(targetPod,chaosDetails),
-	}
-	return switcher.get(argument, "appkind is not supported")
+	print("Argument", argument)
+	if argument == "Deployment":
+		return deployment(targetPod,chaosDetails)
+	elif argument == "Statefulset": 
+		return statefulset(targetPod,chaosDetails)
+	elif argument == "Daemonset": 
+		return daemonset(targetPod,chaosDetails)
+	elif argument == "DeploymentConfig": 
+		return deploymentconfig(targetPod,chaosDetails)
+	elif argument == "Rollout" : 
+		return rollout(targetPod,chaosDetails)
+	else:
+		return False,  print("appkind is not supported")
 	
 # IsPodParentAnnotated check whether the target pod's parent is annotated or not
 def IsPodParentAnnotated(targetPod, chaosDetails):

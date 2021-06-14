@@ -38,9 +38,6 @@ class Pods(object):
 		self.targetPod    			 = targetPod
 		self.appName   				 = appName
 		self.nonChaosPods  			 = nonChaosPods
-		self.DeletePodRetry = retry(exceptions=Exception,max_delay=timeout,tries=timeout/delay, delay=delay, backoff=0)(self.DeletePodRetry)
-		self.DeleteAllPodRetry = retry(exceptions=Exception,max_delay=timeout,tries=timeout/delay, delay=delay, backoff=0)(self.DeleteAllPodRetry)
-		self.DeleteAllPodRetry = retry(exceptions=Exception,max_delay=timeout,tries=timeout/delay, delay=delay, backoff=0)(self.DeleteAllPodRetry)
 	
 	def DeletePodRetry(self, podLabel, namespace):
 		api = create_k8s_api_client(secrets=None)
@@ -73,7 +70,7 @@ class Pods(object):
 		try:
 			v1.delete_namespaced_pod(podName, namespace)
 		except Exception as e:
-			return False,logger.error("no pod found with matching label, err: %v", e)
+			return False,print("no pod found with matching label, err: %v", e)
 		# waiting for the termination of the pod
 		return self.DeletePodRetry(podLabel, namespace)
 	
@@ -87,7 +84,7 @@ class Pods(object):
 		try:
 			v1.delete_collection_namespaced_pod(namespace, label_selector=podLabel)
 		except Exception as e:
-			return logger.error("no pod found with matching label, err: %v", e)
+			return print("no pod found with matching label, err: %v", e)
 		# waiting for the termination of the pod
 		return self.DeleteAllPodRetry(podLabel, namespace)
 
@@ -114,7 +111,6 @@ class Pods(object):
 			return None, e
 		return pod.spec.imagePullSecrets, None
 	
-
 	# GetChaosPodResourceRequirements will return the resource requirements on chaos pod
 	def GetChaosPodResourceRequirements(self, podName, containerName, namespace):
 		api = create_k8s_api_client(secrets = None)
@@ -131,17 +127,20 @@ class Pods(object):
 			if container.name == containerName:
 				return container.resources, None
 		
-		return client.V1ResourceRequirements, logger.error("No container found with %v name in target pod", self.containerName)
+		return client.V1ResourceRequirements, print("No container found with %v name in target pod", self.containerName)
 	
 
 	# VerifyExistanceOfPods check the availibility of list of pods
 	def VerifyExistanceOfPods(self, namespace, pods):
 
-		if self.pods == "":
+		print("Pod", pods)
+		if pods == "":
 			return False, None
 		podList = pods.split(",")
-		for index in podList:
-			isPodsAvailable, err = self.CheckForAvailibiltyOfPod(namespace, podList[index])
+		print(podList)
+		for pod in podList:
+			isPodsAvailable, err = self.CheckForAvailibiltyOfPod(namespace, pod)
+			print("Availablity :", isPodsAvailable)
 			if err != None :
 				return False, err			
 			if isPodsAvailable == False:
@@ -155,33 +154,33 @@ class Pods(object):
 	def GetPodList(self, targetPods , podAffPerc , chaosDetails):
 		api = create_k8s_api_client(secrets = None)
 		v1 = client.CoreV1Api(api)
-		realpods = client.V1PodList()
+		realpods = client.V1PodList
 		try:
 			podList = v1.list_namespaced_pod(chaosDetails.AppDetail.Namespace, label_selector=chaosDetails.AppDetail.Label)
 		except Exception as e:
-			return client.V1PodList, e
+			return client.V1PodList, e, 0
 		if len(podList.items) == 0:
-    			return False,logger.error("Failed to find the pod with matching labels in {} namespace", chaosDetails.AppDetail.Namespace)
-		
+    			return False,print("Failed to find the pod with matching labels in {} namespace", chaosDetails.AppDetail.Namespace)
+		print("Check ", podList.items[0].metadata.labels)
 		isPodsAvailable, err = self.VerifyExistanceOfPods(chaosDetails.AppDetail.Namespace, targetPods)
 		if err != None:
-			return client.V1PodList, err
+			return client.V1PodList, err, 0
 		
 		# getting the pod, if the target pods is defined
 		# else select a random target pod from the specified labels
 		if isPodsAvailable == True:
-			podList, err = self.GetTargetPodsWhenTargetPodsENVSet(targetPods, chaosDetails)
-			if err != None:
+			print("Annonate")
+			realpods, err, count = self.GetTargetPodsWhenTargetPodsENVSet(targetPods, chaosDetails)
+			if err != None or count == 0:
 				return client.V1PodList, err
 			
-			realpods.items = realpods.items.append(podList.items)
 		else:
 			nonChaosPods = self.FilterNonChaosPods(podList, chaosDetails)
-			realpods, err = self.GetTargetPodsWhenTargetPodsENVNotSet(podAffPerc, nonChaosPods, chaosDetails)
-			if err != None:
+			realpods, err, count = self.GetTargetPodsWhenTargetPodsENVNotSet(podAffPerc, nonChaosPods, chaosDetails)
+			if err != None or count == 0:
 				return client.V1PodList, err
-		logger.info("[Chaos]:Number of pods targeted: %v", len(realpods.items))
-		return realpods, None
+		print("[Chaos]:Number of pods targeted: {}".format(count))
+		return realpods, None, count
 	
 
 	# CheckForAvailibiltyOfPod check the availibility of the specified pod
@@ -205,9 +204,11 @@ class Pods(object):
 		if chaosDetails.AppDetail.Label == "":
 			nonChaosPods = V1PodList
 			# ignore chaos pods
-			for index, pod in podList.items:
-				if (pod.Labels["chaosUID"] != str(chaosDetails.ChaosUID) or pod.Labels["name"] == "chaos-operator"):
+			index = 0
+			for pod in podList.items:
+				if (pod.Labels["chaosUID"] != str(chaosDetails.ChaosUID) or pod.metadata.labels["name"] == "chaos-operator"):
 					nonChaosPods = nonChaosPods.update(podList.items[index])
+				index = index + 1
 					
 			return nonChaosPods
 		return podList
@@ -221,53 +222,56 @@ class Pods(object):
 		try:
 			podList = v1.list_namespaced_pod(chaosDetails.AppDetail.Namespace, label_selector=chaosDetails.AppDetail.Label)
 		except Exception as e:
-			return V1PodList, e
+			return V1PodList, e, 0
 		
 		if len(podList.items) == 0 :
-			return V1PodList,logger.error("Failed to find the pods with matching labels in {} namespace", chaosDetails.AppDetail.Namespace)
+			return V1PodList,print("Failed to find the pods with matching labels in {} namespace", chaosDetails.AppDetail.Namespace), 0
 
 
 		targetPodsList = targetPods.split(",")
-		realPods = V1PodList
-
+		realPods = []
+		count = 0
 		for pod in podList.items :
-			for index in targetPodsList :
-				if targetPodsList[index] == pod.name :
+			for podTarget in targetPodsList :
+				if podTarget == pod.metadata.name :
+					print("Same hai", chaosDetails.AppDetail.Kind)
 					if chaosDetails.AppDetail.AnnotationCheck == True:
 						isPodAnnotated, err = IsPodParentAnnotated(pod, chaosDetails)
+						print("Annoted", isPodAnnotated)
 						if err != None :
 							return V1PodList, err
 						
 						if isPodAnnotated == False:
-							return V1PodList,logger.error("%v target pods are not annotated", targetPods)
+							return V1PodList, print("{} target pods are not annotated".format(targetPods))
 
 
-					realPods = realPods.update(pod)
-
+					realPods.append(pod)
+					realPods.append(pod)
+					count = count + 1
 		
-		return realPods, None
+		return V1PodList(items=realPods), None, count
 	
 
 	# GetTargetPodsWhenTargetPodsENVNotSet derives the random target pod list, if TARGET_PODS env is not set
 	def GetTargetPodsWhenTargetPodsENVNotSet(self, podAffPerc , nonChaosPods, chaosDetails):
-		filteredPods = V1PodList
-		realPods = V1PodList
+		filteredPods = []
+		realPods = []
 
 		if chaosDetails.AppDetail.AnnotationCheck == True:
 			for  pod in nonChaosPods.items:
 				isPodAnnotated, err = IsPodParentAnnotated(pod, chaosDetails)
 				if err != None:
-					return V1PodList, err
+					return V1PodList, err , 0
 				
 				if isPodAnnotated == True:
-					filteredPods.items = filteredPods.update(pod)
+					filteredPods.append(pod)
 				
 			
 			if len(filteredPods) == 0:
-				return filteredPods,logger.error("No annotated target pod found")
+				return filteredPods, print("No annotated target pod found"), 0
 			
 		else:
-			filteredPods = nonChaosPods
+			filteredPods.append(nonChaosPods)
 		
 
 		newPodListLength = max(1, Adjustment(podAffPerc, len(filteredPods)))
@@ -275,22 +279,23 @@ class Pods(object):
 
 		# it will generate the random podlist
 		# it starts from the random index and choose requirement no of pods next to that index in a circular way.
-		index = random.randint(0,filteredPods.items)
+		index = random.randint(0,len(filteredPods))
 		for i in newPodListLength:
-			realPods = realPods.update(filteredPods.items[index])
-			index = (index + 1) % len(filteredPods.items)
+			realPods.append(filteredPods[index])
+			realPods.append(filteredPods[index])
+			index = (index + 1) % len(filteredPods)
 		
-		return realPods, None
+		return V1PodList(items=realPods), None, len(realPods)
 
 
 	# DeleteHelperPodBasedOnJobCleanupPolicy deletes specific helper pod based on jobCleanupPolicy
 	def DeleteHelperPodBasedOnJobCleanupPolicy(self, podName, podLabel, chaosDetails):
 
 		if chaosDetails.JobCleanupPolicy == "delete":
-			logger.info("[Cleanup]: Deleting %v helper pod", podName)
+			print("[Cleanup]: Deleting %v helper pod", podName)
 			err = self.DeletePod(podName, podLabel, chaosDetails.ChaosNamespace, chaosDetails.Timeout, chaosDetails.Delay)
 			if err != None:
-				logger.error("Unable to delete the helper pod, err: %v", err)
+				print("Unable to delete the helper pod, err: %v", err)
 
 	# DeleteAllHelperPodBasedOnJobCleanupPolicy delete all the helper pods w/ matching label based on jobCleanupPolicy
 	def DeleteAllHelperPodBasedOnJobCleanupPolicy(self, podLabel, chaosDetails):
@@ -299,7 +304,7 @@ class Pods(object):
 			logger.Info("[Cleanup]: Deleting all the helper pods")
 			err = self.DeleteAllPod(podLabel, chaosDetails.ChaosNamespace, chaosDetails.Timeout, chaosDetails.Delay)
 			if err != None :
-				logger.error("Unable to delete the helper pods, err: %v", err)
+				print("Unable to delete the helper pods, err: %v", err)
 
 	# GetServiceAccount derive the serviceAccountName for the helper pod
 	def GetServiceAccount(self, chaosNamespace, chaosPodName):
@@ -347,7 +352,7 @@ class Pods(object):
 				containerID = container.ContainerID.split("//")[1]
 				break
 
-		logger.info("container ID of %v container, containerID: %v", targetContainer, containerID)
+		print("container ID of %v container, containerID: %v", targetContainer, containerID)
 		return containerID, None
 	
 
@@ -360,11 +365,11 @@ class Pods(object):
 			try:
 				pod = v1.read_namespaced_pod(appName, appNamespace)
 			except Exception as e:
-				return logger.error("unable to find the pod with name :", appName), e
+				return print("unable to find the pod with name :", appName), e
 		
 			for container in pod.status.containerStatuses:
 				if container.Ready == False:
-					return logger.error("containers are not yet in running state")
+					return print("containers are not yet in running state")
 				logger.InfoWithValues("The running status of container are as follows",
 					"container :", container.Name, "Pod :", pod.Name, "Status :", pod.Status.Phase)
 			return None

@@ -42,16 +42,16 @@ def RandomInterval(interval):
 
 	if len(intervals) == 1:
 		lowerBound = 0
-		upperBound, _ = atoi(intervals[0])
+		upperBound = atoi(intervals[0])
 	elif len(intervals) == 2:
-		lowerBound, _ = atoi(intervals[0])
-		upperBound, _ = atoi(intervals[1])
+		lowerBound = atoi(intervals[0])
+		upperBound = atoi(intervals[1])
 	else:
-		return logger.error("unable to parse CHAOS_INTERVAL, provide in valid format")
+		return print("unable to parse CHAOS_INTERVAL, provide in valid format")
 
 	#rand.Seed(time.Now().UnixNano())
 	waitTime = lowerBound + random.randint(0, upperBound-lowerBound)
-	logger.Infof("[Wait]: Wait for the random chaos interval %vs", waitTime)
+	print("[Wait]: Wait for the random chaos interval {}".format(waitTime))
 	WaitForDuration(waitTime)
 	return None
 
@@ -61,27 +61,47 @@ def GetRunID():
 	return str(runId)
 
 def receive_signal(signum, stack):
-    logger.info('Received:', signum)
+    print('Received:', signum)
 
 # AbortWatcher continuosly watch for the abort signals
 # it will update chaosresult w/ failed step and create an abort event, if it recieved abort signal during chaos
 def AbortWatcher(expname, resultDetails, chaosDetails, eventsDetails):
 	AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails)
-	os.Exit(1)
+	#os.exit(1)
 
+class NotifySignal:
+	kill_now = False
+	signals = {
+		signal.SIGINT: 'SIGINT',
+		signal.SIGTERM: ''
+	}
+
+	def __init__(self):
+		signal.signal(signal.SIGINT, self.exit_gracefully)
+		signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+	def exit_gracefully(self, signum, frame):
+		print("\nReceived {} signal".format(self.signals[signum]))
+		self.kill_now = True
+
+def receive_signal(signum, stack):
+	print('Received:', signum)
 
 # AbortWatcherWithoutExit continuosly watch for the abort signals
 def AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails):
 
-	# signChan channel is used to transmit signal notifications.
-	#signChan = make(chan signal.signal, 1)
-	# Catch and relay certain signal(s) to signChan channel.
-	#signal.signal(signal.SIGTERM, receive_signal)
-	# waiting until the abort signal recieved
-	#while True:
-	#	time.sleep(3)
-
-	logger.Info("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
+	# signal.signal(signal.SIGTERM, receive_signal)
+	# print('My PID is:', os.getpid())
+	# while True:
+	# 	print('Waiting...')
+	# 	time.sleep(3)
+	# print("Found")
+	# # signChan channel is used to transmit signal notifications.
+	# killer = NotifySignal()
+	# while not killer.kill_now:
+	# 	time.sleep(1)
+	
+	print("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
 	# updating the chaosresult after stopped
 	failStep = "Chaos injection stopped!"
 	types.SetResultAfterCompletion(resultDetails, "Stopped", "Stopped", failStep)

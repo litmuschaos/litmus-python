@@ -36,14 +36,14 @@ class Application(object):
 		else:
 			if appLabel == "" :
 				# Checking whether applications are healthy
-				logger.info("[status]: No appLabels provided, skipping the application status checks")
+				print("[status]: No appLabels provided, skipping the application status checks")
 			else:
 				# Checking whether application containers are in ready state
-				logger.info("[status]: Checking whether application containers are in ready state")
+				print("[status]: Checking whether application containers are in ready state")
 				self.CheckContainerStatus(appNs, appLabel, containerName, 0)
 				
 				# Checking whether application pods are in running state
-				logger.info("[status]: Checking whether application pods are in running state")
+				print("[status]: Checking whether application pods are in running state")
 				err = self.CheckPodStatus(appNs, appLabel, 0)
 				if err != None:
 					return err
@@ -73,7 +73,7 @@ class Application(object):
 								if container.ready == False:
 									raise Exception("containers are not yet in running state")
 								
-								logger.info("[status]: The Container status are as follows", 
+								print("[status]: The Container status are as follows", 
 									"container :", container.name, "Pod :", pod.metadata.name, "Readiness :", container.ready)
 							
 						else:
@@ -85,16 +85,16 @@ class Application(object):
 									if container.ready == False:
 										raise Exception("containers are not yet in running state")
 									
-									logger.info("[status]: The Container status are as follows", "container :", container.name, "Pod :", pod.metadata.name, "Readiness :", container.ready)
+									print("[status]: The Container status are as follows", "container :", container.name, "Pod :", pod.metadata.name, "Readiness :", container.ready)
 								
 						if pod.status.phase != "Running":
 							raise Exception("%v pod is not yet in running state", pod.metadata.name)
 						
-						logger.info("[status]: The status of Pods are as follows",
+						print("[status]: The status of Pods are as follows",
 							"Pod :", pod.metadata.name, "status :", pod.status.phase)
 				
 		except Exception as e:
-			logger.info(e)
+			print(e)
 			if(e != None):
 				self.AnnotatedApplicationsStatusCheck(appNs, appLabel, containerName, chaosDetails, init = init + self.delay)
 				
@@ -107,17 +107,17 @@ class Application(object):
 		self.delay = delay
 		if appLabel == "":
 			# Checking whether applications are healthy
-			logger.info("[status]: No self.appLabels provided, skipping the application status checks")
+			print("[status]: No self.appLabels provided, skipping the application status checks")
 		else:
 			# Checking whether application containers are in ready state
-			logger.info("[status]: Checking whether application containers are in ready state")
-			err = self.CheckContainerStatus(appNs, appLabel, "")
+			print("[status]: Checking whether application containers are in ready state")
+			err = self.CheckContainerStatus(appNs, appLabel, "", 0)
 			if err != None:
 				return err
 			
 			# Checking whether application pods are in running state
-			logger.info("[status]: Checking whether application pods are in running state")
-			err = self.CheckPodStatus(appNs, appLabel); 
+			print("[status]: Checking whether application pods are in running state")
+			err = self.CheckPodStatus(appNs, appLabel, 0); 
 			if err != None:
 				return err
 
@@ -151,10 +151,10 @@ class Application(object):
 					if str(pod.status.phase) != states: 
 						raise Exception("Pod is not yet in {} state(s)".format(states))
 				
-					logger.info("[status]: The status of Pods are as follows", 
+					print("[status]: The status of Pods are as follows", 
 						"Pod :", pod.metadata.name, "status :", pod.status.phase)
 		except Exception as e:
-			logger.info(e)
+			print(e)
 			if(e != None):
 				self.CheckPodStatusPhase(appNs,appLabel, states, init = init + self.delay)
 				
@@ -185,7 +185,7 @@ class Application(object):
 						if err != None:
 							raise Exception(err)
 		except Exception as e:
-			logger.info(e)
+			print(e)
 			if(e != None):
 				self.CheckContainerStatus(appNs,appLabel,containerName,  init = init + self.delay)
 				
@@ -202,7 +202,7 @@ class Application(object):
 				if container.ready == False :
 					raise Exception("containers are not yet in running state")
 				
-				logger.info("[status]: The Container status are as follows", 
+				print("[status]: The Container status are as follows", 
 					"container :", container.name, "Pod :", podName, "Readiness :", container.ready)
 		return None
 	
@@ -244,7 +244,7 @@ class Application(object):
 				if podStatus == "Pending" :
 					return logger.error("pod is in pending state")
 				
-				logger.info("[status]: The running status of Pods are as follows", 
+				print("[status]: The running status of Pods are as follows", 
 					"Pod :", pod.metadata.name, "status :", podStatus)
 				if podStatus == "Failed":
 					failedPods = failedPods + 1
