@@ -19,8 +19,8 @@ jobs:
       script:
       - bash -c 'shopt -s globstar nullglob; shellcheck **/*.{sh,ksh,bash}' || true
 
-    - stage: build chaos-test images
-      name: build docker image chaos-test
+    - stage: build byoc images
+      name: build docker image byoc
       script:
       - make chaostest
 

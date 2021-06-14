@@ -1,21 +1,14 @@
-from copy import deepcopy
 from kubernetes import client, config
 import time
 import logging
-from retry import retry
 import logging
-from pkg.utils.annotation.annotation import IsPodParentAnnotated
 logger = logging.getLogger(__name__)
 from chaosk8s import create_k8s_api_client
 from jinja2 import Environment,  select_autoescape, PackageLoader
 import os
 import subprocess
-import json
-from kubernetes.dynamic.exceptions import ResourceNotFoundError
-from deepdiff import DeepDiff
 import pkg.events.events as events
 import pkg.types.types as types
-import yaml
 from kubernetes import client, config, dynamic
 from kubernetes.client import api_client
 
@@ -84,7 +77,7 @@ class ChaosResults(object):
 		return self.PatchChaosResult(resultList[0],  chaosDetails, resultDetails, chaosResultLabel =  experimentLabel)
 
 
-	#InitializeChaosResult create the chaos result
+	#InitializeChaosResult or patch the chaos result
 	def InitializeChaosResult(self, chaosDetails , resultDetails , chaosResultLabel, 
 		probeStatus = "Wait", passedRuns = 0,  failedRuns = 0, stoppedRuns = 0, probeSuccessPercentage = "Awaited") :
 		

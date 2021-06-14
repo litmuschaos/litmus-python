@@ -18,7 +18,7 @@ def deployment(targetPod,chaosDetails):
 	 	return False, logger.error("no deployment found with matching label, err: {}".format(e))
 	
 	for deploy in deployList.items:
-		if str(deploy.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'False')):
+		if str(deploy.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'True')):
 			rsOwnerRef = targetPod.metadata.owner_references
 			for own in rsOwnerRef :
 				if own.kind == "ReplicaSet" :

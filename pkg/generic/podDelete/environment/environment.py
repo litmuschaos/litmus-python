@@ -31,7 +31,7 @@ def GetENV(experimentDetails):
 	experimentDetails.Force = (os.getenv("FORCE", "False") == 'False')
 	experimentDetails.Delay = atoi(os.getenv("STATUS_CHECK_DELAY", "2"))
 	experimentDetails.Timeout = atoi(os.getenv("STATUS_CHECK_TIMEOUT", "20"))
-	experimentDetails.TargetPods = os.getenv("TARGET_PODS", "nginx-658f4cf99f-rwp9m")
+	experimentDetails.TargetPods = os.getenv("TARGET_PODS", "nginx-658f4cf99f-fqhlf")
 	experimentDetails.PodsAffectedPerc = atoi(os.getenv("PODS_AFFECTED_PERC", "0"))
 	experimentDetails.Sequence = os.getenv("SEQUENCE", "parallel")
 	experimentDetails.TargetContainer = os.getenv("TARGET_CONTAINER", "")

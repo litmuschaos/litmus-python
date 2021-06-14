@@ -61,7 +61,7 @@ Install Python for your system:
 
 1. In this directory
     ```
-    cd litmus-python/chaos-test/chaostest
+    cd litmus-python/byoc/chaostest
    ```
 1. build python package
     ```
@@ -69,7 +69,7 @@ Install Python for your system:
    ```
 1. In this directory
     ```
-    cd litmus-python/chaos-test
+    cd litmus-python/byoc
     ```
 1. build pip module
     ```

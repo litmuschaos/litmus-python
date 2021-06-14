@@ -3,7 +3,7 @@ import time
 import random
 import logging
 logger = logging.getLogger(__name__)
-import os
+import os, sys
 from kubernetes import client
 import signal
 import pkg.types.types as types
@@ -67,7 +67,7 @@ def receive_signal(signum, stack):
 # it will update chaosresult w/ failed step and create an abort event, if it recieved abort signal during chaos
 def AbortWatcher(expname, resultDetails, chaosDetails, eventsDetails):
 	AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails)
-	#os.exit(1)
+	#sys.exit(0)
 
 class NotifySignal:
 	kill_now = False
@@ -96,10 +96,12 @@ def AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails)
 	# 	print('Waiting...')
 	# 	time.sleep(3)
 	# print("Found")
-	# # signChan channel is used to transmit signal notifications.
-	# killer = NotifySignal()
-	# while not killer.kill_now:
-	# 	time.sleep(1)
+	# signChan channel is used to transmit signal notifications.
+
+	killer = NotifySignal()
+	while not killer.kill_now:
+		time.sleep(1)
+		print('Press Ctrl+C')
 	
 	print("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
 	# updating the chaosresult after stopped

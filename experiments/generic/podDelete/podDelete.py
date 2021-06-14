@@ -17,21 +17,21 @@ def PodDelete():
 	resultDetails = types.ResultDetails()
 	eventsDetails = types.EventDetails()
 	chaosDetails = types.ChaosDetails()
+	
 	status = Application()
 	result = ChaosResults()
+	
 	#Fetching all the ENV passed from the runner pod
-	print("[PreReq]: Getting the ENV for the %v experiment", experimentsDetails.ExperimentName)
 	GetENV(experimentsDetails)
-	print("Get ENV", experimentsDetails.EngineName)
+	
 	# Intialise the chaos attributes
 	InitialiseChaosVariables(chaosDetails, experimentsDetails)
-	print("Finished")
+	
 	# Intialise Chaos Result Parameters
 	types.SetResultAttributes(resultDetails, chaosDetails)
 
-	print("Check :", chaosDetails.EngineName)
 	#Updating the chaos result in the beginning of experiment
-	print("[PreReq]: Updating the chaos result of %v experiment (SOT)", experimentsDetails.ExperimentName)
+	print("[PreReq]: Updating the chaos result of {} experiment (SOT)".format(experimentsDetails.ExperimentName))
 	err = result.ChaosResult(chaosDetails, resultDetails, "SOT")
 	if err != None:
 		print("Unable to Create the Chaos Result, err: {}".format(err))
@@ -46,7 +46,7 @@ def PodDelete():
 	# generating the event in chaosresult to marked the verdict as awaited
 	msg = "experiment: " + experimentsDetails.ExperimentName + ", Result: Awaited"
 	types.SetResultEventAttributes(eventsDetails, types.AwaitedVerdict, msg, "Normal", resultDetails)
-	GenerateEvents(eventsDetails, chaosDetails, "ChaosResult")
+	GenerateEvents(eventsDetails, chaosDetails, "ChaosEngine")
 
 	#DISPLAY THE APP INFORMATION
 	print("The application information is as follows", {

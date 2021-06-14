@@ -6,13 +6,20 @@ from datetime import datetime
 from chaosk8s import create_k8s_api_client
 configuration = kubernetes.client.Configuration()
 from datetime import datetime, timedelta
-
+import pytz
+from pkg.utils.k8serror.k8serror import K8serror
 
 #CreateEvents create the events in the desired resource
 def CreateEvents(eventsDetails , chaosDetails, kind, eventName):
 	api = create_k8s_api_client(secrets = None)
 	api_instance = client.CoreV1Api(api)
-	body = client.V1Event( 
+	first_timestamp = datetime.now(pytz.utc)
+	last_timestamp = datetime.now(pytz.utc)
+	event_time = datetime.now(pytz.utc)
+	body = client.V1Event(
+			first_timestamp = first_timestamp,
+			last_timestamp =  last_timestamp,
+			event_time = event_time,
 			involved_object= client.V1ObjectReference(
 				api_version= "litmuschaos.io/v1alpha1",
 				kind     		= kind,
@@ -41,8 +48,7 @@ def CreateEvents(eventsDetails , chaosDetails, kind, eventName):
 #GenerateEvents update the events and increase the count by 1, if already present
 # else it will create a new event
 def GenerateEvents(eventsDetails, chaosDetails, kind):
-	now = datetime.now()
-	time_stamp = now.strftime("%H:%M:%S")
+	time_stamp = datetime.now(pytz.utc)
 	api_instance = client.CoreV1Api()
 	api = create_k8s_api_client(secrets = None)
 	api_instance = client.CoreV1Api(api)
@@ -54,22 +60,23 @@ def GenerateEvents(eventsDetails, chaosDetails, kind):
 			return err
 	elif kind == "ChaosEngine":
 		eventName = eventsDetails.Reason + chaosDetails.ExperimentName + str(chaosDetails.ChaosUID)
+		event = client.V1Event
 		try:
-			event = client.V1Event(metadata=client.V1ObjectMeta(
-				name = eventName,
-				namespace= chaosDetails.ChaosNamespace,
-			))
+			 event  = api_instance.read_namespaced_event( name = eventName,namespace = chaosDetails.ChaosNamespace)
 		except Exception as e:
-			err = CreateEvents(eventsDetails, chaosDetails, kind, eventName)
-			if err != None:
-				return err
-			return None
-		event.LastTimestamp = time_stamp
-		event.Count = event.Count + 1
-		event.Source.Component = chaosDetails.ChaosPodName
-		event.Message = eventsDetails.Message
+			if K8serror().IsNotFound(err=e):
+				try:
+					CreateEvents(eventsDetails, chaosDetails, kind, eventName)
+				except Exception as err:
+					return err
+			return e
+		
+		event.last_timestamp = time_stamp
+		event.count = event.count + 1
+		event.source.component = chaosDetails.ChaosPodName
+		event.message = eventsDetails.Message
 		try:
-			api_instance.patch_namespaced_event(eventName, chaosDetails.ChaosNamespace, event)
+			api_instance.patch_namespaced_event(eventName, chaosDetails.ChaosNamespace, body = event)
 		except ApiException as e:
 			return e
 		return None

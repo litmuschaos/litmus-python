@@ -26,10 +26,10 @@ deps: _build_check_docker
 
 _build_tests_chaostest_image:
 	@echo "INFO: Building container image for performing chaostoolkit tests"
-	cd chaos-test && docker build -t litmuschaos/chaostoolkit:ci .
+	cd byoc && docker build -t litmuschaos/chaostoolkit:ci .
 
 _push_tests_chaostest_image:
 	@echo "INFO: Publish container litmuschaos/chaostoolkit:ci"
-	REPONAME="litmuschaos" IMGNAME="chaostoolkit" IMGTAG="ci" ./chaos-test/buildscripts/push
+	REPONAME="litmuschaos" IMGNAME="chaostoolkit" IMGTAG="ci" ./byoc/buildscripts/push
 
 chaostest: deps _build_tests_chaostest_image _push_tests_chaostest_image

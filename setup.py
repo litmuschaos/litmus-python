@@ -42,10 +42,10 @@ classifiers = [
 ]
 license = 'Apache License Version 2.0'
 packages = [
-	'chaosLib',
-	'chaosLib/litmus',
-	'chaosLib/litmus/poddelete',
-	'chaosLib/litmus/poddelete/lib',
+	'byoc',
+	'byoc/litmus',
+	'byoc/litmus/poddelete',
+	'byoc/litmus/poddelete/lib',
 	'pkg',
 	'pkg/',
 	'pkg/result',
@@ -53,6 +53,7 @@ packages = [
 	'pkg/types',
 	'pkg/status',
 	'pkg/utils',
+	'pkg/utils/k8serror',
 	'pkg/utils/annotation',
 	'pkg/utils/common',
 	'pkg/generic',
@@ -62,7 +63,7 @@ packages = [
 	'pkg/generic/podDelete/environment',
 	'pkg/status',
 	'bin',
-	'bin/',
+	'bin/experiment',
 	'experiments',
 	'experiments/generic',
 	'experiments/generic/podDelete',

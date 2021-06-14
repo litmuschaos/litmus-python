@@ -1,6 +1,7 @@
 from kubernetes import client, config
 import time
 import random
+from kubernetes.client.models.v1_pod import V1Pod
 
 from kubernetes.client.models.v1_pod_list import V1PodList
 from pkg.types.types import ChaosDetails
@@ -10,7 +11,7 @@ import logging
 from pkg.utils.annotation.annotation import IsPodParentAnnotated
 logger = logging.getLogger(__name__)
 from chaosk8s import create_k8s_api_client
-
+from pkg.utils.k8serror.k8serror import K8serror
 #Adjustment contains rule of three for calculating an integer given another integer representing a percentage
 def Adjustment(a, b):
 	return (a * b) / 100
@@ -158,29 +159,27 @@ class Pods(object):
 		try:
 			podList = v1.list_namespaced_pod(chaosDetails.AppDetail.Namespace, label_selector=chaosDetails.AppDetail.Label)
 		except Exception as e:
-			return client.V1PodList, e, 0
+			return client.V1PodList, e
 		if len(podList.items) == 0:
     			return False,print("Failed to find the pod with matching labels in {} namespace", chaosDetails.AppDetail.Namespace)
-		print("Check ", podList.items[0].metadata.labels)
 		isPodsAvailable, err = self.VerifyExistanceOfPods(chaosDetails.AppDetail.Namespace, targetPods)
 		if err != None:
-			return client.V1PodList, err, 0
+			return client.V1PodList, err
 		
 		# getting the pod, if the target pods is defined
 		# else select a random target pod from the specified labels
 		if isPodsAvailable == True:
-			print("Annonate")
-			realpods, err, count = self.GetTargetPodsWhenTargetPodsENVSet(targetPods, chaosDetails)
-			if err != None or count == 0:
+			realpods, err = self.GetTargetPodsWhenTargetPodsENVSet(targetPods, chaosDetails)
+			if err != None or len(realpods.items) == 0:
 				return client.V1PodList, err
 			
 		else:
 			nonChaosPods = self.FilterNonChaosPods(podList, chaosDetails)
-			realpods, err, count = self.GetTargetPodsWhenTargetPodsENVNotSet(podAffPerc, nonChaosPods, chaosDetails)
-			if err != None or count == 0:
+			realpods, err = self.GetTargetPodsWhenTargetPodsENVNotSet(podAffPerc, nonChaosPods, chaosDetails)
+			if err != None or len(realpods.items) == 0:
 				return client.V1PodList, err
-		print("[Chaos]:Number of pods targeted: {}".format(count))
-		return realpods, None, count
+		print("[Chaos]:Number of pods targeted: {}".format(len(realpods.items)))
+		return realpods, None
 	
 
 	# CheckForAvailibiltyOfPod check the availibility of the specified pod
@@ -192,9 +191,12 @@ class Pods(object):
 			return False, None
 		try:
 			v1.read_namespaced_pod(name, namespace)
-		except Exception as e:
-			return False, e 
-		
+		except Exception as err:
+			if K8serror().IsNotFound(err) == False:
+				return False, err
+			elif K8serror().IsNotFound(err):
+				return False, None
+
 		return True, None
 	
 
@@ -216,21 +218,21 @@ class Pods(object):
 
 	# GetTargetPodsWhenTargetPodsENVSet derive the specific target pods, if TARGET_PODS env is set
 	def GetTargetPodsWhenTargetPodsENVSet(self, targetPods, chaosDetails):
+		config.load_kube_config()
 		api = create_k8s_api_client(secrets = None)
 		v1 = client.CoreV1Api(api)
 		
 		try:
 			podList = v1.list_namespaced_pod(chaosDetails.AppDetail.Namespace, label_selector=chaosDetails.AppDetail.Label)
 		except Exception as e:
-			return V1PodList, e, 0
+			return V1PodList, e
 		
 		if len(podList.items) == 0 :
-			return V1PodList,print("Failed to find the pods with matching labels in {} namespace", chaosDetails.AppDetail.Namespace), 0
-
+			return V1PodList, print("Failed to find the pods with matching labels in {} namespace", chaosDetails.AppDetail.Namespace), 0
 
 		targetPodsList = targetPods.split(",")
-		realPods = []
-		count = 0
+		realPods = client.V1PodList
+		realPodList = []
 		for pod in podList.items :
 			for podTarget in targetPodsList :
 				if podTarget == pod.metadata.name :
@@ -244,48 +246,46 @@ class Pods(object):
 						if isPodAnnotated == False:
 							return V1PodList, print("{} target pods are not annotated".format(targetPods))
 
-
-					realPods.append(pod)
-					realPods.append(pod)
-					count = count + 1
-		
-		return V1PodList(items=realPods), None, count
+					#realPods.items.append(pod)
+					realPodList.append(pod)
+					
+		return realPods(items=realPodList), None
 	
 
 	# GetTargetPodsWhenTargetPodsENVNotSet derives the random target pod list, if TARGET_PODS env is not set
 	def GetTargetPodsWhenTargetPodsENVNotSet(self, podAffPerc , nonChaosPods, chaosDetails):
-		filteredPods = []
-		realPods = []
+		filteredPods = V1PodList
+		realPods = V1PodList
 
 		if chaosDetails.AppDetail.AnnotationCheck == True:
 			for  pod in nonChaosPods.items:
 				isPodAnnotated, err = IsPodParentAnnotated(pod, chaosDetails)
 				if err != None:
-					return V1PodList, err , 0
+					return V1PodList, err 
 				
 				if isPodAnnotated == True:
-					filteredPods.append(pod)
+					filteredPods.items.append(pod)
 				
 			
-			if len(filteredPods) == 0:
-				return filteredPods, print("No annotated target pod found"), 0
+			if len(filteredPods.items) == 0:
+				return filteredPods, print("No annotated target pod found")
 			
 		else:
-			filteredPods.append(nonChaosPods)
+			filteredPods.items.append(nonChaosPods)
 		
 
-		newPodListLength = max(1, Adjustment(podAffPerc, len(filteredPods)))
+		newPodListLength = max(1, Adjustment(podAffPerc, len(filteredPods.items)))
 		#rand.Seed(time.Now().UnixNano())
 
 		# it will generate the random podlist
 		# it starts from the random index and choose requirement no of pods next to that index in a circular way.
-		index = random.randint(0,len(filteredPods))
+		index = random.randint(0,len(filteredPods.items))
 		for i in newPodListLength:
-			realPods.append(filteredPods[index])
-			realPods.append(filteredPods[index])
-			index = (index + 1) % len(filteredPods)
+			realPods.items.append(filteredPods.items[index])
+			realPods.items.append(filteredPods.items[index])
+			index = (index + 1) % len(filteredPods.items)
 		
-		return V1PodList(items=realPods), None, len(realPods)
+		return realPods, None
 
 
 	# DeleteHelperPodBasedOnJobCleanupPolicy deletes specific helper pod based on jobCleanupPolicy
