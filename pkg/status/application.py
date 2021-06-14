@@ -51,7 +51,7 @@ class Application(object):
 	
 
 	#AnnotatedApplicationsStatusCheck checks the status of all the annotated applications with matching label
-	def  AnnotatedApplicationsStatusCheck(self, appNs, appLabel, containerName, chaosDetails, init):
+	def AnnotatedApplicationsStatusCheck(self, appNs, appLabel, containerName, chaosDetails, init):
 		api = create_k8s_api_client(secrets = None)
 		v1 = client.CoreV1Api(api)
 		try:

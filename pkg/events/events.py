@@ -36,10 +36,8 @@ def CreateEvents(eventsDetails , chaosDetails, kind, eventName):
 			), type=eventsDetails.Type, local_vars_configuration=None,
 			count=1,
 			)
-	print("Let's create event")
 	try:
 		api_instance.create_namespaced_event(chaosDetails.ChaosNamespace, body)
-		print(api_instance)
 	except ApiException as e:
 		return Exception(e)
 	
@@ -79,5 +77,5 @@ def GenerateEvents(eventsDetails, chaosDetails, kind):
 			api_instance.patch_namespaced_event(eventName, chaosDetails.ChaosNamespace, body = event)
 		except ApiException as e:
 			return e
-		return None
+
 	return None

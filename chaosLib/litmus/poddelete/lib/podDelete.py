@@ -34,7 +34,6 @@ def PreparePodDelete(experimentsDetails , resultDetails, eventsDetails, chaosDet
 		print("[Ramp]: Waiting for the {} ramp time before injecting chaos".format(experimentsDetails.RampTime))
 		common.WaitForDuration(experimentsDetails.RampTime)
 	
-	print("Sequence :", experimentsDetails.Sequence.lower())
 	if experimentsDetails.Sequence.lower() == "serial":
 		err = injectChaosInSerialMode(experimentsDetails, chaosDetails, eventsDetails, resultDetails)
 		if err != None:
@@ -58,12 +57,14 @@ def injectChaosInSerialMode(experimentsDetails , clients , chaosDetails , events
 	status = Application()
 	api = create_k8s_api_client(secrets = None)
 	v1 = client.CoreV1Api(api)
+	pods = Pods()
+
 	GracePeriod = 0
 	
 	#ChaosStartTimeStamp contains the start timestamp, when the chaos injection begin
 	ChaosStartTimeStamp = datetime.now()
 	duration = (datetime.now() - ChaosStartTimeStamp).seconds
-	pods = Pods()
+	
 	while duration < experimentsDetails.ChaosDuration:
 		# Get the target pod details for the chaos execution
 		# if the target pod is not defined it will derive the random target pod list using pod affected percentage
@@ -73,7 +74,7 @@ def injectChaosInSerialMode(experimentsDetails , clients , chaosDetails , events
 		targetPodList, err = pods.GetPodList(experimentsDetails.TargetPods, experimentsDetails.PodsAffectedPerc, chaosDetails)
 		if err != None: 
 			return err
-		print("target Pods : ", len(targetPodList.items))
+		
 		podNames = []
 		for pod in targetPodList.items:
 			podNames = podNames.append(pod.metadata.name)
@@ -89,13 +90,14 @@ def injectChaosInSerialMode(experimentsDetails , clients , chaosDetails , events
 		for pod in targetPodList.items :
 
 			print("[Info]: Killing the following pods", "PodName :", pod.metadata.name)
-			if experimentsDetails.Force == True:
-				err = v1.delete_namespaced_pod(pod.metadata.name, experimentsDetails.AppNS, grace_period_seconds=GracePeriod)
-			else:
-				err = v1.delete_namespaced_pod(pod.metadata.name, experimentsDetails.AppNS)
+			try:
+				if experimentsDetails.Force == True:
+					err = v1.delete_namespaced_pod(pod.metadata.name, experimentsDetails.AppNS, grace_period_seconds=GracePeriod)
+				else:
+					err = v1.delete_namespaced_pod(pod.metadata.name, experimentsDetails.AppNS)
+			except Exception as e:
+				return e
 
-			if err != None:
-				return err
 			if chaosDetails.Randomness == True :
 				err = common.RandomInterval(experimentsDetails.ChaosInterval)
 				if err != None:
@@ -126,7 +128,7 @@ def injectChaosInParallelMode(experimentsDetails  , chaosDetails , eventsDetails
 	api = create_k8s_api_client(secrets = None)
 	v1 = client.CoreV1Api(api)
 	pods = Pods()
-	
+
 	GracePeriod = 0
 	
 	#ChaosStartTimeStamp contains the start timestamp, when the chaos injection begin
@@ -142,7 +144,7 @@ def injectChaosInParallelMode(experimentsDetails  , chaosDetails , eventsDetails
 		targetPodList, err = pods.GetPodList(experimentsDetails.TargetPods, experimentsDetails.PodsAffectedPerc, chaosDetails)
 		if err != None:
 			return err
-		print("Target Pods", targetPodList.items)
+		
 		podNames = []
 		for pod in targetPodList.items:
 			podNames = podNames.append(str(pod.metadata.name))
@@ -164,7 +166,7 @@ def injectChaosInParallelMode(experimentsDetails  , chaosDetails , eventsDetails
 					v1.delete_namespaced_pod(pod.metadata.name, experimentsDetails.AppNS)
 			except Exception as err:
 				return err	
-		print("Random :c,:", chaosDetails.Randomness)
+		
 		if chaosDetails.Randomness == True:
 			err = common.RandomInterval(experimentsDetails.ChaosInterval)
 			if err != None:
@@ -182,8 +184,6 @@ def injectChaosInParallelMode(experimentsDetails  , chaosDetails , eventsDetails
 		if err != None:
 			return err
 		duration = (datetime.now() - ChaosStartTimeStamp).seconds
-		print("Duration", duration)
-
 
 	print("[Completion]: {} chaos is done".format(experimentsDetails.ExperimentName))
 

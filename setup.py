@@ -42,10 +42,10 @@ classifiers = [
 ]
 license = 'Apache License Version 2.0'
 packages = [
-	'byoc',
-	'byoc/litmus',
-	'byoc/litmus/poddelete',
-	'byoc/litmus/poddelete/lib',
+	'chaosLib',
+	'chaosLib/litmus',
+	'chaosLib/litmus/poddelete',
+	'chaosLib/litmus/poddelete/lib',
 	'pkg',
 	'pkg/',
 	'pkg/result',

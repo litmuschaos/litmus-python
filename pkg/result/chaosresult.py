@@ -43,7 +43,6 @@ class ChaosResults(object):
 		experimentLabel = {}
 		api = create_k8s_api_client(secrets = None)
 		v1 = client.CoreV1Api(api)
-		v2 = client.CustomObjectsApi()
 		
 		# It will list all the chaos-result with matching label
 		# it will retries until it got chaos result list or met the timeout(3 mins)
@@ -75,7 +74,6 @@ class ChaosResults(object):
 		# # it will patch the chaos-result in the end of experiment
 		resultDetails.Phase == "Completed"
 		return self.PatchChaosResult(resultList[0],  chaosDetails, resultDetails, chaosResultLabel =  experimentLabel)
-
 
 	#InitializeChaosResult or patch the chaos result
 	def InitializeChaosResult(self, chaosDetails , resultDetails , chaosResultLabel, 
@@ -141,8 +139,8 @@ class ChaosResults(object):
 			probeSuccessPercentage = "Awaited"
 
 		# It will update the existing chaos-result CR with new values
-		return self.InitializeChaosResult(chaosDetails , resultDetails , chaosResultLabel, 
-		probeStatus, passedRuns ,  failedRuns , stoppedRuns, probeSuccessPercentage)
+		return self.InitializeChaosResult(chaosDetails, resultDetails, chaosResultLabel, 
+		probeStatus, passedRuns, failedRuns, stoppedRuns, probeSuccessPercentage)
 
 	# SetResultUID sets the ResultUID into the ResultDetails structure
 	def SetResultUID(self, resultDetails, chaosDetails):

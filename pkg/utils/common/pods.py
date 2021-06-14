@@ -236,10 +236,8 @@ class Pods(object):
 		for pod in podList.items :
 			for podTarget in targetPodsList :
 				if podTarget == pod.metadata.name :
-					print("Same hai", chaosDetails.AppDetail.Kind)
 					if chaosDetails.AppDetail.AnnotationCheck == True:
 						isPodAnnotated, err = IsPodParentAnnotated(pod, chaosDetails)
-						print("Annoted", isPodAnnotated)
 						if err != None :
 							return V1PodList, err
 						
@@ -292,7 +290,7 @@ class Pods(object):
 	def DeleteHelperPodBasedOnJobCleanupPolicy(self, podName, podLabel, chaosDetails):
 
 		if chaosDetails.JobCleanupPolicy == "delete":
-			print("[Cleanup]: Deleting %v helper pod", podName)
+			print("[Cleanup]: Deleting {} helper pod".format(podName))
 			err = self.DeletePod(podName, podLabel, chaosDetails.ChaosNamespace, chaosDetails.Timeout, chaosDetails.Delay)
 			if err != None:
 				print("Unable to delete the helper pod, err: %v", err)
@@ -352,7 +350,7 @@ class Pods(object):
 				containerID = container.ContainerID.split("//")[1]
 				break
 
-		print("container ID of %v container, containerID: %v", targetContainer, containerID)
+		print("container ID of %v container, containerID: {}".format(targetContainer, containerID))
 		return containerID, None
 	
 

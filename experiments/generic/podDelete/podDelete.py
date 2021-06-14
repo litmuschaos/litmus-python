@@ -39,7 +39,6 @@ def PodDelete():
 		result.RecordAfterFailure(chaosDetails, resultDetails, failStep, eventsDetails)
 		return err
 
-
 	# Set the chaos result uid
 	result.SetResultUID(resultDetails, chaosDetails)
 
@@ -102,7 +101,7 @@ def PodDelete():
 			return
 		
 	else:
-		logger.Error("[Invalid]: Please Provide the correct LIB")
+		print("[Invalid]: Please Provide the correct LIB")
 		failStep = "no match found for specified lib"
 		result.RecordAfterFailure(chaosDetails, resultDetails, failStep, eventsDetails)
 		return

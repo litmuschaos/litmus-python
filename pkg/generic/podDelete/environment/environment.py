@@ -22,16 +22,16 @@ def GetENV(experimentDetails):
 	experimentDetails.RampTime = atoi(os.getenv("RAMP_TIME", "0"))
 	experimentDetails.ChaosLib = os.getenv("LIB", "litmus")
 	experimentDetails.ChaosServiceAccount = os.getenv("CHAOS_SERVICE_ACCOUNT", "")
-	experimentDetails.AppNS = os.getenv("APP_NAMESPACE", "default")
-	experimentDetails.AppLabel = os.getenv("APP_LABEL", "run=nginx")
-	experimentDetails.AppKind = os.getenv("APP_KIND", "Deployment")
+	experimentDetails.AppNS = os.getenv("APP_NAMESPACE", "")
+	experimentDetails.AppLabel = os.getenv("APP_LABEL", "")
+	experimentDetails.AppKind = os.getenv("APP_KIND", "")
 	experimentDetails.ChaosUID = os.getenv("CHAOS_UID", "")
 	experimentDetails.InstanceID = os.getenv("INSTANCE_ID", "12345")
-	experimentDetails.ChaosPodName = os.getenv("POD_NAME", "litmusportal-frontend-698bcb686f-6h5hg")
+	experimentDetails.ChaosPodName = os.getenv("POD_NAME", "")
 	experimentDetails.Force = (os.getenv("FORCE", "False") == 'False')
 	experimentDetails.Delay = atoi(os.getenv("STATUS_CHECK_DELAY", "2"))
-	experimentDetails.Timeout = atoi(os.getenv("STATUS_CHECK_TIMEOUT", "20"))
-	experimentDetails.TargetPods = os.getenv("TARGET_PODS", "nginx-658f4cf99f-fqhlf")
+	experimentDetails.Timeout = atoi(os.getenv("STATUS_CHECK_TIMEOUT", "2"))
+	experimentDetails.TargetPods = os.getenv("TARGET_PODS", "")
 	experimentDetails.PodsAffectedPerc = atoi(os.getenv("PODS_AFFECTED_PERC", "0"))
 	experimentDetails.Sequence = os.getenv("SEQUENCE", "parallel")
 	experimentDetails.TargetContainer = os.getenv("TARGET_CONTAINER", "")
@@ -39,7 +39,7 @@ def GetENV(experimentDetails):
 #InitialiseChaosVariables initialise all the global variables
 def InitialiseChaosVariables(chaosDetails, experimentDetails):
 	appDetails = AppDetails()
-	appDetails.AnnotationCheck = (os.getenv("ANNOTATION_CHECK", "False") == 'False')
+	appDetails.AnnotationCheck = (os.getenv("ANNOTATION_CHECK", "False") == 'True')
 	appDetails.AnnotationKey = os.getenv("ANNOTATION_KEY", "litmuschaos.io/chaos")
 	appDetails.AnnotationValue = "True"
 	appDetails.Kind = experimentDetails.AppKind
@@ -56,5 +56,5 @@ def InitialiseChaosVariables(chaosDetails, experimentDetails):
 	chaosDetails.Delay = experimentDetails.Delay
 	chaosDetails.AppDetail = appDetails
 	chaosDetails.ProbeImagePullPolicy = experimentDetails.LIBImagePullPolicy
-	chaosDetails.Randomness = (os.getenv("RANDOMNESS", "False") == 'False')
+	chaosDetails.Randomness = (os.getenv("RANDOMNESS", "False") == 'True')
 

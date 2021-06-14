@@ -1,0 +1,21 @@
+---
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosResult
+metadata:
+    name: pod-delete-pod-delete-12345
+    namespace: litmus
+    labels: {'component': 'litmusportal-frontend', 'pod-template-hash': '698bcb686f', 'name': 'pod-delete-pod-delete-12345'}
+spec:
+    engineName: pod-delete
+    experimentName: pod-delete
+    instanceID: 12345
+status:
+    experimentStatus: 
+        phase: Completed
+        verdict: Fail
+        ProbeSuccessPercentage: 0
+    probeStatus: []
+    history:
+        passedRuns: 0
+        failedRuns: 1
+        stoppedRuns: 0

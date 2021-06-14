@@ -84,24 +84,14 @@ class NotifySignal:
 		print("\nReceived {} signal".format(self.signals[signum]))
 		self.kill_now = True
 
-def receive_signal(signum, stack):
-	print('Received:', signum)
-
 # AbortWatcherWithoutExit continuosly watch for the abort signals
 def AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails):
 
-	# signal.signal(signal.SIGTERM, receive_signal)
-	# print('My PID is:', os.getpid())
-	# while True:
-	# 	print('Waiting...')
-	# 	time.sleep(3)
-	# print("Found")
 	# signChan channel is used to transmit signal notifications.
-
 	killer = NotifySignal()
 	while not killer.kill_now:
 		time.sleep(1)
-		print('Press Ctrl+C')
+		#print('Press Ctrl+C')
 	
 	print("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
 	# updating the chaosresult after stopped

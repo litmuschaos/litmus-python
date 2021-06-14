@@ -1,9 +1,9 @@
 import experiments.generic.podDelete.podDelete as podDelete
 import argparse
-parser = argparse.ArgumentParser()
 
 def main():
 
+	parser = argparse.ArgumentParser()
 	# parse the experiment name
 	parser.add_argument("-experimentName", action='store',
                     default="pod-delete",
@@ -20,4 +20,5 @@ def main():
 		print("Unsupported -name {}, please provide the correct value of -name args".format(args.experimentName))
 	return
 
-main()
+if __name__ == "__main__":
+    main()
