@@ -1,0 +1,21 @@
+---
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosResult
+metadata:
+    name: pod-delete-pod-delete-12345
+    namespace: litmus
+    labels: {'name': 'pod-delete-pod-delete-12345'}
+spec:
+    engineName: pod-delete
+    experimentName: pod-delete
+    instanceID: 12345
+status:
+    experimentStatus: 
+        phase: Stopped
+        verdict: Pass
+        ProbeSuccessPercentage: Awaited
+    probeStatus: []
+    history:
+        passedRuns: 0
+        failedRuns: 0
+        stoppedRuns: 0

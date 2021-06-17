@@ -1,5 +1,4 @@
 import os
-from kubernetes import type
 from pkg.types.types import AppDetails
 from pkg.generic.podDelete.types.types import ExperimentDetails
 
@@ -17,7 +16,7 @@ def atoi(string):
 def GetENV(experimentDetails):
 	experimentDetails.ExperimentName =  os.getenv("EXPERIMENT_NAME", "pod-delete")
 	experimentDetails.ChaosNamespace = os.getenv("CHAOS_NAMESPACE", "litmus")
-	experimentDetails.EngineName = os.getenv("CHAOSENGINE", "")
+	experimentDetails.EngineName = os.getenv("CHAOSENGINE", "pod-delete")
 	experimentDetails.ChaosDuration = atoi(os.getenv("TOTAL_CHAOS_DURATION", "30"))
 	experimentDetails.ChaosInterval = os.getenv("CHAOS_INTERVAL", "10")
 	experimentDetails.RampTime = atoi(os.getenv("RAMP_TIME", "0"))
@@ -26,12 +25,12 @@ def GetENV(experimentDetails):
 	experimentDetails.AppNS = os.getenv("APP_NAMESPACE", "")
 	experimentDetails.AppLabel = os.getenv("APP_LABEL", "")
 	experimentDetails.AppKind = os.getenv("APP_KIND", "")
-	experimentDetails.ChaosUID = UID(os.getenv("CHAOS_UID", ""))
-	experimentDetails.InstanceID = os.getenv("INSTANCE_ID", "")
+	experimentDetails.ChaosUID = os.getenv("CHAOS_UID", "")
+	experimentDetails.InstanceID = os.getenv("INSTANCE_ID", "12345")
 	experimentDetails.ChaosPodName = os.getenv("POD_NAME", "")
-	experimentDetails.Force = bool(os.getenv("FORCE", "false"))
+	experimentDetails.Force = (os.getenv("FORCE", "False") == 'False')
 	experimentDetails.Delay = atoi(os.getenv("STATUS_CHECK_DELAY", "2"))
-	experimentDetails.Timeout = atoi(os.getenv("STATUS_CHECK_TIMEOUT", "180"))
+	experimentDetails.Timeout = atoi(os.getenv("STATUS_CHECK_TIMEOUT", "2"))
 	experimentDetails.TargetPods = os.getenv("TARGET_PODS", "")
 	experimentDetails.PodsAffectedPerc = atoi(os.getenv("PODS_AFFECTED_PERC", "0"))
 	experimentDetails.Sequence = os.getenv("SEQUENCE", "parallel")
@@ -40,9 +39,9 @@ def GetENV(experimentDetails):
 #InitialiseChaosVariables initialise all the global variables
 def InitialiseChaosVariables(chaosDetails, experimentDetails):
 	appDetails = AppDetails()
-	appDetails.AnnotationCheck, _ = str.ParseBool(os.getenv("ANNOTATION_CHECK", "false"))
+	appDetails.AnnotationCheck = (os.getenv("ANNOTATION_CHECK", "False") == 'true')
 	appDetails.AnnotationKey = os.getenv("ANNOTATION_KEY", "litmuschaos.io/chaos")
-	appDetails.AnnotationValue = "true"
+	appDetails.AnnotationValue = "True"
 	appDetails.Kind = experimentDetails.AppKind
 	appDetails.Label = experimentDetails.AppLabel
 	appDetails.Namespace = experimentDetails.AppNS
@@ -57,5 +56,5 @@ def InitialiseChaosVariables(chaosDetails, experimentDetails):
 	chaosDetails.Delay = experimentDetails.Delay
 	chaosDetails.AppDetail = appDetails
 	chaosDetails.ProbeImagePullPolicy = experimentDetails.LIBImagePullPolicy
-	chaosDetails.Randomness, _ = str.ParseBool(os.getenv("RANDOMNESS", "false"))
+	chaosDetails.Randomness = (os.getenv("RANDOMNESS", "False") == 'true')
 

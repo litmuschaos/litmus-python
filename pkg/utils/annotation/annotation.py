@@ -6,38 +6,40 @@ import logging
 logger = logging.getLogger(__name__)
 from chaosk8s import create_k8s_api_client
 from kubernetes.client import api_client
-
+import os
 from datetime import datetime
+from distutils.util import strtobool
 
-def deployment():
-	api = create_k8s_api_client(secrets = None)
-	v1 = client.AppsV1beta2Api(api)
-	
+global conf
+if os.getenv('KUBERNETES_SERVICE_HOST'):
+	conf = config.load_incluster_config()
+else:
+	conf = config.load_kube_config()
+
+def deployment(targetPod,chaosDetails):
+	api_instance = client.AppsV1Api()
 	try:
-		deployList = v1.list_namespaced_deployment("litmus")
+		deployList = api_instance.list_namespaced_deployment(chaosDetails.AppDetail.Namespace, label_selector=chaosDetails.AppDetail.Label)
 	except ApiException as e:
-	 	return print("no deployment found with matching label, err: %v", e) 
+	 	return False, logger.error("no deployment found with matching label, err: {}".format(e))
 	
 	for deploy in deployList.items:
-		if deploy.metadata.annotations[chaosDetails.AppDetail.AnnotationKey] == str(int(chaosDetails.AppDetail.AnnotationValue == 'true')):
-			
+		if str(deploy.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'False')):
 			rsOwnerRef = targetPod.metadata.owner_references
-			for own in range(rsOwnerRef) :
-				if own.Kind == "ReplicaSet" :
+			for own in rsOwnerRef :
+				if own.kind == "ReplicaSet" :
 					try:
-						rs = v1.read_namespaced_replica_set(own.name, "litmus")
+						rs = api_instance.read_namespaced_replica_set(own.name, chaosDetails.AppDetail.Namespace)
 					except Exception as e:
 						return False, e
-					
-					ownerRef = rs.OwnerReferences
-					for own in range(ownerRef):
-						if own.Kind == "Deployment" & own.name == deploy.name:
-							logger.info("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, deploy.name, deploy.Namespace)
+					ownerRef = rs.metadata.owner_references
+					for own in ownerRef:
+						if own.kind == "Deployment" and own.name == deploy.metadata.name:
+							print("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, deploy.metadata.name, deploy.metadata.namespace))
 							return True, None
-
-def statefulset(clients, targetPod,chaosDetails):
-	api = create_k8s_api_client(secrets = None)
-	v1 = client.AppsV1Api(api)
+	return False, False
+def statefulset(targetPod,chaosDetails):
+	v1 = client.AppsV1Api()
 	
 	try:
 		stsList = v1.list_namespaced_stateful_set("litmus")
@@ -47,17 +49,17 @@ def statefulset(clients, targetPod,chaosDetails):
 		return False, logger.error("no statefulset found with matching label")
 	
 	for sts in stsList.items:
-		if sts.metadata.annotations[chaosDetails.AppDetail.AnnotationKey] == str(int(chaosDetails.AppDetail.AnnotationValue == 'true')):
-			ownerRef = targetPod.OwnerReferences
-			for own in range(ownerRef):
-				if own.Kind == "StatefulSet" & own.name == sts.name:
-					logger.info("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, sts.name, sts.Namespace)
+		if str(sts.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'True')):
+			ownerRef = targetPod.metadata.owner_references
+			for own in ownerRef:
+				if own.kind == "StatefulSet" and own.name == sts.name:
+					print("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, sts.metadata.name, sts.metadata.namespace))
 					return True, None
 
-def daemonset(clients, targetPod, chaosDetails):
-	api = create_k8s_api_client(secrets = None)
-	v1 = client.AppsV1Api(api)
-	
+def daemonset(targetPod, chaosDetails):
+	#api = create_k8s_api_client(secrets = None)
+	v1 = client.AppsV1Api()
+
 	try:
 		dsList = v1.list_namespaced_daemon_set(chaosDetails.AppDetail.Namespace, label_selector=chaosDetails.AppDetail.Label)
 	except Exception as e:
@@ -66,20 +68,20 @@ def daemonset(clients, targetPod, chaosDetails):
 		return False, logger.error("no daemonset found with matching label")
 	
 	for ds in dsList.items:
-		if ds.metadata.annotations[chaosDetails.AppDetail.AnnotationKey] == str(int(chaosDetails.AppDetail.AnnotationValue == 'true')):
-			ownerRef = targetPod.OwnerReferences
-			for own in range(ownerRef):
-				if own.Kind == "DaemonSet" & own.name == ds.name:
-					logger.info("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, ds.name, ds.Namespace)
+		if str(ds.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'True')):
+			ownerRef = targetPod.metadata.owner_references
+			for own in ownerRef:
+				if own.kind == "DaemonSet" and own.name == ds.name:
+					print("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, ds.metadata.name, ds.metadata.namespace))
 					return True, None
 
 def deploymentconfig(targetPod, chaosDetails):
-	api = create_k8s_api_client(secrets = None)
-	v1 = client.CoreV1Api(api)
-	clientDyn = dynamic.DynamicClient(
-        api_client.ApiClient(configuration=config.load_kube_config())
-    )
+	v1 = client.CoreV1Api()
 	
+	clientDyn = dynamic.DynamicClient(
+        api_client.ApiClient(conf)
+    )
+
 	try:
 		deploymentConfigList = clientDyn.resources.get(api_version="v1", kind="DeploymentConfig", group="apps.openshift.io", label_selector=chaosDetails.AppDetail.Label)
 	except Exception as e:
@@ -88,28 +90,26 @@ def deploymentconfig(targetPod, chaosDetails):
 		return False, logger.error("no deploymentconfig found with matching labels")
 	
 	for dc in deploymentConfigList.items:
-		annotations = dc.GetAnnotations()
-		if annotations[chaosDetails.AppDetail.AnnotationKey] == str(int(chaosDetails.AppDetail.AnnotationValue == 'true')):
-			rcOwnerRef = targetPod.OwnerReferences
+		if str(dc.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'True')):
+			rcOwnerRef = targetPod.metadata.owner_references
 			for own in range(rcOwnerRef):
-				if own.Kind == "ReplicationController":
+				if own.kind == "ReplicationController":
 					try:
 						rc = v1.read_namespaced_replication_controller(own.name, chaosDetails.AppDetail.Namespace)
 					except Exception as e:
 						return False, e
 					
-					ownerRef = rc.OwnerReferences
-					for own in range(ownerRef):
-						if own.Kind == "DeploymentConfig" & own.name == dc.GetName():
-							logger.info("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, dc.GetName(), dc.GetNamespace())
+					ownerRef = rc.metadata.owner_references
+					for own in ownerRef:
+						if own.kind == "DeploymentConfig" and own.name == dc.GetName():
+							print("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, dc.metadata.name, dc.metadata.namespace))
 							return True, None
 
-
-def rollout(clients, targetPod, chaosDetails):
-	api = create_k8s_api_client(secrets = None)
-	v1 = client.AppsV1beta1Api(api)
+def rollout(targetPod, chaosDetails):
+	v1 = client.AppsV1beta1Api()
+	
 	clientDyn = dynamic.DynamicClient(
-        api_client.ApiClient(configuration=config.load_kube_config())
+        api_client.ApiClient(conf)
     )
 	
 	try:
@@ -118,34 +118,38 @@ def rollout(clients, targetPod, chaosDetails):
 		return False, logger.error("no rollouts found with matching labels")
 	
 	for ro in rolloutList.items :
-		annotations = ro.GetAnnotations()
-		if annotations[chaosDetails.AppDetail.AnnotationKey] == str(int(chaosDetails.AppDetail.AnnotationValue == 'true')):
-			rsOwnerRef = targetPod.OwnerReferences
-			for own in range(rsOwnerRef) :
-				if own.Kind == "ReplicaSet":
+		if str(ro.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'True')):
+			rsOwnerRef = targetPod.metadata.owner_references
+			for own in rsOwnerRef :
+				if own.kind == "ReplicaSet":
 					try:
 						rs = v1.read_namespaced_replica_set(own.name, chaosDetails.AppDetail.Namespace)
 					except Exception as e:
 						return False, e
 					
-					ownerRef = rs.OwnerReferences
-					for own in range(ownerRef):
-						if own.Kind == "Rollout" & own.name == ro.GetName():
-							logger.info("[Info]: chaos candidate of kind: %v, name: %v, namespace: %v", chaosDetails.AppDetail.Kind, ro.GetName(), ro.GetNamespace())
+					ownerRef = rs.metadata.owner_references
+					for own in ownerRef:
+						if own.kind == "Rollout" and own.name == ro.metadata.name:
+							print("[Info]: chaos candidate of kind: {}, name: {}, namespace: {}".format(chaosDetails.AppDetail.Kind, ro.metadata.name, ro.metadata.namespace))
 							return True, None
 
-
-def numbers_to_strings(argument, clients, targetPod,chaosDetails):
-    switcher = {
-        "deployment": deployment(clients, targetPod,chaosDetails),
-        "statefulset": statefulset(clients, targetPod,chaosDetails),
-        "daemonset": daemonset(clients, targetPod,chaosDetails),
-		"deploymentconfig": deploymentconfig(clients, targetPod,chaosDetails),
-		"rollout" : rollout(clients, targetPod,chaosDetails),
-    }
-    return switcher.get(argument, "%v appkind is not supported",chaosDetails.AppDetail.Kind)
+# PodParentAnnotated is helper method to check whether the target pod's parent is annotated or not
+def PodParentAnnotated(argument, targetPod,chaosDetails):
+	print("Argument", argument)
+	if argument == "deployment":
+		return deployment(targetPod,chaosDetails)
+	elif argument == "statefulset": 
+		return statefulset(targetPod,chaosDetails)
+	elif argument == "daemonset": 
+		return daemonset(targetPod,chaosDetails)
+	elif argument == "deploymentConfig": 
+		return deploymentconfig(targetPod,chaosDetails)
+	elif argument == "rollout" : 
+		return rollout(targetPod,chaosDetails)
+	else:
+		return False,  print("appkind is not supported")
 	
 # IsPodParentAnnotated check whether the target pod's parent is annotated or not
-def IsPodParentAnnotated(clients, targetPod, chaosDetails):
+def IsPodParentAnnotated(targetPod, chaosDetails):
 
-    return numbers_to_strings(chaosDetails.AppDetail.Kind, clients, targetPod,chaosDetails)
+    return PodParentAnnotated(chaosDetails.AppDetail.Kind, targetPod,chaosDetails)
