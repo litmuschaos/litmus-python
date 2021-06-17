@@ -1,17 +1,14 @@
 from kubernetes import client, config
-import time
 import random
-from kubernetes.client.models.v1_pod import V1Pod
 import os
 from kubernetes.client.models.v1_pod_list import V1PodList
-from pkg.types.types import ChaosDetails
 import logging
-from retry import retry
 import logging
 from pkg.utils.annotation.annotation import IsPodParentAnnotated
 logger = logging.getLogger(__name__)
-from chaosk8s import create_k8s_api_client
 from pkg.utils.k8serror.k8serror import K8serror
+import sys
+sys.stdout.flush()
 #Adjustment contains rule of three for calculating an integer given another integer representing a percentage
 def Adjustment(a, b):
 	return (a * b / 100)
@@ -83,7 +80,6 @@ class Pods(object):
 	def DeleteAllPod(self, podLabel, namespace, timeout, delay):
 		self.timeout = timeout
 		self.delay = delay
-		global conf
 		v1=client.CoreV1Api()
 		try:
 			v1.delete_collection_namespaced_pod(namespace, label_selector=podLabel)
@@ -111,7 +107,7 @@ class Pods(object):
 			pod = v1.read_namespaced_pod(podName, namespace)
 		except Exception as e:
 			return None, e
-		return pod.spec.imagePullSecrets, None
+		return pod.spec.image_pull_secrets, None
 	
 	# GetChaosPodResourceRequirements will return the resource requirements on chaos pod
 	def GetChaosPodResourceRequirements(self, podName, containerName, namespace):
@@ -161,7 +157,7 @@ class Pods(object):
 		isPodsAvailable, err = self.VerifyExistanceOfPods(chaosDetails.AppDetail.Namespace, targetPods)
 		if err != None:
 			return client.V1PodList, err
-		
+		logger.info("inside")
 		# getting the pod, if the target pods is defined
 		# else select a random target pod from the specified labels
 		if isPodsAvailable == True:
@@ -198,15 +194,16 @@ class Pods(object):
 	# it filter when the applabels are not defined and it will select random pods from appns
 	def FilterNonChaosPods(self, podList, chaosDetails):
 		if chaosDetails.AppDetail.Label == "":
-			nonChaosPods = V1PodList
+			nonChaosPods = []
 			# ignore chaos pods
-			index = 0
+			print("Nn chaos Pod")
 			for pod in podList.items:
-				if (pod.Labels["chaosUID"] != str(chaosDetails.ChaosUID) or pod.metadata.labels["name"] == "chaos-operator"):
-					nonChaosPods = nonChaosPods.update(podList.items[index])
-				index = index + 1
-					
-			return nonChaosPods
+				if (pod.metadata.labels["chaosUID"] != str(chaosDetails.ChaosUID) or pod.metadata.labels["name"] == "chaos-operator"):
+					nonChaosPods = nonChaosPods.append(pod)
+					print("Chaos chaos", len(nonChaosPods))
+			print("Items length : ", len(nonChaosPods))		
+			return V1PodList(items=nonChaosPods)
+		print("length od podList : ", len(podList.items))
 		return podList
 	
 
@@ -223,7 +220,6 @@ class Pods(object):
 			return V1PodList, print("Failed to find the pods with matching labels in {} namespace", chaosDetails.AppDetail.Namespace), 0
 
 		targetPodsList = targetPods.split(",")
-		realPods = client.V1PodList
 		realPodList = []
 		for pod in podList.items :
 			for podTarget in targetPodsList :
@@ -239,7 +235,7 @@ class Pods(object):
 					#realPods.items.append(pod)
 					realPodList.append(pod)
 					
-		return realPods(items=realPodList), None
+		return client.V1PodList(items=realPodList), None
 	
 
 	# GetTargetPodsWhenTargetPodsENVNotSet derives the random target pod list, if TARGET_PODS env is not set
@@ -247,7 +243,7 @@ class Pods(object):
 		filteredPods = []
 		realPods = []
 		if chaosDetails.AppDetail.AnnotationCheck == True:
-			for  pod in nonChaosPods.items:
+			for pod in nonChaosPods.items:
 				isPodAnnotated, err = IsPodParentAnnotated(pod, chaosDetails)
 				if err != None:
 					return V1PodList, err 
@@ -260,7 +256,8 @@ class Pods(object):
 				return V1PodList(items=filteredPods), print("No annotated target pod found")
 			
 		else:
-			filteredPods.append(nonChaosPods)
+			for pod in nonChaosPods.items:
+				filteredPods.append(pod)
 		
 
 		newPodListLength = max(1, Adjustment(podAffPerc, len(filteredPods)))
@@ -268,11 +265,11 @@ class Pods(object):
 
 		# it will generate the random podlist
 		# it starts from the random index and choose requirement no of pods next to that index in a circular way.
-		index = random.randint(0,len(filteredPods))
+		index = random.randint(0,len(filteredPods)-1)
+		print("Index :", index , " len of filtered pods :", len(filteredPods))
 		print("newPodListLength", newPodListLength)
 		for i in range(newPodListLength):
-			print("I :", i)
-			realPods.append(filteredPods[i])
+			realPods.append(filteredPods[index])
 			index = (index + 1) % len(filteredPods)
 		
 		return client.V1PodList(items=realPods), None
@@ -334,7 +331,7 @@ class Pods(object):
 		
 		# filtering out the container id from the details of containers inside containerStatuses of the given pod
 		# container id is present in the form of <runtime>:#<container-id>
-		for container in pod.Status.ContainerStatuses:
+		for container in pod.status.container_statuses:
 			if container.name == targetContainer:
 				containerID = container.ContainerID.split("//")[1]
 				break

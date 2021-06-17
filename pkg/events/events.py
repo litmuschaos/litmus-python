@@ -17,7 +17,7 @@ else:
 
 #CreateEvents create the events in the desired resource
 def CreateEvents(eventsDetails , chaosDetails, kind, eventName):
-	#api = create_k8s_api_client(secrets = None)
+	
 	api_instance = client.CoreV1Api()
 	first_timestamp = datetime.now(pytz.utc)
 	last_timestamp = datetime.now(pytz.utc)
@@ -64,7 +64,7 @@ def GenerateEvents(eventsDetails, chaosDetails, kind):
 		eventName = eventsDetails.Reason + chaosDetails.ExperimentName + str(chaosDetails.ChaosUID)
 		event = client.V1Event
 		try:
-			 event  = api_instance.read_namespaced_event( name = eventName,namespace = chaosDetails.ChaosNamespace)
+			 event = api_instance.read_namespaced_event( name = eventName,namespace = chaosDetails.ChaosNamespace)
 		except Exception as e:
 			if K8serror().IsNotFound(err=e):
 				try:
@@ -81,5 +81,4 @@ def GenerateEvents(eventsDetails, chaosDetails, kind):
 			api_instance.patch_namespaced_event(eventName, chaosDetails.ChaosNamespace, body = event)
 		except ApiException as e:
 			return e
-
 	return None

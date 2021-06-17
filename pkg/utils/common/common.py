@@ -69,20 +69,19 @@ def AbortWatcher(expname, resultDetails, chaosDetails, eventsDetails):
 	AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails)
 	#sys.exit(0)
 
-# class NotifySignal:
-# 	kill_now = False
-# 	signals = {
-# 		signal.SIGINT: 'SIGINT',
-# 		signal.SIGTERM: 'SIGTERM'
-# 	}
+class NotifySignal:
+	kill_now = False
+	signals = {
+		signal.SIGTERM: 'SIGTERM'
+	}
 
-# 	def __init__(self):
-# 		signal.signal(signal.SIGINT, self.exit_gracefully)
-# 		signal.signal(signal.SIGTERM, self.exit_gracefully)
+	def __init__(self):
+		signal.signal(signal.SIGINT, self.exit_gracefully)
+		signal.signal(signal.SIGTERM, self.exit_gracefully)
 
-# 	def exit_gracefully(self, signum, frame):
-# 		print("\nReceived {} signal".format(self.signals[signum]))
-# 		self.kill_now = True
+	def exit_gracefully(self, signum, frame):
+		print("\nReceived {} signal".format(self.signals[signum]))
+		self.kill_now = True
 
 # AbortWatcherWithoutExit continuosly watch for the abort signals
 def AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails):
@@ -93,7 +92,7 @@ def AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails)
 	# 	time.sleep(1)
 		#print('Press Ctrl+C')
 	
-	print("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
+	#print("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
 	# updating the chaosresult after stopped
 	failStep = "Chaos injection stopped!"
 	types.SetResultAfterCompletion(resultDetails, "Stopped", "Stopped", failStep)
@@ -131,8 +130,7 @@ def FilterBasedOnPercentage(percentage, list):
 
 	finalList = []
 	newInstanceListLength = max(1, Adjustment(percentage, len(list)))
-	#rand.Seed(time.Now().UnixNano())
-
+	
 	# it will generate the random instanceList
 	# it starts from the random index and choose requirement no of volumeID next to that index in a circular way.
 	index = random.randint(0, len(list))

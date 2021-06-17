@@ -1,21 +1,16 @@
 
 import pkg.types.types  as types
 import pkg.events.events as events
-from kubernetes.client.api import core_v1_api
-from kubernetes.client.models.v1_event import V1Event
 from kubernetes import client, config
 import time
-#import kubernetes.client
-from kubernetes.client.rest import ApiException
 import logging
 logger = logging.getLogger(__name__)
-from chaosk8s import create_k8s_api_client
 import pkg.utils.common.common as common
 from pkg.utils.common.pods import Pods
-import pkg.status.application as status
 from datetime import datetime
 from pkg.status.application import Application
 import os
+
 global conf
 if os.getenv('KUBERNETES_SERVICE_HOST'):
 	conf = config.load_incluster_config()
@@ -149,11 +144,11 @@ def injectChaosInParallelMode(experimentsDetails  , chaosDetails , eventsDetails
 		if err != None:
 			return err
 		print(len(targetPodList.items))
-		# podNames = []
-		# for pod in targetPodList.items:
-		# 	podNames.append(str(pod.metadata.name))
+		podNames = []
+		for pod in targetPodList.items:
+			podNames.append(str(pod.metadata.name))
 		
-		# print("Target pods list for chaos, {}".format(podNames))
+		print("Target pods list for chaos, {}".format(podNames))
 		
 		if experimentsDetails.EngineName != "" :
 			msg = "Injecting " + experimentsDetails.ExperimentName + " chaos on application pod"
@@ -162,13 +157,13 @@ def injectChaosInParallelMode(experimentsDetails  , chaosDetails , eventsDetails
 
 		#Deleting the application pod
 		for pod in targetPodList.items:
-			print(pod.items[0].metadata.name)
-			print("[Info]: Killing the following pods", "PodName :", pod.items[0].metadata.name)
+			print(pod.metadata.name)
+			print("[Info]: Killing the following pods", "PodName :", pod.metadata.name)
 			try:
 				if experimentsDetails.Force == True:
-					v1.delete_namespaced_pod(pod.items[0].metadata.name, experimentsDetails.AppNS, grace_period_seconds=GracePeriod)
+					v1.delete_namespaced_pod(pod.metadata.name, experimentsDetails.AppNS, grace_period_seconds=GracePeriod)
 				else:
-					v1.delete_namespaced_pod(pod.items[0].metadata.name, experimentsDetails.AppNS)
+					v1.delete_namespaced_pod(pod.metadata.name, experimentsDetails.AppNS)
 			except Exception as err:
 				return err	
 		

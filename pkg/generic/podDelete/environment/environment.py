@@ -28,9 +28,9 @@ def GetENV(experimentDetails):
 	experimentDetails.ChaosUID = os.getenv("CHAOS_UID", "")
 	experimentDetails.InstanceID = os.getenv("INSTANCE_ID", "12345")
 	experimentDetails.ChaosPodName = os.getenv("POD_NAME", "")
-	experimentDetails.Force = (os.getenv("FORCE", "False") == 'False')
+	experimentDetails.Force = (os.getenv("FORCE", "false") == 'true')
 	experimentDetails.Delay = atoi(os.getenv("STATUS_CHECK_DELAY", "2"))
-	experimentDetails.Timeout = atoi(os.getenv("STATUS_CHECK_TIMEOUT", "2"))
+	experimentDetails.Timeout = atoi(os.getenv("STATUS_CHECK_TIMEOUT", "180"))
 	experimentDetails.TargetPods = os.getenv("TARGET_PODS", "")
 	experimentDetails.PodsAffectedPerc = atoi(os.getenv("PODS_AFFECTED_PERC", "0"))
 	experimentDetails.Sequence = os.getenv("SEQUENCE", "parallel")
@@ -39,9 +39,9 @@ def GetENV(experimentDetails):
 #InitialiseChaosVariables initialise all the global variables
 def InitialiseChaosVariables(chaosDetails, experimentDetails):
 	appDetails = AppDetails()
-	appDetails.AnnotationCheck = (os.getenv("ANNOTATION_CHECK", "False") == 'true')
+	appDetails.AnnotationCheck = (os.getenv("ANNOTATION_CHECK", "false") == 'true')
 	appDetails.AnnotationKey = os.getenv("ANNOTATION_KEY", "litmuschaos.io/chaos")
-	appDetails.AnnotationValue = "True"
+	appDetails.AnnotationValue = "true"
 	appDetails.Kind = experimentDetails.AppKind
 	appDetails.Label = experimentDetails.AppLabel
 	appDetails.Namespace = experimentDetails.AppNS
@@ -56,5 +56,5 @@ def InitialiseChaosVariables(chaosDetails, experimentDetails):
 	chaosDetails.Delay = experimentDetails.Delay
 	chaosDetails.AppDetail = appDetails
 	chaosDetails.ProbeImagePullPolicy = experimentDetails.LIBImagePullPolicy
-	chaosDetails.Randomness = (os.getenv("RANDOMNESS", "False") == 'true')
+	chaosDetails.Randomness = (os.getenv("RANDOMNESS", "false") == 'true')
 

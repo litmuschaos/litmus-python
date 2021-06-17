@@ -1,13 +1,11 @@
 from kubernetes import client, config
 import time
-from pkg.types.types import ChaosDetails
 import logging
-from retry import retry
 import logging
 from pkg.utils.annotation.annotation import IsPodParentAnnotated
 logger = logging.getLogger(__name__)
-from chaosk8s import create_k8s_api_client
 import os
+
 global conf
 if os.getenv('KUBERNETES_SERVICE_HOST'):
 	conf = config.load_incluster_config()
@@ -73,7 +71,7 @@ class Application(object):
 						if containerName == "":
 							for  container in pod.status.container_statuses:
 								if container.state.terminated != None: 
-									raise Exception("container is in terminated state")
+									raise Exception("Container is in terminated state")
 								
 								if container.ready == False:
 									raise Exception("containers are not yet in running state")
@@ -93,11 +91,12 @@ class Application(object):
 									print("[status]: The Container status are as follows", "container :", container.name, "Pod :", pod.metadata.name, "Readiness :", container.ready)
 								
 						if pod.status.phase != "Running":
-							raise Exception("%v pod is not yet in running state", pod.metadata.name)
+							raise Exception("{} pod is not yet in running state", pod.metadata.name)
 						
 						print("[status]: The status of Pods are as follows",
 							"Pod :", pod.metadata.name, "status :", pod.status.phase)
-				
+			else:
+				return print("Unable to find containers are in running state")	
 		except Exception as e:
 			print(e)
 			if(e != None):
@@ -157,6 +156,8 @@ class Application(object):
 				
 					print("[status]: The status of Pods are as follows", 
 						"Pod :", pod.metadata.name, "status :", pod.status.phase)
+			else:
+				print("Pod are not yet in running state(s)")
 		except Exception as e:
 			print(e)
 			if(e != None):
@@ -187,6 +188,8 @@ class Application(object):
 						err = self.validateContainerStatus(containerName, pod.metadata.name, pod.status.container_statuses); 
 						if err != None:
 							raise Exception(err)
+			else:
+				return print("Unable to find the pods with matching labels")
 		except Exception as e:
 			print(e)
 			if(e != None):
@@ -238,14 +241,14 @@ class Application(object):
 			failedPods = 0
 			for pod in podList.items :
 				podStatus = str(pod.status.phase)
-				logger.Infof("helper pod status: %v", podStatus)
+				print("Helper pod status: {}".format(podStatus))
 				if podStatus != "Succeeded" & podStatus != "Failed":
 					for container in pod.status.container_statuses:
 						if container.name == containerName & container.ready:
-							return logger.error("Container is not completed yet")
+							return print("Container is not completed yet")
 				
 				if podStatus == "Pending" :
-					return logger.error("pod is in pending state")
+					return print("pod is in pending state")
 				
 				print("[status]: The running status of Pods are as follows", 
 					"Pod :", pod.metadata.name, "status :", podStatus)
@@ -254,7 +257,7 @@ class Application(object):
 		except:
 			raise Exception
 		if failedPods > 0:
-			return logger.error("pod is in pending state")	
+			return print("pod is in pending state")	
 		return None
 	
 
@@ -270,14 +273,13 @@ class Application(object):
 			for  pod in podList.items:
 				podStatus = str(pod.status.phase)
 				if podStatus.lower() == "running" or podStatus.lower() == "succeeded":
-					logger.Infof("%v helper pod is in %v state", pod.metadata.name, podStatus)
+					print("{} helper pod is in {} state".format(pod.metadata.name, podStatus))
 				else:
-					return logger.error("%v pod is in %v state", pod.metadata.name, podStatus)
+					return print("{} pod is in {} state".format(pod.metadata.name, podStatus))
 				
 				for container in pod.status.container_statuses:
 					if container.state.terminated & pod.status.phase != "Completed" :
-						return logger.error("container is terminated with %v reason", pod.status.reason)
-					
+						return print("container is terminated with {} reason".format(pod.status.reason))
 		except:
 			raise Exception	
 

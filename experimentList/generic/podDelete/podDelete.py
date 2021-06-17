@@ -12,41 +12,36 @@ from pkg.utils.common.common import AbortWatcher
 
 # PodDelete inject the pod-delete chaos
 def PodDelete():
-
+	print("1")
 	experimentsDetails = ExperimentDetails()
 	resultDetails = types.ResultDetails()
 	eventsDetails = types.EventDetails()
 	chaosDetails = types.ChaosDetails()
-	print("3")
-
+	
 	status = Application()
 	result = ChaosResults()
 	
 	#Fetching all the ENV passed from the runner pod
 	GetENV(experimentsDetails)
-	print("4")
-
+	print("2")
 	# Intialise the chaos attributes
 	InitialiseChaosVariables(chaosDetails, experimentsDetails)
-	
+	print("3")
 	# Intialise Chaos Result Parameters
 	types.SetResultAttributes(resultDetails, chaosDetails)
-	print("5")
-
+	logger.info("4")
 	#Updating the chaos result in the beginning of experiment
-	print("[PreReq]: Updating the chaos result of {} experiment (SOT)".format(experimentsDetails.ExperimentName))
+	logger.info("[PreReq]: Updating the chaos result of {} experiment (SOT)".format(experimentsDetails.ExperimentName))
 	err = result.ChaosResult(chaosDetails, resultDetails, "SOT")
-	print(err)
 	if err != None:
 		print("Unable to Create the Chaos Result, err: {}".format(err))
 		failStep = "Updating the chaos result of pod-delete experiment (SOT)"
 		result.RecordAfterFailure(chaosDetails, resultDetails, failStep, eventsDetails)
-		print("4")
 		return
-
+	print("5")
 	# Set the chaos result uid
 	result.SetResultUID(resultDetails, chaosDetails)
-
+	logger.info("6")
 	# generating the event in chaosresult to marked the verdict as awaited
 	msg = "experiment: " + experimentsDetails.ExperimentName + ", Result: Awaited"
 	types.SetResultEventAttributes(eventsDetails, types.AwaitedVerdict, msg, "Normal", resultDetails)
@@ -58,10 +53,11 @@ def PodDelete():
 		"Label":     experimentsDetails.AppLabel,
 		"Ramp Time": experimentsDetails.RampTime,
 	})
-
+	print("7")
+	
 	# Calling AbortWatcher go routine, it will continuously watch for the abort signal and generate the required and result
 	AbortWatcher(experimentsDetails.ExperimentName, resultDetails, chaosDetails, eventsDetails)
-
+	print("8")
 	# #PRE-CHAOS APPLICATION STATUS CHECK
 	print("[Status]: Verify that the AUT (Application Under Test) is running (pre-chaos)")
 	err = status.AUTStatusCheck(experimentsDetails.AppNS, experimentsDetails.AppLabel, experimentsDetails.TargetContainer, experimentsDetails.Timeout, experimentsDetails.Delay, chaosDetails)
@@ -110,8 +106,7 @@ def PodDelete():
 		failStep = "no match found for specified lib"
 		result.RecordAfterFailure(chaosDetails, resultDetails, failStep, eventsDetails)
 		return
-	
-
+	print("9")
 	print("[Confirmation]: %v chaos has been injected successfully", experimentsDetails.ExperimentName)
 	resultDetails.Verdict = "Pass"
 
@@ -123,8 +118,7 @@ def PodDelete():
 		failStep = "Verify that the AUT (Application Under Test) is running (post-chaos)"
 		result.RecordAfterFailure(chaosDetails, resultDetails, failStep, eventsDetails)
 		return
-	
-
+	print("10")
 	# if experimentsDetails.EngineName != "" :
 	# 	# marking AUT as running, as we already checked the status of application under test
 	# 	msg = "AUT: Running"
@@ -155,7 +149,7 @@ def PodDelete():
 	if err != None:
 		print("Unable to Update the Chaos Result, err: %v", err)
 		return
-
+	print("11")
 
 	# generating the event in chaosresult to marked the verdict as pass/fail
 	msg = "experiment: " + experimentsDetails.ExperimentName + ", Result: " + resultDetails.Verdict
@@ -167,8 +161,9 @@ def PodDelete():
 
 	types.SetResultEventAttributes(eventsDetails, reason, msg, eventType, resultDetails)
 	GenerateEvents(eventsDetails, chaosDetails, "ChaosResult")
-
+	print("12")
 	if experimentsDetails.EngineName != "":
 		msg = experimentsDetails.ExperimentName + " experiment has been " + resultDetails.Verdict + "ed"
 		types.SetEngineEventAttributes(eventsDetails, types.Summary, msg, "Normal", chaosDetails)
 		GenerateEvents(eventsDetails, chaosDetails, "ChaosEngine")
+	print("13")

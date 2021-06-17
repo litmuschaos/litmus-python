@@ -3,7 +3,6 @@ import time
 import logging
 import logging
 logger = logging.getLogger(__name__)
-from chaosk8s import create_k8s_api_client
 from jinja2 import Environment,  select_autoescape, PackageLoader
 import os
 import subprocess
@@ -11,10 +10,7 @@ import pkg.events.events as events
 import pkg.types.types as types
 from kubernetes import client, config, dynamic
 from kubernetes.client import api_client
-from kubernetes.client import Configuration
-from kubernetes.client.api import core_v1_api
 
-from pkg.utils.client.client import Client
 global conf
 if os.getenv('KUBERNETES_SERVICE_HOST'):
 	conf = config.load_incluster_config()
@@ -30,10 +26,10 @@ class ChaosResults(object):
 		items = 0
 		try:
 			time.sleep(2)
-			if iter < 10:
+			if iter < 90:
 				chaosResults = clientDyn.resources.get(api_version="litmuschaos.io/v1alpha1", kind="ChaosResult").get()
 				if len(chaosResults.items) == 0:
-					raise Exception
+					raise Exception("unable to find the chaosresult with matching labels")
 				for result in chaosResults.items:
 					if result.metadata.labels["name"] == resultDetails.Name:
 						resultList[items] = result
@@ -84,27 +80,29 @@ class ChaosResults(object):
 
 	#InitializeChaosResult or patch the chaos result
 	def InitializeChaosResult(self, chaosDetails , resultDetails , chaosResultLabel, 
-		probeStatus = "Wait", passedRuns = 0,  failedRuns = 0, stoppedRuns = 0, probeSuccessPercentage = "Awaited") :
-		
-		
-		env_tmpl = Environment(loader=PackageLoader('pkg', 'templates'), trim_blocks=True, lstrip_blocks=True,
-								autoescape=select_autoescape(['yaml']))
-		template = env_tmpl.get_template('chaos-result.j2')
-		updated_chaosresult_template = template.render(name=resultDetails.Name, namespace=chaosDetails.ChaosNamespace, labels=chaosResultLabel,
-													engineName=chaosDetails.EngineName, experimentName=chaosDetails.ExperimentName, instanceID=chaosDetails.InstanceID, phase=resultDetails.Phase, 
-												verdict=resultDetails.Verdict, probeStatus=probeStatus, passedRuns = passedRuns,  failedRuns = failedRuns, stoppedRuns = stoppedRuns, probeSuccessPercentage=probeSuccessPercentage)
-		with open('chaosresult.yaml', "w+") as f:
-			f.write(updated_chaosresult_template)
-		
-		# if the chaos result is already present, it will patch the new parameters with the existing chaos result CR
-		# Note: We have added labels inside chaos result and looking for matching labels to list the chaos-result
-		# these labels were not present inside earlier releases so giving a retry/update if someone have a exiting result CR
-		# in his cluster, which was created earlier with older release/version of litmus.
-		# it will override the params and add the labels to it so that it will work as desired.
-		chaosresult_update_cmd_args_list = ['kubectl', 'apply', '-f', 'chaosresult.yaml', '-n', chaosDetails.ChaosNamespace]
-		run_cmd = subprocess.Popen(chaosresult_update_cmd_args_list, stdout=subprocess.PIPE, env=os.environ.copy())
-		run_cmd.communicate()	
-	
+			probeStatus = "Wait", passedRuns = 0,  failedRuns = 0, stoppedRuns = 0, probeSuccessPercentage = "Awaited") :
+			
+		try:	
+			env_tmpl = Environment(loader=PackageLoader('pkg', 'templates'), trim_blocks=True, lstrip_blocks=True,
+									autoescape=select_autoescape(['yaml']))
+			template = env_tmpl.get_template('chaos-result.j2')
+			updated_chaosresult_template = template.render(name=resultDetails.Name, namespace=chaosDetails.ChaosNamespace, labels=chaosResultLabel,
+														engineName=chaosDetails.EngineName, experimentName=chaosDetails.ExperimentName, instanceID=chaosDetails.InstanceID, phase=resultDetails.Phase, 
+													verdict=resultDetails.Verdict, probeStatus=probeStatus, passedRuns = passedRuns,  failedRuns = failedRuns, stoppedRuns = stoppedRuns, probeSuccessPercentage=probeSuccessPercentage)
+			with open('chaosresult.yaml', "w+") as f:
+				f.write(updated_chaosresult_template)
+			
+			# if the chaos result is already present, it will patch the new parameters with the existing chaos result CR
+			# Note: We have added labels inside chaos result and looking for matching labels to list the chaos-result
+			# these labels were not present inside earlier releases so giving a retry/update if someone have a exiting result CR
+			# in his cluster, which was created earlier with older release/version of litmus.
+			# it will override the params and add the labels to it so that it will work as desired.
+			chaosresult_update_cmd_args_list = ['kubectl', 'apply', '-f', 'chaosresult.yaml', '-n', chaosDetails.ChaosNamespace]
+			run_cmd = subprocess.Popen(chaosresult_update_cmd_args_list, stdout=subprocess.PIPE, env=os.environ.copy())
+			run_cmd.communicate()	
+		except Exception as e:
+			return e
+
 		return None
 
 	#GetProbeStatus fetch status of all probes
@@ -130,16 +128,17 @@ class ChaosResults(object):
 		failedRuns = 0 
 		stoppedRuns = 0
 		isAllProbePassed, probeStatus = self.GetProbeStatus(resultDetails)
-		if resultDetails.Phase.lower() == "completed":
+		if str(resultDetails.Phase).lower() == "completed":
 			if isAllProbePassed == False:
 				resultDetails.Verdict = "Fail"
-			if resultDetails.Verdict.lower() == "pass":
+			
+			if str(resultDetails.Verdict).lower() == "pass":
 				probeSuccessPercentage = "100"
 				passedRuns = result.status.history.passedRuns + 1
-			elif resultDetails.Verdict.lower() == "fail":
+			elif str(resultDetails.Verdict).lower() == "fail":
 				failedRuns =  result.status.history.failedRuns + 1
 				probeSuccessPercentage = "0"
-			elif resultDetails.Verdict.lower() == "stopped":
+			elif str(resultDetails.Verdict).lower() == "stopped":
 				stoppedRuns = result.status.history.stoppedRuns + 1
 				probeSuccessPercentage = "0"
 		else:
@@ -158,7 +157,7 @@ class ChaosResults(object):
 		try:
 			chaosResults = clientDyn.resources.get(api_version="litmuschaos.io/v1alpha1", kind="ChaosResult").get()
 			if len(chaosResults.items) == 0:
-				raise Exception
+				raise Exception("Unable to get ChaosResult")
 			for result in chaosResults.items:
 				if result.metadata.name == resultDetails.Name:
 					resultDetails.ResultUID = result.metadata.uid
