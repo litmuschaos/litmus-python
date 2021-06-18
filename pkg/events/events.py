@@ -3,12 +3,14 @@ from kubernetes import client, config
 import kubernetes.client
 from kubernetes.client.rest import ApiException
 from datetime import datetime
-from chaosk8s import create_k8s_api_client
 configuration = kubernetes.client.Configuration()
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
 from pkg.utils.k8serror.k8serror import K8serror
 import os
+import logging
+logging.basicConfig(format='time=%(asctime)s level=%(levelname)s  msg=%(message)s', level=logging.INFO) 
+
 global conf
 if os.getenv('KUBERNETES_SERVICE_HOST'):
 	conf = config.load_incluster_config()
@@ -17,7 +19,6 @@ else:
 
 #CreateEvents create the events in the desired resource
 def CreateEvents(eventsDetails , chaosDetails, kind, eventName):
-	
 	api_instance = client.CoreV1Api()
 	first_timestamp = datetime.now(pytz.utc)
 	last_timestamp = datetime.now(pytz.utc)
@@ -32,21 +33,20 @@ def CreateEvents(eventsDetails , chaosDetails, kind, eventName):
 				name     		= eventsDetails.ResourceName,
 				namespace		= chaosDetails.ChaosNamespace,
 				uid				= eventsDetails.ResourceUID,
-			), message= eventsDetails.Message, 
+			), message= eventsDetails.Message,
 			metadata=client.V1ObjectMeta(
 				name = eventName,
 				namespace= chaosDetails.ChaosNamespace,
-			), reason=eventsDetails.Message, related=None, 
-			reporting_component=None, reporting_instance=None, series=None, source=client.V1EventSource(
+			), reason=eventsDetails.Reason, related=None, action="ChaosResult",
+			reporting_component="litmuschaos.io/v1alpha1", reporting_instance=eventsDetails.ResourceName, series=None, source=client.V1EventSource(
 				component= chaosDetails.ChaosPodName,
 			), type=eventsDetails.Type, local_vars_configuration=None,
 			count=1,
 			)
 	try:
 		api_instance.create_namespaced_event(chaosDetails.ChaosNamespace, body=body)
-	except ApiException as e:
-		return Exception(e)
-	
+	except Exception as exp:
+		return logging.error("Failed to create event with err: %s", exp)
 	return None
 
 #GenerateEvents update the events and increase the count by 1, if already present
@@ -54,9 +54,8 @@ def CreateEvents(eventsDetails , chaosDetails, kind, eventName):
 def GenerateEvents(eventsDetails, chaosDetails, kind):
 	time_stamp = datetime.now(pytz.utc)
 	api_instance = client.CoreV1Api()
-	
 	if kind == "ChaosResult":
-		eventName = eventsDetails.Reason + chaosDetails.ChaosPodName
+		eventName = eventsDetails.Reason + chaosDetails.ChaosPodName	
 		err = CreateEvents(eventsDetails, chaosDetails, kind, eventName)
 		if err != None:
 			return err
@@ -64,11 +63,13 @@ def GenerateEvents(eventsDetails, chaosDetails, kind):
 		eventName = eventsDetails.Reason + chaosDetails.ExperimentName + str(chaosDetails.ChaosUID)
 		event = client.V1Event
 		try:
-			 event = api_instance.read_namespaced_event( name = eventName,namespace = chaosDetails.ChaosNamespace)
+			 event = api_instance.read_namespaced_event(name = eventName,namespace = chaosDetails.ChaosNamespace)
 		except Exception as e:
 			if K8serror().IsNotFound(err=e):
 				try:
-					CreateEvents(eventsDetails, chaosDetails, kind, eventName)
+					err = CreateEvents(eventsDetails, chaosDetails, kind, eventName)
+					if err != None:
+						return err
 				except Exception as err:
 					return err
 			return e

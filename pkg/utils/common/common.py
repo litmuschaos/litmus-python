@@ -2,7 +2,7 @@
 import time
 import random
 import logging
-logger = logging.getLogger(__name__)
+logging.basicConfig(format='time=%(asctime)s level=%(levelname)s  msg=%(message)s', level=logging.INFO)  
 import os, sys
 from kubernetes import client
 import signal
@@ -47,11 +47,11 @@ def RandomInterval(interval):
 		lowerBound = atoi(intervals[0])
 		upperBound = atoi(intervals[1])
 	else:
-		return print("unable to parse CHAOS_INTERVAL, provide in valid format")
+		return logging.info("unable to parse CHAOS_INTERVAL, provide in valid format")
 
 	#rand.Seed(time.Now().UnixNano())
 	waitTime = lowerBound + random.randint(0, upperBound-lowerBound)
-	print("[Wait]: Wait for the random chaos interval {}".format(waitTime))
+	logging.info("[Wait]: Wait for the random chaos interval %s",(waitTime))
 	WaitForDuration(waitTime)
 	return None
 
@@ -61,7 +61,7 @@ def GetRunID():
 	return str(runId)
 
 def receive_signal(signum, stack):
-    print('Received:', signum)
+    logging.info('Received:', signum)
 
 # AbortWatcher continuosly watch for the abort signals
 # it will update chaosresult w/ failed step and create an abort event, if it recieved abort signal during chaos
@@ -80,9 +80,11 @@ class NotifySignal:
 		signal.signal(signal.SIGTERM, self.exit_gracefully)
 
 	def exit_gracefully(self, signum, frame):
-		print("\nReceived {} signal".format(self.signals[signum]))
+		logging.info("\nReceived %s signal",(self.signals[signum]))
 		self.kill_now = True
-
+def handle_iterrupt():
+	logging.info("Handling interrupt")
+	sys.exit(0)
 # AbortWatcherWithoutExit continuosly watch for the abort signals
 def AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails):
 
@@ -90,9 +92,11 @@ def AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails)
 	# killer = NotifySignal()
 	# while not killer.kill_now:
 	# 	time.sleep(1)
-		#print('Press Ctrl+C')
-	
-	#print("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
+		#logging.info('Press Ctrl+C')
+
+
+	# signal.signal(signal.SIGTERM, handle_iterrupt)
+	#logging.info("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
 	# updating the chaosresult after stopped
 	failStep = "Chaos injection stopped!"
 	types.SetResultAfterCompletion(resultDetails, "Stopped", "Stopped", failStep)

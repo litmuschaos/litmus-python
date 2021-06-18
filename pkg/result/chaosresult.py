@@ -1,8 +1,7 @@
 from kubernetes import client, config
 import time
 import logging
-import logging
-logger = logging.getLogger(__name__)
+logging.basicConfig(format='time=%(asctime)s level=%(levelname)s  msg=%(message)s', level=logging.INFO)  
 from jinja2 import Environment,  select_autoescape, PackageLoader
 import os
 import subprocess
@@ -26,10 +25,10 @@ class ChaosResults(object):
 		items = 0
 		try:
 			time.sleep(2)
-			if iter < 90:
+			if iter < 20:
 				chaosResults = clientDyn.resources.get(api_version="litmuschaos.io/v1alpha1", kind="ChaosResult").get()
 				if len(chaosResults.items) == 0:
-					raise Exception("unable to find the chaosresult with matching labels")
+					raise Exception("Unable to find the chaosresult with matching labels")
 				for result in chaosResults.items:
 					if result.metadata.labels["name"] == resultDetails.Name:
 						resultList[items] = result
@@ -42,7 +41,6 @@ class ChaosResults(object):
 
 	#ChaosResult Create and Update the chaos result
 	def ChaosResult(self, chaosDetails, resultDetails , state):
-		
 		v1 = client.CoreV1Api()
 
 		experimentLabel = {}
@@ -52,7 +50,6 @@ class ChaosResults(object):
 		# Note: We have added labels inside chaos result and looking for matching labels to list the chaos-result
 		#var resultList *v1alpha1.ChaosResultList
 		resultList = self.Checkresults(chaosDetails, resultDetails , state, 0)
-
 		# as the chaos pod won't be available for stopped phase
 		# skipping the derivation of labels from chaos pod, if phase is stopped
 		if chaosDetails.EngineName != "" and resultDetails.Phase != "Stopped" :
@@ -60,7 +57,7 @@ class ChaosResults(object):
 			try:
 				chaosPod = v1.read_namespaced_pod(chaosDetails.ChaosPodName, chaosDetails.ChaosNamespace)
 			except Exception as e:
-				return print("failed to find chaos pod with name: {}, err: {}".format(chaosDetails.ChaosPodName, e))
+				return logging.error("failed to find chaos pod with name: %s, err: %s",(chaosDetails.ChaosPodName, e))
 
 			experimentLabel = chaosPod.metadata.labels
 		experimentLabel["name"] = resultDetails.Name
@@ -75,20 +72,21 @@ class ChaosResults(object):
 			return self.PatchChaosResult(resultList[0],  chaosDetails, resultDetails,chaosResultLabel =  experimentLabel)
 
 		# # it will patch the chaos-result in the end of experiment
-		resultDetails.Phase == "Completed"
+		resultDetails.Phase = "Completed"
+		
 		return self.PatchChaosResult(resultList[0],  chaosDetails, resultDetails, chaosResultLabel =  experimentLabel)
 
 	#InitializeChaosResult or patch the chaos result
 	def InitializeChaosResult(self, chaosDetails , resultDetails , chaosResultLabel, 
-			probeStatus = "Wait", passedRuns = 0,  failedRuns = 0, stoppedRuns = 0, probeSuccessPercentage = "Awaited") :
-			
+		 passedRuns = 0,  failedRuns = 0, stoppedRuns = 0, probeSuccessPercentage = "Awaited") :
+		
 		try:	
 			env_tmpl = Environment(loader=PackageLoader('pkg', 'templates'), trim_blocks=True, lstrip_blocks=True,
 									autoescape=select_autoescape(['yaml']))
 			template = env_tmpl.get_template('chaos-result.j2')
 			updated_chaosresult_template = template.render(name=resultDetails.Name, namespace=chaosDetails.ChaosNamespace, labels=chaosResultLabel,
 														engineName=chaosDetails.EngineName, experimentName=chaosDetails.ExperimentName, instanceID=chaosDetails.InstanceID, phase=resultDetails.Phase, 
-													verdict=resultDetails.Verdict, probeStatus=probeStatus, passedRuns = passedRuns,  failedRuns = failedRuns, stoppedRuns = stoppedRuns, probeSuccessPercentage=probeSuccessPercentage)
+													verdict=resultDetails.Verdict, passedRuns = passedRuns,  failedRuns = failedRuns, stoppedRuns = stoppedRuns, probeSuccessPercentage=probeSuccessPercentage)
 			with open('chaosresult.yaml', "w+") as f:
 				f.write(updated_chaosresult_template)
 			
@@ -127,10 +125,8 @@ class ChaosResults(object):
 		passedRuns = 0 
 		failedRuns = 0 
 		stoppedRuns = 0
-		isAllProbePassed, probeStatus = self.GetProbeStatus(resultDetails)
+		#isAllProbePassed, probeStatus = self.GetProbeStatus(resultDetails)
 		if str(resultDetails.Phase).lower() == "completed":
-			if isAllProbePassed == False:
-				resultDetails.Verdict = "Fail"
 			
 			if str(resultDetails.Verdict).lower() == "pass":
 				probeSuccessPercentage = "100"
@@ -146,7 +142,7 @@ class ChaosResults(object):
 
 		# It will update the existing chaos-result CR with new values
 		return self.InitializeChaosResult(chaosDetails, resultDetails, chaosResultLabel, 
-		probeStatus, passedRuns, failedRuns, stoppedRuns, probeSuccessPercentage)
+		passedRuns, failedRuns, stoppedRuns, probeSuccessPercentage)
 
 	# SetResultUID sets the ResultUID into the ResultDetails structure
 	def SetResultUID(self, resultDetails, chaosDetails):
@@ -161,6 +157,7 @@ class ChaosResults(object):
 			for result in chaosResults.items:
 				if result.metadata.name == resultDetails.Name:
 					resultDetails.ResultUID = result.metadata.uid
+					logging.info("[Info]: UID has been successfully updated to result")
 					return None
 		except Exception as err:
 			return err

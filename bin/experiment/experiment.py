@@ -4,7 +4,7 @@ import experimentList.generic.podDelete.podDelete as podDelete
 import argparse
 import os
 import logging
-logger = logging.getLogger(__name__)
+logging.basicConfig(format='time=%(asctime)s level=%(levelname)s  msg=%(message)s', level=logging.INFO)  
 def main():
 	parser = argparse.ArgumentParser()
 	
@@ -21,13 +21,13 @@ def main():
                     help="Kubernetes client ignore SSL")
 	args = parser.parse_args()
 	
-	logger.info("Experiment Name: {}".format(args.experimentName))
+	logging.info("Experiment Name: {}".format(args.experimentName))
 
 	# invoke the corresponding experiment based on the the (-name) flag
 	if args.experimentName == "pod-delete":
 		podDelete.PodDelete()
 	else:
-		print("Unsupported -name {}, please provide the correct value of -name args".format(args.experimentName))
+		logging.warning("Unsupported -name {}, please provide the correct value of -name args".format(args.experimentName))
 	return
 if __name__ == "__main__":
 	main()

@@ -1,9 +1,8 @@
 from kubernetes import client, config
 import time
 import logging
-import logging
 from pkg.utils.annotation.annotation import IsPodParentAnnotated
-logger = logging.getLogger(__name__)
+logging.basicConfig(format='time=%(asctime)s level=%(levelname)s  msg=%(message)s', level=logging.INFO)  
 import os
 
 global conf
@@ -35,19 +34,20 @@ class Application(object):
 	def AUTStatusCheck(self, appNs, appLabel, containerName, timeout, delay, chaosDetails):
 		self.timeout = timeout
 		self.delay = delay
-		if chaosDetails.AppDetail.AnnotationCheck == False:
+		if chaosDetails.AppDetail.AnnotationCheck == True:
+			logging.info("Check Annotated for Applications Status")
 			return self.AnnotatedApplicationsStatusCheck(appNs, appLabel, containerName, chaosDetails, 0)
 		else:
 			if appLabel == "" :
 				# Checking whether applications are healthy
-				print("[status]: No appLabels provided, skipping the application status checks")
+				logging.info("[status]: No appLabels provided, skipping the application status checks")
 			else:
 				# Checking whether application containers are in ready state
-				print("[status]: Checking whether application containers are in ready state")
+				logging.info("[status]: Checking whether application containers are in ready state")
 				self.CheckContainerStatus(appNs, appLabel, containerName, 0)
 				
 				# Checking whether application pods are in running state
-				print("[status]: Checking whether application pods are in running state")
+				logging.info("[status]: Checking whether application pods are in running state")
 				err = self.CheckPodStatus(appNs, appLabel, 0)
 				if err != None:
 					return err
@@ -76,8 +76,7 @@ class Application(object):
 								if container.ready == False:
 									raise Exception("containers are not yet in running state")
 								
-								print("[status]: The Container status are as follows", 
-									"container :", container.name, "Pod :", pod.metadata.name, "Readiness :", container.ready)
+								logging.info("[status]: The Container status are as follows Container : %s, Pod : %s, Readiness : %s", container.name, pod.metadata.name, container.ready)
 							
 						else:
 							for container in pod.status.container_statuses:
@@ -88,17 +87,14 @@ class Application(object):
 									if container.ready == False:
 										raise Exception("containers are not yet in running state")
 									
-									print("[status]: The Container status are as follows", "container :", container.name, "Pod :", pod.metadata.name, "Readiness :", container.ready)
-								
+									logging.info("[status]: The Container status are as follows Container : %s, Pod : %s, Readiness : %s.", container.name, pod.metadata.name, container.ready)
 						if pod.status.phase != "Running":
-							raise Exception("{} pod is not yet in running state", pod.metadata.name)
+							raise Exception("%s pod is not yet in running state", pod.metadata.name)
 						
-						print("[status]: The status of Pods are as follows",
-							"Pod :", pod.metadata.name, "status :", pod.status.phase)
+						logging.info("[status]: The status of Pods are as follows Pod : %s, status : %s.", pod.metadata.name, pod.status.phase)
 			else:
-				return print("Unable to find containers are in running state")	
+				return logging.error("Unable to find containers are in running state, timeout")	
 		except Exception as e:
-			print(e)
 			if(e != None):
 				self.AnnotatedApplicationsStatusCheck(appNs, appLabel, containerName, chaosDetails, init = init + self.delay)
 				
@@ -111,16 +107,16 @@ class Application(object):
 		self.delay = delay
 		if appLabel == "":
 			# Checking whether applications are healthy
-			print("[status]: No self.appLabels provided, skipping the application status checks")
+			logging.warning("[status]: No self.appLabels provided, skipping the application status checks")
 		else:
 			# Checking whether application containers are in ready state
-			print("[status]: Checking whether application containers are in ready state")
+			logging.info("[status]: Checking whether application containers are in ready state")
 			err = self.CheckContainerStatus(appNs, appLabel, "", 0)
 			if err != None:
 				return err
 			
 			# Checking whether application pods are in running state
-			print("[status]: Checking whether application pods are in running state")
+			logging.info("[status]: Checking whether application pods are in running state")
 			err = self.CheckPodStatus(appNs, appLabel, 0); 
 			if err != None:
 				return err
@@ -152,14 +148,12 @@ class Application(object):
 				podList = v1.list_namespaced_pod(appNs, label_selector=appLabel)
 				for pod in podList.items:
 					if str(pod.status.phase) != states: 
-						raise Exception("Pod is not yet in {} state(s)".format(states))
+						raise Exception("Pod is not yet in %s state(s)",(states))
 				
-					print("[status]: The status of Pods are as follows", 
-						"Pod :", pod.metadata.name, "status :", pod.status.phase)
+					logging.info("[status]: The status of Pods are as follows Pod : %s status : %s", pod.metadata.name, pod.status.phase)
 			else:
-				print("Pod are not yet in running state(s)")
+				return logging.error("Pod are not yet in running state(s)")
 		except Exception as e:
-			print(e)
 			if(e != None):
 				self.CheckPodStatusPhase(appNs,appLabel, states, init = init + self.delay)
 				
@@ -189,9 +183,8 @@ class Application(object):
 						if err != None:
 							raise Exception(err)
 			else:
-				return print("Unable to find the pods with matching labels")
+				return logging.error("Unable to find the pods with matching labels, timeout")
 		except Exception as e:
-			print(e)
 			if(e != None):
 				self.CheckContainerStatus(appNs,appLabel,containerName,  init = init + self.delay)
 				
@@ -208,8 +201,7 @@ class Application(object):
 				if container.ready == False :
 					raise Exception("containers are not yet in running state")
 				
-				print("[status]: The Container status are as follows", 
-					"container :", container.name, "Pod :", podName, "Readiness :", container.ready)
+				logging.info("[status]: The Container status are as follows Container : %s, Pod : %s, Readiness : %s", container.name, podName, container.ready)
 		return None
 	
 
@@ -241,23 +233,22 @@ class Application(object):
 			failedPods = 0
 			for pod in podList.items :
 				podStatus = str(pod.status.phase)
-				print("Helper pod status: {}".format(podStatus))
+				logging.info("Helper pod status: %s",(podStatus))
 				if podStatus != "Succeeded" & podStatus != "Failed":
 					for container in pod.status.container_statuses:
 						if container.name == containerName & container.ready:
-							return print("Container is not completed yet")
+							return logging.error("Container is not completed yet")
 				
 				if podStatus == "Pending" :
-					return print("pod is in pending state")
+					return logging.warning("pod is in pending state")
 				
-				print("[status]: The running status of Pods are as follows", 
-					"Pod :", pod.metadata.name, "status :", podStatus)
+				logging.info("[status]: The running status of Pods are as follows Pod : %s status : %s", pod.metadata.name, podStatus)
 				if podStatus == "Failed":
 					failedPods = failedPods + 1
 		except:
 			raise Exception
 		if failedPods > 0:
-			return print("pod is in pending state")	
+			return logging.warning("pod is in pending state")	
 		return None
 	
 
@@ -273,13 +264,13 @@ class Application(object):
 			for  pod in podList.items:
 				podStatus = str(pod.status.phase)
 				if podStatus.lower() == "running" or podStatus.lower() == "succeeded":
-					print("{} helper pod is in {} state".format(pod.metadata.name, podStatus))
+					logging.info("%s helper pod is in %s state",(pod.metadata.name, podStatus))
 				else:
-					return print("{} pod is in {} state".format(pod.metadata.name, podStatus))
+					return logging.warning("%s pod is in %s state",(pod.metadata.name, podStatus))
 				
 				for container in pod.status.container_statuses:
 					if container.state.terminated & pod.status.phase != "Completed" :
-						return print("container is terminated with {} reason".format(pod.status.reason))
+						return logging.info("container is terminated with %s reason",(pod.status.reason))
 		except:
 			raise Exception	
 

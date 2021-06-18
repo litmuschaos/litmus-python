@@ -4,7 +4,7 @@ import pkg.events.events as events
 from kubernetes import client, config
 import time
 import logging
-logger = logging.getLogger(__name__)
+logging.basicConfig(format='time=%(asctime)s level=%(levelname)s  msg=%(message)s', level=logging.INFO)  
 import pkg.utils.common.common as common
 from pkg.utils.common.pods import Pods
 from datetime import datetime
@@ -32,7 +32,7 @@ def PreparePodDelete(experimentsDetails , resultDetails, eventsDetails, chaosDet
 
 	#Waiting for the ramp time before chaos injection
 	if experimentsDetails.RampTime != 0 :
-		print("[Ramp]: Waiting for the {} ramp time before injecting chaos".format(experimentsDetails.RampTime))
+		logging.info("[Ramp]: Waiting for the %s ramp time before injecting chaos",(experimentsDetails.RampTime))
 		common.WaitForDuration(experimentsDetails.RampTime)
 	
 	if experimentsDetails.Sequence.lower() == "serial":
@@ -44,16 +44,16 @@ def PreparePodDelete(experimentsDetails , resultDetails, eventsDetails, chaosDet
 		if err != None:
 			return err
 	else:
-		print("{} sequence is not supported".format(experimentsDetails.Sequence))
+		logging.info("[Warning]: %s sequence is not supported",(experimentsDetails.Sequence))
 
 	#Waiting for the ramp time after chaos injection
 	if experimentsDetails.RampTime != 0 :
-		print("[Ramp]: Waiting for the {} ramp time after injecting chaos".format(experimentsDetails.RampTime))
+		logging.info("[Ramp]: Waiting for the %s ramp time after injecting chaos",(experimentsDetails.RampTime))
 		common.WaitForDuration(experimentsDetails.RampTime)
 	return None
 
 # injectChaosInSerialMode delete the target application pods serial mode(one by one)
-def injectChaosInSerialMode(experimentsDetails , clients , chaosDetails , eventsDetails , resultDetails): 
+def injectChaosInSerialMode(experimentsDetails , chaosDetails , eventsDetails , resultDetails): 
 	
 	status = Application()
 	v1 = client.CoreV1Api()
@@ -69,7 +69,7 @@ def injectChaosInSerialMode(experimentsDetails , clients , chaosDetails , events
 		# Get the target pod details for the chaos execution
 		# if the target pod is not defined it will derive the random target pod list using pod affected percentage
 		if experimentsDetails.TargetPods == "" and chaosDetails.AppDetail.Label == "" :
-			return print("please provide one of the appLabel or TARGET_PODS")
+			return logging.info("[Warning]: Please provide one of the appLabel or TARGET_PODS")
 		
 		targetPodList, err = pods.GetPodList(experimentsDetails.TargetPods, experimentsDetails.PodsAffectedPerc, chaosDetails)
 		if err != None: 
@@ -79,17 +79,17 @@ def injectChaosInSerialMode(experimentsDetails , clients , chaosDetails , events
 		for pod in targetPodList.items:
 			podNames.append(pod.metadata.name)
 		
-		print("Target pods list, {}".format(podNames))
+		logging.info("[Info]: Target pods list, %s",(podNames))
 
 		if experimentsDetails.EngineName != "" :
 			msg = "Injecting " + experimentsDetails.ExperimentName + " chaos on application pod"
 			types.SetEngineEventAttributes(eventsDetails, types.ChaosInject, msg, "Normal", chaosDetails)
-			events.GenerateEvents(eventsDetails, clients, chaosDetails, "ChaosEngine")
+			events.GenerateEvents(eventsDetails, chaosDetails, "ChaosEngine")
 		
 		#Deleting the application pod
 		for pod in targetPodList.items :
 
-			print("[Info]: Killing the following pods", "PodName :", pod.metadata.name)
+			logging.info("[Info]: Killing the following pods, PodName : %s", pod.metadata.name)
 			try:
 				if experimentsDetails.Force == True:
 					err = v1.delete_namespaced_pod(pod.metadata.name, experimentsDetails.AppNS, grace_period_seconds=GracePeriod)
@@ -105,24 +105,24 @@ def injectChaosInSerialMode(experimentsDetails , clients , chaosDetails , events
 			else:
 				#Waiting for the chaos interval after chaos injection
 				if experimentsDetails.ChaosInterval != "":
-					print("[Wait]: Wait for the chaos interval {}".format(experimentsDetails.ChaosInterval))
+					logging.info("[Wait]: Wait for the chaos interval %s",(experimentsDetails.ChaosInterval))
 					waitTime = atoi(experimentsDetails.ChaosInterval)
 					common.WaitForDuration(waitTime)
 
 			#Verify the status of pod after the chaos injection
-			print("[Status]: Verification for the recreation of application pod")
+			logging.info("[Status]: Verification for the recreation of application pod")
 			err = status.CheckApplicationStatus(experimentsDetails.AppNS, experimentsDetails.AppLabel, experimentsDetails.Timeout, experimentsDetails.Delay)
 			if err != None:
 				return err
 			
-			duration = int(time.Since(ChaosStartTimeStamp).Seconds())
+			duration = (datetime.now() - ChaosStartTimeStamp).seconds
 
-	print("[Completion]: {} chaos is done".format(experimentsDetails.ExperimentName))
+	logging.info("[Completion]: %s chaos is done",(experimentsDetails.ExperimentName))
 
 	return None
 
 # injectChaosInParallelMode delete the target application pods in parallel mode (all at once)
-def injectChaosInParallelMode(experimentsDetails  , chaosDetails , eventsDetails , resultDetails):
+def injectChaosInParallelMode(experimentsDetails , chaosDetails , eventsDetails , resultDetails):
 	
 	status = Application()
 	v1 = client.CoreV1Api()
@@ -138,17 +138,16 @@ def injectChaosInParallelMode(experimentsDetails  , chaosDetails , eventsDetails
 		# Get the target pod details for the chaos execution
 		# if the target pod is not defined it will derive the random target pod list using pod affected percentage
 		if experimentsDetails.TargetPods == "" and chaosDetails.AppDetail.Label == "" :
-			return print("please provide one of the appLabel or TARGET_PODS")
+			return logging.info("[Warning]: Please provide one of the appLabel or TARGET_PODS")
 		
 		targetPodList, err = pods.GetPodList(experimentsDetails.TargetPods, experimentsDetails.PodsAffectedPerc, chaosDetails)
 		if err != None:
 			return err
-		print(len(targetPodList.items))
 		podNames = []
 		for pod in targetPodList.items:
 			podNames.append(str(pod.metadata.name))
 		
-		print("Target pods list for chaos, {}".format(podNames))
+		logging.info("[Info]: Target pods list for chaos, %s",(podNames))
 		
 		if experimentsDetails.EngineName != "" :
 			msg = "Injecting " + experimentsDetails.ExperimentName + " chaos on application pod"
@@ -157,8 +156,7 @@ def injectChaosInParallelMode(experimentsDetails  , chaosDetails , eventsDetails
 
 		#Deleting the application pod
 		for pod in targetPodList.items:
-			print(pod.metadata.name)
-			print("[Info]: Killing the following pods", "PodName :", pod.metadata.name)
+			logging.info("[Info]: Killing the following pods, PodName : %s", pod.metadata.name)
 			try:
 				if experimentsDetails.Force == True:
 					v1.delete_namespaced_pod(pod.metadata.name, experimentsDetails.AppNS, grace_period_seconds=GracePeriod)
@@ -174,17 +172,17 @@ def injectChaosInParallelMode(experimentsDetails  , chaosDetails , eventsDetails
 		else:
 			#Waiting for the chaos interval after chaos injection
 			if experimentsDetails.ChaosInterval != "" :
-				print("[Wait]: Wait for the chaos interval %vs", experimentsDetails.ChaosInterval)
+				logging.info("[Wait]: Wait for the chaos interval %s", experimentsDetails.ChaosInterval)
 				waitTime = atoi(experimentsDetails.ChaosInterval)
 				common.WaitForDuration(waitTime)
 
 		#Verify the status of pod after the chaos injection
-		print("[Status]: Verification for the recreation of application pod")
+		logging.info("[Status]: Verification for the recreation of application pod")
 		err = status.CheckApplicationStatus(experimentsDetails.AppNS, experimentsDetails.AppLabel, experimentsDetails.Timeout, experimentsDetails.Delay)
 		if err != None:
 			return err
 		duration = (datetime.now() - ChaosStartTimeStamp).seconds
 
-	print("[Completion]: {} chaos is done".format(experimentsDetails.ExperimentName))
+	logging.info("[Completion]: %s chaos is done",(experimentsDetails.ExperimentName))
 
 	return None
