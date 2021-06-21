@@ -26,7 +26,7 @@ def GetENV(experimentDetails):
 	experimentDetails.AppLabel = os.getenv("APP_LABEL", "")
 	experimentDetails.AppKind = os.getenv("APP_KIND", "")
 	experimentDetails.ChaosUID = os.getenv("CHAOS_UID", "")
-	experimentDetails.InstanceID = os.getenv("INSTANCE_ID", "12345")
+	experimentDetails.InstanceID = os.getenv("INSTANCE_ID", "")
 	experimentDetails.ChaosPodName = os.getenv("POD_NAME", "")
 	experimentDetails.Force = (os.getenv("FORCE", "false") == 'true')
 	experimentDetails.Delay = atoi(os.getenv("STATUS_CHECK_DELAY", "2"))

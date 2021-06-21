@@ -21,11 +21,15 @@ def PodDelete():
 	result = ChaosResults()
 	
 	#Fetching all the ENV passed from the runner pod
+	logging.info("[PreReq]: Getting the ENV for the %s experiment", experimentsDetails.ExperimentName)
 	GetENV(experimentsDetails)
+	
 	# Intialise the chaos attributes
 	InitialiseChaosVariables(chaosDetails, experimentsDetails)
+	
 	# Intialise Chaos Result Parameters
 	types.SetResultAttributes(resultDetails, chaosDetails)
+	
 	#Updating the chaos result in the beginning of experiment
 	logging.info("[PreReq]: Updating the chaos result of %s experiment (SOT)",(experimentsDetails.ExperimentName))
 	err = result.ChaosResult(chaosDetails, resultDetails, "SOT")
@@ -37,15 +41,16 @@ def PodDelete():
 	
 	# Set the chaos result uid
 	result.SetResultUID(resultDetails, chaosDetails)
+	
 	# generating the event in chaosresult to marked the verdict as awaited
 	msg = "Experiment " + experimentsDetails.ExperimentName + ", Result Awaited"
 	types.SetResultEventAttributes(eventsDetails, types.AwaitedVerdict, msg, "Normal", resultDetails)
-	GenerateEvents(eventsDetails, chaosDetails, "ChaosEngine")
+	GenerateEvents(eventsDetails, chaosDetails, "ChaosResult")
 
 	#DISPLAY THE APP INFORMATION
-	logging.info("[Info]: The application information is as follows Namespace=%s Label=%s Ramp Time=%s",experimentsDetails.AppNS,experimentsDetails.AppLabel,experimentsDetails.RampTime)
+	logging.info("[Info]: The application information is as follows Namespace=%s, Label=%s, Ramp Time=%s",experimentsDetails.AppNS,experimentsDetails.AppLabel,experimentsDetails.RampTime)
 	
-	# Calling AbortWatcher go routine, it will continuously watch for the abort signal and generate the required and result
+	# Calling AbortWatcher, it will continuously watch for the abort signal and generate the required and result
 	AbortWatcher(experimentsDetails.ExperimentName, resultDetails, chaosDetails, eventsDetails)
 	
 	# #PRE-CHAOS APPLICATION STATUS CHECK
@@ -58,28 +63,12 @@ def PodDelete():
 		return
 	
 
-	# if experimentsDetails.EngineName != "":
-	# 	# marking AUT as running, as we already checked the status of application under test
-	# 	msg = "AUT: Running"
-
-	# 	# run the probes in the pre-chaos check
-	# 	if len(resultDetails.ProbeDetails) != 0 :
-
-	# 		err = probe.RunProbes(chaosDetails, clients, resultDetails, "PreChaos", eventsDetails):
-	# 		if err != None:
-	# 			logging.info("Probe Failed, err: %s", err)
-	# 			failStep = "Failed while running probes"
-	# 			msg = "AUT: Running, Probes: Unsuccessful"
-	# 			types.SetEngineEventAttributes(eventsDetails, types.PreChaosCheck, msg, "Warning", chaosDetails)
-	# 			GenerateEvents(eventsDetails, clients, chaosDetails, "ChaosEngine")
-	# 			result.RecordAfterFailure(chaosDetails, resultDetails, failStep, clients, eventsDetails)
-	# 			return
-			
-	# 		msg = "AUT: Running, Probes: Successful"
-		
-	# 	# generating the for the pre-chaos check
-	# 	types.SetEngineEventAttributes(eventsDetails, types.PreChaosCheck, msg, "Normal", chaosDetails)
-	# 	GenerateEvents(eventsDetails, clients, chaosDetails, "ChaosEngine")
+	if experimentsDetails.EngineName != "":
+		# marking AUT as running, as we already checked the status of application under test
+		msg = "AUT: Running"
+		# generating the for the pre-chaos check
+		types.SetEngineEventAttributes(eventsDetails, types.PreChaosCheck, msg, "Normal", chaosDetails)
+		GenerateEvents(eventsDetails, chaosDetails, "ChaosEngine")
 	
 
 	# Including the litmus lib for pod-delete
@@ -107,28 +96,14 @@ def PodDelete():
 		failStep = "Verify that the AUT (Application Under Test) is running (post-chaos)"
 		result.RecordAfterFailure(chaosDetails, resultDetails, failStep, eventsDetails)
 		return
-	# if experimentsDetails.EngineName != "" :
-	# 	# marking AUT as running, as we already checked the status of application under test
-	# 	msg = "AUT: Running"
+	
+	if experimentsDetails.EngineName != "" :
+		# marking AUT as running, as we already checked the status of application under test
+		msg = "AUT: Running"	
 
-	# 	# run the probes in the post-chaos check
-	# 	if len(resultDetails.ProbeDetails) != 0 :
-	# 		err = probe.RunProbes(chaosDetails, clients, resultDetails, "PostChaos", eventsDetails) 
-	# 		if err != None:
-	# 			logging.info("Probes Failed, err: %s", err)
-	# 			failStep = "Failed while running probes"
-	# 			msg = "AUT: Running, Probes: Unsuccessful"
-	# 			types.SetEngineEventAttributes(eventsDetails, types.PostChaosCheck, msg, "Warning", chaosDetails)
-	# 			GenerateEvents(eventsDetails, clients, chaosDetails, "ChaosEngine")
-	# 			result.RecordAfterFailure(chaosDetails, resultDetails, failStep, clients, eventsDetails)
-	# 			return
-			
-	# 		msg = "AUT: Running, Probes: Successful"
-		
-
-	# 	# generating post chaos event
-	# 	types.SetEngineEventAttributes(eventsDetails, types.PostChaosCheck, msg, "Normal", chaosDetails)
-	# 	GenerateEvents(eventsDetails, clients, chaosDetails, "ChaosEngine")
+		# generating post chaos event
+		types.SetEngineEventAttributes(eventsDetails, types.PostChaosCheck, msg, "Normal", chaosDetails)
+		GenerateEvents(eventsDetails, chaosDetails, "ChaosEngine")
 	
 
 	#Updating the chaosResult in the end of experiment

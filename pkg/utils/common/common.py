@@ -1,5 +1,5 @@
 
-import time
+import time, threading
 import random
 import logging
 logging.basicConfig(format='time=%(asctime)s level=%(levelname)s  msg=%(message)s', level=logging.INFO)  
@@ -10,7 +10,7 @@ import pkg.types.types as types
 import pkg.events.events as events
 import string
 import random
-
+from pkg.result.chaosresult import ChaosResults
 # ENVDetails contains the ENV details
 class ENVDetails(object):
 	def __init__(self):
@@ -76,31 +76,20 @@ class NotifySignal:
 	}
 
 	def __init__(self):
-		signal.signal(signal.SIGINT, self.exit_gracefully)
 		signal.signal(signal.SIGTERM, self.exit_gracefully)
 
 	def exit_gracefully(self, signum, frame):
 		logging.info("\nReceived %s signal",(self.signals[signum]))
 		self.kill_now = True
-def handle_iterrupt():
-	logging.info("Handling interrupt")
-	sys.exit(0)
-# AbortWatcherWithoutExit continuosly watch for the abort signals
-def AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails):
 
-	# signChan channel is used to transmit signal notifications.
-	# killer = NotifySignal()
-	# while not killer.kill_now:
-	# 	time.sleep(1)
-		#logging.info('Press Ctrl+C')
-
-
-	# signal.signal(signal.SIGTERM, handle_iterrupt)
-	#logging.info("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
+def Notify(expname, resultDetails, chaosDetails, eventsDetails):
+	
+	result = ChaosResults()
+	logging.info("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
 	# updating the chaosresult after stopped
 	failStep = "Chaos injection stopped!"
 	types.SetResultAfterCompletion(resultDetails, "Stopped", "Stopped", failStep)
-	
+	result.ChaosResult(chaosDetails, resultDetails, "EOT")
 	# generating summary event in chaosengine
 	msg = expname + " experiment has been aborted"
 	types.SetEngineEventAttributes(eventsDetails, types.Summary, msg, "Warning", chaosDetails)
@@ -109,6 +98,39 @@ def AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails)
 	# generating summary event in chaosresult
 	types.SetResultEventAttributes(eventsDetails, types.Summary, msg, "Warning", resultDetails)
 	events.GenerateEvents(eventsDetails, chaosDetails, "ChaosResult")
+
+
+# AbortWatcherWithoutExit continuosly watch for the abort signals
+def AbortWatcherWithoutExit(expname, resultDetails, chaosDetails, eventsDetails):
+
+	# signChan channel is used to transmit signal notifications.
+	# killer = NotifySignal()
+	# while not killer.kill_now:
+	# 	time.sleep(1)
+		#logging.info('Press Ctrl+C')
+	sender = threading.Thread(target=Notify, args=(expname, resultDetails, chaosDetails, eventsDetails))
+	def signal_handler(sig, frame):
+		print('You pressed Ctrl+C!')
+		sender.start()
+		sys.exit(0)
+	
+	signal.signal(signal.SIGTERM, signal_handler)
+	signal.signal(signal.SIGINT, signal_handler)
+	
+	print('Press Ctrl+C')
+	# logging.info("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
+	# # updating the chaosresult after stopped
+	# failStep = "Chaos injection stopped!"
+	# types.SetResultAfterCompletion(resultDetails, "Stopped", "Stopped", failStep)
+	
+	# # generating summary event in chaosengine
+	# msg = expname + " experiment has been aborted"
+	# types.SetEngineEventAttributes(eventsDetails, types.Summary, msg, "Warning", chaosDetails)
+	# events.GenerateEvents(eventsDetails, chaosDetails, "ChaosEngine")
+
+	# # generating summary event in chaosresult
+	# types.SetResultEventAttributes(eventsDetails, types.Summary, msg, "Warning", resultDetails)
+	# events.GenerateEvents(eventsDetails, chaosDetails, "ChaosResult")
 
 #GetIterations derive the iterations value from given parameters
 def GetIterations(duration, interval):

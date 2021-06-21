@@ -118,7 +118,7 @@ def SetResultAttributes(ResultDetails , ChaosDetails):
 	else:
 		ResultDetails.Name = ChaosDetails.ExperimentName
 
-	if ChaosDetails.InstanceID != "" and ChaosDetails.InstanceID != "12345":
+	if ChaosDetails.InstanceID != "":
 		ResultDetails.Name = ResultDetails.Name + "-" + ChaosDetails.InstanceID
 
 #SetResultAfterCompletion set all the chaos result ENV in the EOT

@@ -10,6 +10,16 @@ import pkg.types.types as types
 from kubernetes import client, config, dynamic
 from kubernetes.client import api_client
 
+def atoi(string):
+    res = 0
+
+    # Iterate through all characters of
+    #  input and update result
+    for i in range(len(string)):
+        res = res * 10 + (ord(string[i]) - ord('0'))
+
+    return res
+
 global conf
 if os.getenv('KUBERNETES_SERVICE_HOST'):
 	conf = config.load_incluster_config()
@@ -78,14 +88,14 @@ class ChaosResults(object):
 
 	#InitializeChaosResult or patch the chaos result
 	def InitializeChaosResult(self, chaosDetails , resultDetails , chaosResultLabel, 
-		 passedRuns = 0,  failedRuns = 0, stoppedRuns = 0, probeSuccessPercentage = "Awaited") :
+		passedRuns = 0,  failedRuns = 0, stoppedRuns = 0, probeSuccessPercentage = "Awaited") :
 		
 		try:	
 			env_tmpl = Environment(loader=PackageLoader('pkg', 'templates'), trim_blocks=True, lstrip_blocks=True,
 									autoescape=select_autoescape(['yaml']))
 			template = env_tmpl.get_template('chaos-result.j2')
 			updated_chaosresult_template = template.render(name=resultDetails.Name, namespace=chaosDetails.ChaosNamespace, labels=chaosResultLabel,
-														engineName=chaosDetails.EngineName, experimentName=chaosDetails.ExperimentName, instanceID=chaosDetails.InstanceID, phase=resultDetails.Phase, 
+														engineName=chaosDetails.EngineName, failStep=resultDetails.FailStep, experimentName=chaosDetails.ExperimentName, phase=resultDetails.Phase, 
 													verdict=resultDetails.Verdict, passedRuns = passedRuns,  failedRuns = failedRuns, stoppedRuns = stoppedRuns, probeSuccessPercentage=probeSuccessPercentage)
 			with open('chaosresult.yaml', "w+") as f:
 				f.write(updated_chaosresult_template)

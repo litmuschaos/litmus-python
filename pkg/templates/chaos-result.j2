@@ -2,18 +2,18 @@
 apiVersion: litmuschaos.io/v1alpha1
 kind: ChaosResult
 metadata:
-    name: {{ name }}
-    namespace: {{ namespace }}
+    name: "{{ name }}"
+    namespace: "{{ namespace }}"
     labels: {{ labels }}
 spec:
-    engineName: {{ engineName }}
-    experimentName: {{ experimentName }}
-    instanceID: {{ instanceID }}
+    engine: "{{ engineName }}"
+    experiment: "{{ experimentName }}"
 status:
     experimentStatus: 
-        phase: {{ phase }}
-        verdict: {{ verdict }}
-        ProbeSuccessPercentage: {{ probeSuccessPercentage }}
+        phase: "{{ phase }}"
+        verdict: "{{ verdict }}"
+        probeSuccessPercentage: "{{ probeSuccessPercentage }}"
+        failStep: "{{ failStep }}"
     history:
         passedRuns: {{ passedRuns }}
         failedRuns: {{ failedRuns }}

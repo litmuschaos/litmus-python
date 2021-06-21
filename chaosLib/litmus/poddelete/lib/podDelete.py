@@ -44,7 +44,7 @@ def PreparePodDelete(experimentsDetails , resultDetails, eventsDetails, chaosDet
 		if err != None:
 			return err
 	else:
-		logging.info("[Warning]: %s sequence is not supported",(experimentsDetails.Sequence))
+		logging.warning("[Warning]: %s sequence is not supported",(experimentsDetails.Sequence))
 
 	#Waiting for the ramp time after chaos injection
 	if experimentsDetails.RampTime != 0 :
@@ -58,7 +58,6 @@ def injectChaosInSerialMode(experimentsDetails , chaosDetails , eventsDetails , 
 	status = Application()
 	v1 = client.CoreV1Api()
 	pods = Pods()
-
 	GracePeriod = 0
 	
 	#ChaosStartTimeStamp contains the start timestamp, when the chaos injection begin
@@ -69,7 +68,7 @@ def injectChaosInSerialMode(experimentsDetails , chaosDetails , eventsDetails , 
 		# Get the target pod details for the chaos execution
 		# if the target pod is not defined it will derive the random target pod list using pod affected percentage
 		if experimentsDetails.TargetPods == "" and chaosDetails.AppDetail.Label == "" :
-			return logging.info("[Warning]: Please provide one of the appLabel or TARGET_PODS")
+			return logging.warning("[Warning]: Please provide one of the appLabel or TARGET_PODS")
 		
 		targetPodList, err = pods.GetPodList(experimentsDetails.TargetPods, experimentsDetails.PodsAffectedPerc, chaosDetails)
 		if err != None: 
