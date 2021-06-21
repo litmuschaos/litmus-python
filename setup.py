@@ -49,6 +49,7 @@ packages = [
 	'chaosLib/litmus/poddelete/lib',
 	'pkg',
 	'pkg/',
+	'pkg/maths',
 	'pkg/result',
 	'pkg/templates',
 	'pkg/types',

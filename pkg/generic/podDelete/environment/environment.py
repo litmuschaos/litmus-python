@@ -1,25 +1,17 @@
+
 import os
 from pkg.types.types import AppDetails
 from pkg.generic.podDelete.types.types import ExperimentDetails
-
-def atoi(string):
-    res = 0
- 
-    # Iterate through all characters of
-    #  input string and update result
-    for i in range(len(string)):
-        res = res * 10 + (ord(string[i]) - ord('0'))
- 
-    return res
+import pkg.maths.maths as maths
 
 #GetENV fetches all the env variables from the runner pod
 def GetENV(experimentDetails):
 	experimentDetails.ExperimentName =  os.getenv("EXPERIMENT_NAME", "pod-delete")
 	experimentDetails.ChaosNamespace = os.getenv("CHAOS_NAMESPACE", "litmus")
 	experimentDetails.EngineName = os.getenv("CHAOSENGINE", "pod-delete")
-	experimentDetails.ChaosDuration = atoi(os.getenv("TOTAL_CHAOS_DURATION", "30"))
+	experimentDetails.ChaosDuration = maths.atoi(os.getenv("TOTAL_CHAOS_DURATION", "30"))
 	experimentDetails.ChaosInterval = os.getenv("CHAOS_INTERVAL", "10")
-	experimentDetails.RampTime = atoi(os.getenv("RAMP_TIME", "0"))
+	experimentDetails.RampTime = maths.atoi(os.getenv("RAMP_TIME", "0"))
 	experimentDetails.ChaosLib = os.getenv("LIB", "litmus")
 	experimentDetails.ChaosServiceAccount = os.getenv("CHAOS_SERVICE_ACCOUNT", "")
 	experimentDetails.AppNS = os.getenv("APP_NAMESPACE", "")
@@ -29,10 +21,10 @@ def GetENV(experimentDetails):
 	experimentDetails.InstanceID = os.getenv("INSTANCE_ID", "")
 	experimentDetails.ChaosPodName = os.getenv("POD_NAME", "")
 	experimentDetails.Force = (os.getenv("FORCE", "false") == 'true')
-	experimentDetails.Delay = atoi(os.getenv("STATUS_CHECK_DELAY", "2"))
-	experimentDetails.Timeout = atoi(os.getenv("STATUS_CHECK_TIMEOUT", "180"))
+	experimentDetails.Delay = maths.atoi(os.getenv("STATUS_CHECK_DELAY", "2"))
+	experimentDetails.Timeout = maths.atoi(os.getenv("STATUS_CHECK_TIMEOUT", "180"))
 	experimentDetails.TargetPods = os.getenv("TARGET_PODS", "")
-	experimentDetails.PodsAffectedPerc = atoi(os.getenv("PODS_AFFECTED_PERC", "0"))
+	experimentDetails.PodsAffectedPerc = maths.atoi(os.getenv("PODS_AFFECTED_PERC", "0"))
 	experimentDetails.Sequence = os.getenv("SEQUENCE", "parallel")
 	experimentDetails.TargetContainer = os.getenv("TARGET_CONTAINER", "")
 

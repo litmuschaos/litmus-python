@@ -16,8 +16,9 @@ DOCKER_TAG ?= ci
 help:
 	@echo ""
 	@echo "Usage:-"
+	@echo "\tmake deps          --  sets up dependencies for image build"
 	@echo "\tmake litmuspython  --  will build and push the litmus-python image"
-	@echo "\tmake chaostest     -- will build and push python experiment images
+	@echo "\tmake chaostest     --  will build and push python experiment images
 	@echo ""
 
 
@@ -25,6 +26,7 @@ deps: _build_check_docker
 	@echo ""
 	@echo "INFO:\tverifying dependencies for litmus-python ..."
 
+.PHONY: litmuspython
 _build_tests_litmus_python_image:
 	@echo "INFO: Building container image for performing chaostoolkit tests"
 	docker build -t litmuschaos/litmus-python:ci .
@@ -36,7 +38,7 @@ _push_tests_litmus_python_image:
 
 litmuspython: deps _build_tests_litmus_python_image _push_tests_litmus_python_image
 
-
+.PHONY: chaostest
 _build_tests_chaostest_image:
 	@echo "INFO: Building container image for performing chaostoolkit tests"
 	cd byoc && docker build -t litmuschaos/chaostoolkit:ci .
