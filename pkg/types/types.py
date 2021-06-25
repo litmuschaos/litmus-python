@@ -16,42 +16,16 @@ FailVerdict = "Fail"
 # StoppedVerdict marked the verdict as stopped in the end of experiment
 StoppedVerdict = "Stopped"
 
-# ProbeArtifact contains the probe artifacts
-class ProbeArtifact(object):
-	def __init__(self, Register=None):
-		self.ProbeArtifacts = RegisterDetails(Register)
-
-# ProbeDetails is for collecting all the probe details
-class ProbeDetail(object):
-	def __init__(self, Name=None, Type=None, RunID=None, RunCount=None, error=None, status=None):
-		self.Name                   = Name
-		self.Type                   = Type
-		self.Status                 = status
-		self.IsProbeFailedWithError = error
-		self.RunID                  = RunID
-		self.RunCount               = RunCount
-		
-
 #ResultDetails is for collecting all the chaos-result-related details
 class ResultDetails(object):
-	def __init__(self, Name=None, Verdict=None,Register=None, FailStep=None, Phase=None,  ProbeDetails=None,
-	Type=None, Status=None, IsProbeFailedWithError=None, RunID=None, RunCount=None, PassedProbeCount=None, ProbeArtifacts=None, UID=None):
+	def __init__(self, Name=None, Verdict=None, FailStep=None, Phase=None,
+	PassedProbeCount=None, UID=None):
 		self.Name             = Name
 		self.Verdict          = Verdict
 		self.FailStep         = FailStep
 		self.Phase            = Phase
 		self.ResultUID        = UID
-		self.ProbeDetails     = []
 		self.PassedProbeCount = PassedProbeCount
-		self.ProbeArtifacts   = ProbeArtifact(Register)
-
-		def append(self, Name, Type, Status, IsProbeFailedWithError, RunID, RunCount):
-			self.ProbeDetails.append(ProbeDetail(Name, Type, Status, IsProbeFailedWithError, RunID, RunCount))
-
-# RegisterDetails contains the output of the corresponding probe
-class RegisterDetails(object):
-	def __init__(self, Register=None):
-		self.Register = Register
 
 # EventDetails is for collecting all the events-related details
 class EventDetails(object):
@@ -62,41 +36,6 @@ class EventDetails(object):
 		self.ResourceUID  = UID
 		self.Type         = Type
 
-# ChaosDetails is for collecting all the global variables
-class ChaosDetails(object):
-	def __init__(self, ChaosPodName=None, ChaosNamespace=None, EngineName=None, InstanceID=None, ExperimentName=None, Timeout=None, 
-	Delay=None, ChaosDuration=None, JobCleanupPolicy=None, ProbeImagePullPolicy=None, Randomness=None,
-	Namespace=None, Label=None, Kind=None, AnnotationCheck=None, AnnotationKey=None, AnnotationValue=None, UID=None
-	):
-		self.ChaosUID             = UID
-		self.ChaosNamespace       = ChaosNamespace
-		self.ChaosPodName         = ChaosPodName
-		self.EngineName           = EngineName
-		self.InstanceID           = InstanceID
-		self.ExperimentName       = ExperimentName
-		self.Timeout              = Timeout
-		self.Delay                = Delay
-		self.AppDetail            = AppDetails(Namespace, Label, Kind, AnnotationCheck, AnnotationKey, AnnotationValue)
-		self.ChaosDuration        = ChaosDuration
-		self.JobCleanupPolicy     = JobCleanupPolicy
-		self.ProbeImagePullPolicy = ProbeImagePullPolicy
-		self.Randomness           = Randomness
-
-# ProbeStatus defines information about the status and result of the probes
-class ProbeStatus(object):
-	def __init__(self, Name=None, Type=None, Status=None):
-		self.Name    = Name
-		self.Type    = Type
-		self.Status  = Status
-
-		# ENVDetails contains the ENV details
-class ENVDetails(object):
-	def __init__(self):
-		self.ENV = []
-
-	def append(self, value):
-		self.ENV.append(value)
-
 # AppDetails contains all the application related envs
 class AppDetails(object):
 	def __init__(self, Namespace=None, Label=None, Kind=None, AnnotationCheck=None, AnnotationKey=None, AnnotationValue=None):
@@ -106,6 +45,29 @@ class AppDetails(object):
 		self.AnnotationCheck = AnnotationCheck
 		self.AnnotationKey   = AnnotationKey
 		self.AnnotationValue = AnnotationValue
+
+# ChaosDetails is for collecting all the global variables
+class ChaosDetails(object):
+	def __init__(self, ChaosPodName=None, ChaosNamespace=None, EngineName=None, InstanceID=None, ExperimentName=None, Timeout=None, 
+	Delay=None, ChaosDuration=None, JobCleanupPolicy=None,  Randomness=None, ParentsResources=None,
+	Namespace=None, Label=None, Kind=None, AnnotationCheck=None, AnnotationKey=None, AnnotationValue=None, UID=None
+	):
+		self.ChaosUID            	 = UID
+		self.ChaosNamespace      	 = ChaosNamespace
+		self.ChaosPodName        	 = ChaosPodName
+		self.EngineName          	 = EngineName
+		self.InstanceID          	 = InstanceID
+		self.ExperimentName      	 = ExperimentName
+		self.Timeout             	 = Timeout
+		self.Delay               	 = Delay
+		self.AppDetail           	 = AppDetails(Namespace, Label, Kind, AnnotationCheck, AnnotationKey, AnnotationValue)
+		self.ChaosDuration       	 = ChaosDuration
+		self.JobCleanupPolicy     	 = JobCleanupPolicy
+		self.Randomness          	 = Randomness
+		self.ParentsResources		 = []
+	
+	def append(self, value):
+		self.ParentsResources.append(value)
 
 #SetResultAttributes initialise all the chaos result ENV
 def SetResultAttributes(ResultDetails , ChaosDetails):

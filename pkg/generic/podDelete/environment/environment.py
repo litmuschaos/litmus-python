@@ -1,19 +1,17 @@
 
 import os
-from pkg.types.types import AppDetails
-from pkg.generic.podDelete.types.types import ExperimentDetails
+import pkg.types.types as types
 import pkg.maths.maths as maths
 
 #GetENV fetches all the env variables from the runner pod
 def GetENV(experimentDetails):
 	experimentDetails.ExperimentName =  os.getenv("EXPERIMENT_NAME", "pod-delete")
 	experimentDetails.ChaosNamespace = os.getenv("CHAOS_NAMESPACE", "litmus")
-	experimentDetails.EngineName = os.getenv("CHAOSENGINE", "pod-delete")
+	experimentDetails.EngineName = os.getenv("CHAOSENGINE", "")
 	experimentDetails.ChaosDuration = maths.atoi(os.getenv("TOTAL_CHAOS_DURATION", "30"))
 	experimentDetails.ChaosInterval = os.getenv("CHAOS_INTERVAL", "10")
 	experimentDetails.RampTime = maths.atoi(os.getenv("RAMP_TIME", "0"))
 	experimentDetails.ChaosLib = os.getenv("LIB", "litmus")
-	experimentDetails.ChaosServiceAccount = os.getenv("CHAOS_SERVICE_ACCOUNT", "")
 	experimentDetails.AppNS = os.getenv("APP_NAMESPACE", "")
 	experimentDetails.AppLabel = os.getenv("APP_LABEL", "")
 	experimentDetails.AppKind = os.getenv("APP_KIND", "")
@@ -30,7 +28,7 @@ def GetENV(experimentDetails):
 
 #InitialiseChaosVariables initialise all the global variables
 def InitialiseChaosVariables(chaosDetails, experimentDetails):
-	appDetails = AppDetails()
+	appDetails = types.AppDetails()
 	appDetails.AnnotationCheck = (os.getenv("ANNOTATION_CHECK", "false") == 'true')
 	appDetails.AnnotationKey = os.getenv("ANNOTATION_KEY", "litmuschaos.io/chaos")
 	appDetails.AnnotationValue = "true"
@@ -47,6 +45,5 @@ def InitialiseChaosVariables(chaosDetails, experimentDetails):
 	chaosDetails.Timeout = experimentDetails.Timeout
 	chaosDetails.Delay = experimentDetails.Delay
 	chaosDetails.AppDetail = appDetails
-	chaosDetails.ProbeImagePullPolicy = experimentDetails.LIBImagePullPolicy
 	chaosDetails.Randomness = (os.getenv("RANDOMNESS", "false") == 'true')
 

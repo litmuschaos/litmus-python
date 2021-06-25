@@ -11,7 +11,7 @@ def get_version_from_package() -> str:
 	"""
     Read the package version from the source without importing it.
     """
-	path = os.path.join(os.path.dirname(__file__), "byoc/__init__.py")
+	path = os.path.join(os.path.dirname(__file__), "chaostest/__init__.py")
 	path = os.path.normpath(os.path.abspath(path))
 	with open(path) as f:
 		for line in f:

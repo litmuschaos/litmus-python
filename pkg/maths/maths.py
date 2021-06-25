@@ -1,5 +1,3 @@
-
-
 #Atoi stands for ASCII to Integer Conversion
 def atoi(string):
     res = 0

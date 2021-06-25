@@ -23,7 +23,6 @@ WORKDIR /app/kubectl/
 RUN curl -Lsf -o kubectl https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/local/bin/kubectl
-### Setup kubectl
 
 #### Other Packages
 #RUN export DEBIAN_FRONTEND=noninteractive \
@@ -49,13 +48,15 @@ ENV LC_ALL=C.UTF-8
 
 ENV LANG=C.UTF-8
 
+WORKDIR /app/chaos
+
 ### Setup chaostoolkit packages
-ADD chaostest /app/chaos
-#ADD chaostoolkit-aws /app/chaostoolkit-aws
-#ADD chaostoolkit-kubernetes /app/chaostoolkit-kubernetes
+COPY byoc /app/chaos
+
+# ADD chaostoolkit-aws /app/chaostoolkit-aws
+# ADD chaostoolkit-kubernetes /app/chaostoolkit-kubernetes
 # ADD install.sh install.sh
-ADD install.sh install.sh
 RUN chmod +x install.sh
+
 RUN ./install.sh
 WORKDIR /app/chaos
-### Setup chaostoolkit package

@@ -1,51 +1,90 @@
+
 # Makefile for building Litmus and its tools
 # Reference Guide - https://www.gnu.org/software/make/manual/make.html
 
 #
 # Internal variables or constants.
 # NOTE - These will be executed when any make target is invoked.
-#
+
 IS_DOCKER_INSTALLED = $(shell which docker >> /dev/null 2>&1; echo $$?)
 
 # Docker info
 DOCKER_REPO ?= litmuschaos
-DOCKER_IMAGE ?= python-runner
+DOCKER_IMAGE ?= py-runner
 DOCKER_TAG ?= ci
 
 .PHONY: help
 help:
 	@echo ""
 	@echo "Usage:-"
-	@echo "\tmake deps          --  sets up dependencies for image build"
-	@echo "\tmake litmuspython  --  will build and push the litmus-python image"
-	@echo "\tmake chaostest     --  will build and push python experiment images
+	@echo "\tmake deps          	-- sets up dependencies for image build"
+	@echo "\tmake docker.buildx     -- docker multi-arch image"
+	@echo "\tmake build-amd64   	-- builds the litmus-py docker amd64 image"
+	@echo "\tmake push-amd64    	-- pushes the litmus-py amd64 image"
+	@echo "\tmake build-amd64-byoc  -- builds the chaostest docker amd64 image"
+	@echo "\tmake push-amd64-byoc   -- pushes the chaostest amd64 image"
 	@echo ""
 
+.PHONY: all
+all: deps docker.buildx build-amd64 push-amd64 build-amd64-byoc push-amd64-byoc trivy-check
 
+.PHONY: deps
 deps: _build_check_docker
-	@echo ""
-	@echo "INFO:\tverifying dependencies for litmus-python ..."
 
-.PHONY: litmuspython
-_build_tests_litmus_python_image:
-	@echo "INFO: Building container image for performing chaostoolkit tests"
-	docker build -t litmuschaos/litmus-python:ci .
+_build_check_docker:
+	@if [ $(IS_DOCKER_INSTALLED) -eq 1 ]; \
+		then echo "" \
+		&& echo "ERROR:\tdocker is not installed. Please install it before build." \
+		&& echo "" \
+		&& exit 1; \
+		fi;
 
-_push_tests_litmus_python_image:
-	@echo "INFO: Publish container litmuschaos/litmus-python:ci"
-	cd ./build/push
+.PHONY: docker.buildx
+docker.buildx:
+	@echo "------------------------------"
+	@echo "--> Setting up Builder        " 
+	@echo "------------------------------"
+	@if ! docker buildx ls | grep -q multibuilder; then\
+		docker buildx create --name multibuilder;\
+		docker buildx inspect multibuilder --bootstrap;\
+		docker buildx use multibuilder;\
+	fi
 
+.PHONY: build-amd64
+build-amd64:
 
-litmuspython: deps _build_tests_litmus_python_image _push_tests_litmus_python_image
+	@echo "-------------------------"
+	@echo "--> Build py-runner image" 
+	@echo "-------------------------"
+	@sudo docker build --file Dockerfile --tag $(DOCKER_REPO)/$(DOCKER_IMAGE):$(DOCKER_TAG) . --build-arg TARGETARCH=amd64
 
-.PHONY: chaostest
-_build_tests_chaostest_image:
-	@echo "INFO: Building container image for performing chaostoolkit tests"
-	cd byoc && docker build -t litmuschaos/chaostoolkit:ci .
+.PHONY: push-amd64
+push-amd64:
+	@echo "-------------------"
+	@echo "--> py-runner image" 
+	@echo "-------------------"
+	REPONAME="$(DOCKER_REPO)" IMGNAME="$(DOCKER_IMAGE)" IMGTAG="$(DOCKER_TAG)" ./build/push
 
-_push_tests_chaostest_image:
-	@echo "INFO: Publish container litmuschaos/chaostoolkit:ci"
-	REPONAME="litmuschaos" IMGNAME="chaostoolkit" IMGTAG="ci" ./byoc/buildscripts/push
+.PHONY: build-amd64-byoc
+build-amd64-byoc:
 
-chaostest: deps _build_tests_chaostest_image _push_tests_chaostest_image
+	@echo "-------------------------"
+	@echo "--> Build chaostoolkit image" 
+	@echo "-------------------------"
+	@sudo docker build --file byoc/Dockerfile --tag $(DOCKER_REPO)/$(DOCKER_IMAGE):$(DOCKER_TAG) . --build-arg TARGETARCH=amd64
 
+.PHONY: push-amd64-byoc
+push-amd64-byoc:
+	@echo "-------------------"
+	@echo "--> chaostoolkit image" 
+	@echo "-------------------"
+	REPONAME="$(DOCKER_REPO)" IMGNAME="$(DOCKER_IMAGE)" IMGTAG="$(DOCKER_TAG)" .byoc/buildscripts/push
+
+.PHONY: trivy-check
+trivy-check:
+
+	@echo "------------------------"
+	@echo "---> Running Trivy Check"
+	@echo "------------------------"
+	@./trivy --exit-code 0 --severity HIGH --no-progress $(DOCKER_REPO)/$(DOCKER_IMAGE):$(DOCKER_TAG)
+	@./trivy --exit-code 0 --severity CRITICAL --no-progress $(DOCKER_REPO)/$(DOCKER_IMAGE):$(DOCKER_TAG)

@@ -40,7 +40,7 @@ class Helper(object):
                                autoescape=select_autoescape(['yaml']))
         template = env_tmpl.get_template('chaos-result.j2')
 
-        events = None
+        #events = None
         # if jornal_file_name:
         #     if os.path.exists(jornal_file_name):
         #         with open(jornal_file_name, "r") as file:
@@ -48,8 +48,7 @@ class Helper(object):
         #             if yaml_content:
         #                 events = "\n" + yaml_content
         #         file.close()
-        updated_chaosresult_template = template.render(c_experiment=exp_name, phase=exp_phase, verdict=exp_verdict,
-                                                       events=events)
+        updated_chaosresult_template = template.render(c_experiment=exp_name, phase=exp_phase, verdict=exp_verdict)
         with open('chaosresult.yaml', "w+") as f:
             f.write(updated_chaosresult_template)
         chaosresult_update_cmd_args_list = ['kubectl', 'apply', '-f', 'chaosresult.yaml', '-n', ns]

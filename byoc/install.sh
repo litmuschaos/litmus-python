@@ -21,7 +21,7 @@ for chaos_litmus_package in "${chaos_litmus_packages[@]}"
 do
   pwd
   cd /app/"$chaos_litmus_package"/
-  pwd
+  cd chaostest
   ls -ltr
   python setup.py develop
   pip install -U .

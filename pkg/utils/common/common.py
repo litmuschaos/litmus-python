@@ -2,24 +2,13 @@
 import time, threading
 import random
 import logging
-logging.basicConfig(format='time=%(asctime)s level=%(levelname)s  msg=%(message)s', level=logging.INFO)  
 import os, sys
-from kubernetes import client
 import signal
 import pkg.types.types as types
 import pkg.events.events as events
 import string
-import random
-from pkg.result.chaosresult import ChaosResults
+import pkg.result.chaosresult as chaosresult
 import pkg.maths.maths as maths
-
-# ENVDetails contains the ENV details
-class ENVDetails(object):
-	def __init__(self):
-		self.ENV = []
-
-	def append(self, value):
-		self.ENV.append(value)
 		
 #WaitForDuration waits for the given time duration (in seconds)
 def WaitForDuration(duration):
@@ -40,7 +29,6 @@ def RandomInterval(interval):
 	else:
 		return logging.info("unable to parse CHAOS_INTERVAL, provide in valid format")
 
-	#rand.Seed(time.Now().UnixNano())
 	waitTime = lowerBound + random.randint(0, upperBound-lowerBound)
 	logging.info("[Wait]: Wait for the random chaos interval %s",(waitTime))
 	WaitForDuration(waitTime)
@@ -51,19 +39,19 @@ def GetRunID():
 	runId = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))
 	return str(runId)
 
-def receive_signal(signum, stack):
-    logging.info('Received:', signum)
-
 # Notify Catch and relay certain signal(s) to sendor.
 # waiting until the abort signal recieved
 def Notify(expname, resultDetails, chaosDetails, eventsDetails, clients):
 	
-	result = ChaosResults()
+	# initialising result object
+	result = chaosresult.ChaosResults()
 	logging.info("[Chaos]: Chaos Experiment Abortion started because of terminated signal received")
+	
 	# updating the chaosresult after stopped
 	failStep = "Chaos injection stopped!"
 	types.SetResultAfterCompletion(resultDetails, "Stopped", "Stopped", failStep)
 	result.ChaosResult(chaosDetails, resultDetails, "EOT", clients)
+	
 	# generating summary event in chaosengine
 	msg = expname + " experiment has been aborted"
 	types.SetEngineEventAttributes(eventsDetails, types.Summary, msg, "Warning", chaosDetails)
@@ -114,20 +102,3 @@ def FilterBasedOnPercentage(percentage, list):
 		index = (index + 1) % len(list)
 
 	return finalList
-
-# SetEnv sets the env inside envDetails struct
-def SetEnv(envDetails, key, value):
-	if value != "" :
-		envDetails.append(client.V1EnvVar(name=key, value=value))
-
-# SetEnvFromDownwardAPI sets the downapi env in envDetails struct
-def SetEnvFromDownwardAPI(envDetails, apiVersion, fieldPath):
-	if apiVersion != "" & fieldPath != "" :
-		# Getting experiment pod name from downward API
-		experimentPodName = getEnvSource(apiVersion, fieldPath)
-		envDetails.append(client.V1EnvVar(name="POD_NAME", value_from=experimentPodName))
-
-# getEnvSource return the env source for the given apiVersion & fieldPath
-def getEnvSource(apiVersion, fieldPath):
-	downwardENV = client.V1EnvVarSource(field_ref=client.V1ObjectFieldSelector(api_version=apiVersion,field_path=fieldPath))
-	return downwardENV

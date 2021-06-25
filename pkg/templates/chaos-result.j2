@@ -1,3 +1,4 @@
+# Jinja template for ChaosResult
 ---
 apiVersion: litmuschaos.io/v1alpha1
 kind: ChaosResult
@@ -8,6 +9,7 @@ metadata:
 spec:
     engine: "{{ engineName }}"
     experiment: "{{ experimentName }}"
+    instance: "{{ instanceId }}"
 status:
     experimentStatus: 
         phase: "{{ phase }}"

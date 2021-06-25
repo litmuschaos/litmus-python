@@ -117,8 +117,8 @@ class Report(object):
                 logger.info(
                     "Successfully posted kubernetes to Kafka end point " + report_endpoint + " with status code {0}".format(
                         response.status_code))
-            except Exception as e:
-                logger.info("Posting kubernetes to Kafka failed: {0}".format(e))
+            except Exception as exp:
+                logger.info("Posting kubernetes to Kafka failed: {0}".format(exp))
 
         else:
             logger.info("Not making http post request to Kafka %s", report_endpoint)
