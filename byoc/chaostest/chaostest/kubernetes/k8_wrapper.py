@@ -105,18 +105,19 @@ test_namespace = os.environ['TEST_NAMESPACE']
 
 # if the env CHAOSENGINE is defined, suffix it standard experiment name
 # to generate the fully-qualified chaos experiment/chaosresult name
-
+engineName = os.environ['CHAOSENGINE']
 if 'CHAOSENGINE' in os.environ.keys():
     experiment_name = os.environ['CHAOSENGINE']
 else:
     experiment_name = experiment
+    engineName = experiment
 
-result_name = Helper.get_updated_result_name(experiment_name)
+result_name = Helper.get_updated_result_name(experiment)
 try:
-    Helper().chaos_result_tracker(result_name, 'Running', 'Awaited', test_namespace)
+    Helper().chaos_result_tracker(result_name, 'Running', 'Awaited', test_namespace, engineName)
     chaos_utils = ChaosUtils()
-    test_result = chaos_utils.run_chaos_engine(filename, env_params, report, report_endpoint)
-    Helper().chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result), test_namespace)
+    test_result = chaos_utils.run_chaos_engine(filename, env_params, report, report_endpoint, engineName)
+    Helper().chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(test_result), test_namespace, engineName)
 except Exception as ex:
     logger.error("Test Failed with exception " + str(ex))
-    Helper().chaos_result_tracker(result_name, 'Completed', 'Failed', test_namespace)
+    Helper().chaos_result_tracker(result_name, 'Completed', 'Failed', test_namespace, engineName)

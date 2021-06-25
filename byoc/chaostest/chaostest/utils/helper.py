@@ -30,7 +30,7 @@ class Helper(object):
         run_cmd = subprocess.Popen(cmd_arg_list, stdout=subprocess.PIPE, env=os.environ.copy())
         run_cmd.communicate()
 
-    def chaos_result_tracker(self, exp_name, exp_phase, exp_verdict, ns, jornal_file_name = None):
+    def chaos_result_tracker(self, exp_name, exp_phase, exp_verdict, ns, engineName, jornal_file_name = None):
         """
         chaos_result_tracker() creates/patches the litmus chaosresult custom resource in the provided namespace.
         Typically invoked before and after chaos, and takes the .spec.phase, .spec.verdict & namespace as as args.
@@ -48,7 +48,7 @@ class Helper(object):
         #             if yaml_content:
         #                 events = "\n" + yaml_content
         #         file.close()
-        updated_chaosresult_template = template.render(c_experiment=exp_name, phase=exp_phase, verdict=exp_verdict)
+        updated_chaosresult_template = template.render(engineName=engineName, c_experiment=exp_name, phase=exp_phase, verdict=exp_verdict, namespace=ns)
         with open('chaosresult.yaml', "w+") as f:
             f.write(updated_chaosresult_template)
         chaosresult_update_cmd_args_list = ['kubectl', 'apply', '-f', 'chaosresult.yaml', '-n', ns]
@@ -56,6 +56,5 @@ class Helper(object):
 
     @staticmethod
     def get_updated_result_name(experiment_name: str):
-        timestamp = str(int(time.time() * 1000))
-        result_name = experiment_name + "-" + timestamp
+        result_name = experiment_name 
         return result_name

@@ -50,7 +50,7 @@ def chaos_result_decorator(function):
 
         result_name = experiment_name + "-" + time_string
         namespace = os.environ.get("NAME_SPACE", None)
-
+        engineName = os.environ.get("CHAOSENGINE", experiment_name)
         test_json = os.environ.get("FILE", "")
         test_result = False
         if experiment_name and namespace and test_json:
@@ -63,25 +63,25 @@ def chaos_result_decorator(function):
             #     logger.info("Renaming existing journal file " + journal_file_name + " to " + backup_journal_file)
             #     os.rename(journal_file_name, journal_file_name + "-" + time_string)
             helper.chaos_result_tracker(result_name, 'Running', Helper.TEST_RESULT_STATUS.get("Running"),
-                                        namespace, journal_file_name)
+                                        namespace, engineName, journal_file_name)
             try:
                 test_result = function(*args, **kwargs)
                 logger.info("Test result status came as")
                 logger.info(test_result)
                 if not isinstance(test_result, bool) and isinstance(test_result, str):
-                    helper.chaos_result_tracker(result_name, 'Completed', test_result, namespace, journal_file_name)
+                    helper.chaos_result_tracker(result_name, 'Completed', test_result, namespace, engineName, journal_file_name)
                 elif not isinstance(test_result, bool) and not isinstance(test_result, str):
                     helper.chaos_result_tracker(result_name, 'Completed', "test_result_not_a_readable_return",
-                                                namespace, journal_file_name)
+                                                namespace, engineName, journal_file_name)
                 else:
                     helper.chaos_result_tracker(result_name, 'Completed',
                                                 Helper.TEST_RESULT_STATUS.get(test_result, lambda : test_result),
-                                                namespace, journal_file_name)
+                                                namespace, engineName, journal_file_name)
                 return test_result
             except Exception as ex:
                 logger.error("Test Failed with exception " + str(ex))
                 helper.chaos_result_tracker(result_name, 'Completed', Helper.TEST_RESULT_STATUS.get(False),
-                                            namespace, journal_file_name)
+                                            namespace, engineName, journal_file_name)
 
         else:
 
@@ -191,7 +191,7 @@ class ChaosAction(argparse.Action):
 
 class ChaosUtils(object):
 
-    def run_chaos_engine(self, file, env_params: dict, report: str, report_endpoint: str) -> bool:
+    def run_chaos_engine(self, file, env_params: dict, report: str, report_endpoint: str, engineName) -> bool:
         """
         Runs chaos engine programmatically instead of using chaos binary
         :param file:
