@@ -17,7 +17,7 @@ class Helper(object):
     ####################################
 
     TEST_RESULT_STATUS = {
-        True: "Success",
+        True: "Pass",
         False: "Failed",
         "Running": "Awaited"
     }
@@ -54,7 +54,7 @@ class Helper(object):
         chaosresult_update_cmd_args_list = ['kubectl', 'apply', '-f', 'chaosresult.yaml', '-n', ns]
         self.run_shell_task(chaosresult_update_cmd_args_list)
 
-    @staticmethod
-    def get_updated_result_name(experiment_name: str):
-        result_name = experiment_name 
-        return result_name
+    # @staticmethod
+    # def get_updated_result_name(experiment_name: str):
+    #     result_name = experiment_name 
+    #     return result_name

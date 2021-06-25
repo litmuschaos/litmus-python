@@ -8,7 +8,6 @@ from datetime import datetime
 import pkg.status.application as status
 import pkg.maths.maths as maths
 
-
 #PreparePodDelete contains the prepration steps before chaos injection
 def PreparePodDelete(experimentsDetails , resultDetails, eventsDetails, chaosDetails, clients):
 

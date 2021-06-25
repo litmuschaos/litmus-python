@@ -112,7 +112,7 @@ else:
     experiment_name = experiment
     engineName = experiment
 
-result_name = Helper.get_updated_result_name(experiment)
+result_name = experiment
 try:
     Helper().chaos_result_tracker(result_name, 'Running', 'Awaited', test_namespace, engineName)
     chaos_utils = ChaosUtils()

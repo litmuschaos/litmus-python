@@ -11,7 +11,7 @@ class ChaosResults(object):
 
 	#ChaosResult Create and Update the chaos result
 	def ChaosResult(self, chaosDetails, resultDetails , state, clients):
-	
+
 		# Initialise experimentLabel
 		experimentLabel = {}
 		
@@ -28,10 +28,10 @@ class ChaosResults(object):
 			# Getting chaos pod label and passing it in chaos result
 			try:
 				chaosPod = clients.clientCoreV1.read_namespaced_pod(chaosDetails.ChaosPodName, chaosDetails.ChaosNamespace)
+				experimentLabel = chaosPod.metadata.labels
 			except Exception as exp:
 				return ValueError("failed to find chaos pod with name: {}, err: {}".format(chaosDetails.ChaosPodName, exp))
 
-			experimentLabel = chaosPod.metadata.labels
 		experimentLabel["name"] = resultDetails.Name
 		experimentLabel["chaosUID"] = str(chaosDetails.ChaosUID)
 
@@ -42,16 +42,16 @@ class ChaosResults(object):
 		# the chaos-result is already present with matching labels
 		# it will patch the new parameters in the same chaos-result
 		if state == "SOT" :
-			return self.PatchChaosResult(resultList.items[0],  chaosDetails, resultDetails, experimentLabel)
+			return self.PatchChaosResult(clients, resultList.items[0],  chaosDetails, resultDetails, experimentLabel)
 
 		# it will patch the chaos-result in the end of experiment
 		resultDetails.Phase = "Completed"
 		
-		return self.PatchChaosResult(resultList.items[0],  chaosDetails, resultDetails, experimentLabel)
+		return self.PatchChaosResult(clients, resultList.items[0],  chaosDetails, resultDetails, experimentLabel)
 
 	#InitializeChaosResult or patch the chaos result
 	def InitializeChaosResult(self, chaosDetails , resultDetails , experimentLabel, 
-		passedRuns = 0,  failedRuns = 0, stoppedRuns = 0, probeSuccessPercentage = "Awaited") :
+		passedRuns = 0,  failedRuns = 0, stoppedRuns = 0, probeSuccessPercentage = "Awaited"):
 		
 		try:	
 			env_tmpl = Environment(loader=PackageLoader('pkg', 'templates'), trim_blocks=True, lstrip_blocks=True,
@@ -79,8 +79,8 @@ class ChaosResults(object):
 		return None
 
 	#PatchChaosResult Update the chaos result
-	def PatchChaosResult(self, result, chaosDetails, resultDetails, chaosResultLabel):
-
+	def PatchChaosResult(self, clients, result, chaosDetails, resultDetails, chaosResultLabel):
+		
 		passedRuns = 0 
 		failedRuns = 0 
 		stoppedRuns = 0

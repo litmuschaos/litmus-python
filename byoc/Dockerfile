@@ -52,7 +52,7 @@ WORKDIR /app/chaos
 
 ### Setup chaostoolkit packages
 COPY byoc /app/chaos
-
+COPY byoc/chaostest /app/chaos
 # ADD chaostoolkit-aws /app/chaostoolkit-aws
 # ADD chaostoolkit-kubernetes /app/chaostoolkit-kubernetes
 # ADD install.sh install.sh

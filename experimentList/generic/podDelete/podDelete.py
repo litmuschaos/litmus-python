@@ -83,6 +83,7 @@ def PodDelete(clients):
 		failStep = "no match found for specified lib"
 		result.RecordAfterFailure(chaosDetails, resultDetails, failStep, eventsDetails, clients)
 		return
+	
 	logging.info("[Confirmation]: %s chaos has been injected successfully", experimentsDetails.ExperimentName)
 	resultDetails.Verdict = "Pass"
 
