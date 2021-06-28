@@ -16,7 +16,6 @@ ENV kopsversion=1.10.0
 RUN curl -Lsf -o kops-linux-amd64 https://github.com/kubernetes/kops/releases/download/${kopsversion}/kops-linux-amd64
 RUN chmod +x ./kops-linux-amd64
 RUN mv ./kops-linux-amd64 /usr/local/bin/kops
-### Setup kops
 
 ### Setup kubectl
 WORKDIR /app/kubectl/
@@ -52,10 +51,7 @@ WORKDIR /app/chaos
 
 ### Setup chaostoolkit packages
 COPY byoc /app/chaos
-COPY byoc/chaostest /app/chaos
-# ADD chaostoolkit-aws /app/chaostoolkit-aws
-# ADD chaostoolkit-kubernetes /app/chaostoolkit-kubernetes
-# ADD install.sh install.sh
+
 RUN chmod +x install.sh
 
 RUN ./install.sh

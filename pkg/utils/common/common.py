@@ -64,10 +64,12 @@ def Notify(expname, resultDetails, chaosDetails, eventsDetails, clients):
 # AbortWatcher continuosly watch for the abort signals
 # it will update chaosresult w/ failed step and create an abort event, if it recieved abort signal during chaos
 def AbortWatcher(expname, resultDetails, chaosDetails, eventsDetails, clients):
+	
 	# sendor thread is used to transmit signal notifications.
 	sender = threading.Thread(target=Notify, args=(expname, resultDetails, chaosDetails, eventsDetails, clients))
 	def signal_handler(sig, frame):
 		sender.start()
+		sender.join()
 		sys.exit(0)
 	
 	signal.signal(signal.SIGTERM, signal_handler)

@@ -60,7 +60,7 @@ def GenerateEvents(eventsDetails, chaosDetails, kind, clients):
 			if k8serror.K8serror().IsNotFound(err=exp):
 				return CreateEvents(eventsDetails, chaosDetails, kind, eventName, clients)
 			else:
-				return None
+				return exp
 		event.last_timestamp = datetime.now(pytz.utc)
 		event.count = event.count + 1
 		event.source.component = chaosDetails.ChaosPodName

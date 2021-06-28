@@ -102,7 +102,7 @@ def IsParentAnnotated(clients, parentName, chaosDetails):
 			deploy = clients.clientApps.read_namespaced_deployment(name=parentName, namespace=chaosDetails.AppDetail.Namespace)
 		except Exception as exp:
 			return False, exp
-		if str(deploy.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'true')):
+		if deploy.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) == chaosDetails.AppDetail.AnnotationValue:
 			return True, None
 
 	elif chaosDetails.AppDetail.Kind.lower() =="statefulset" or  chaosDetails.AppDetail.Kind.lower() == "statefulsets":
@@ -111,7 +111,7 @@ def IsParentAnnotated(clients, parentName, chaosDetails):
 		except Exception as exp:
 			return False, exp
 	
-		if str(sts.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'true')):
+		if sts.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) == chaosDetails.AppDetail.AnnotationValue:
 			return True, None
 
 	elif chaosDetails.AppDetail.Kind.lower() =="daemonset" or  chaosDetails.AppDetail.Kind.lower() == "daemonsets":
@@ -120,7 +120,7 @@ def IsParentAnnotated(clients, parentName, chaosDetails):
 		except Exception as exp:
 			return False, exp
 
-		if str(ds.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'true')):
+		if ds.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) == chaosDetails.AppDetail.AnnotationValue:
 			return True, None
 
 	elif chaosDetails.AppDetail.Kind.lower() == "deploymentconfig":
@@ -129,7 +129,7 @@ def IsParentAnnotated(clients, parentName, chaosDetails):
 		except Exception as exp:
 			return False, exp
 
-		if str(dc.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'true')):
+		if dc.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) == chaosDetails.AppDetail.AnnotationValue:
 			return True, None
 
 	elif chaosDetails.AppDetail.Kind.lower() == "rollout":
@@ -138,7 +138,7 @@ def IsParentAnnotated(clients, parentName, chaosDetails):
 		except Exception as exp:
 			return "", exp
 	
-		if str(ro.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) != None) == str((chaosDetails.AppDetail.AnnotationValue == 'true')):
+		if ro.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) == chaosDetails.AppDetail.AnnotationValue:
 			return True, None
 
 	else:

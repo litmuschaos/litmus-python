@@ -58,7 +58,7 @@ class Application(object):
 							if container.state.terminated != None: 
 								raise Exception("Container is in terminated state")
 				
-							if container.ready == False:
+							if not container.ready:
 								raise Exception("containers are not yet in running state")
 							
 							logging.info("[status]: The Container status are as follows Container : %s, Pod : %s, Readiness : %s", container.name, pod.metadata.name, container.ready)
@@ -70,7 +70,7 @@ class Application(object):
 								if container.state.terminated != None:
 									raise Exception("container is in terminated state")
 								
-								if container.ready == False:
+								if not container.ready:
 									raise Exception("containers are not yet in running state")
 								
 								logging.info("[status]: The Container status are as follows Container : %s, Pod : %s, Readiness : %s.", container.name, pod.metadata.name, container.ready)
@@ -175,7 +175,7 @@ class Application(object):
 			if container.name == containerName:
 				if container.state.terminated != None :
 					return ValueError("container is in terminated state")
-				if container.ready == False:
+				if not container.ready:
 					return ValueError("containers are not yet in running state")
 				
 				logging.info("[status]: The Container status are as follows Container : %s, Pod : %s, Readiness : %s", container.name, podName, container.ready)
@@ -189,32 +189,3 @@ class Application(object):
 				return ValueError(err)
 		return None
 
-	# CheckHelperStatusPhase checks the status of the helper pod
-	# and wait until the helper pod comes to one of the {running,completed} states
-	def CheckHelperStatusPhase(self, clients, appNs, appLabel, init, timeout, delay):
-			
-		try:
-			podList = clients.clientCoreV1.list_namespaced_pod(appNs, label_selector=appLabel)
-			if len(podList.items == 0):
-				raise Exception("unable to find the pods with matching labels")
-			for  pod in podList.items:
-				podStatus = str(pod.status.phase)
-				if podStatus.lower() == "running" or podStatus.lower() == "succeeded":
-					logging.info("%s helper pod is in %s state",(pod.metadata.name, podStatus))
-				else:
-					raise Exception("{} pod is in {} state".format(pod.metadata.name, podStatus))
-				
-				for container in pod.status.container_statuses:
-					if container.state.terminated & pod.status.phase != "Completed" :
-						raise Exception("container is terminated with {} reason".format(pod.status.reason))
-		except Exception as exp:
-			if init > timeout:
-				return ValueError("unable to find the pods with matching labels {}".format(exp))
-			time.sleep(delay)
-			return self.CheckHelperStatusPhase(clients, appNs, appLabel, init + delay, timeout, delay)	
-		return None
-
-	# CheckHelperStatus checks the status of the helper pod
-	# and wait until the helper pod comes to one of the {running,completed} states
-	def CheckHelperStatus(self, appNs, appLabel, timeout, delay, clients):
-		return self.CheckHelperStatusPhase(clients, appNs, appLabel, timeout, delay)

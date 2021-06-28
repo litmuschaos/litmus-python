@@ -27,7 +27,7 @@ class Pods(object):
 			isPodsAvailable, err = self.CheckForAvailibiltyOfPod(namespace, pod, clients)
 			if err != None :
 				return False, err			
-			if isPodsAvailable == False:
+			if not isPodsAvailable:
 				return isPodsAvailable, None
 
 		return True, None
@@ -72,7 +72,7 @@ class Pods(object):
 		try:
 			clients.clientCoreV1.read_namespaced_pod(name, namespace)
 		except Exception as err:
-			if k8serror.K8serror().IsNotFound(err) == False:
+			if not k8serror.K8serror().IsNotFound(err):
 				return False, err
 			elif k8serror.K8serror().IsNotFound(err):
 				return False, None
@@ -110,15 +110,14 @@ class Pods(object):
 					return client.V1PodList, err
 				if podTarget == pod.metadata.name :
 					if chaosDetails.AppDetail.AnnotationCheck:
-						isPodAnnotated, err = annotation.IsParentAnnotated(parentName, chaosDetails, clients)
+						isPodAnnotated, err = annotation.IsParentAnnotated(clients, parentName, chaosDetails)
 						if err != None :
 							return client.V1PodList, err
 						
-						if isPodAnnotated == False:
+						if not isPodAnnotated:
 							return client.V1PodList, ValueError("{} target pods are not annotated".format(targetPods))
 
 					realPodList.append(pod)
-					self.setParentName(parentName, chaosDetails)
 					logging.info("[Info]: chaos candidate of kind: %s, name: %s, namespace: %s", chaosDetails.AppDetail.Kind, parentName, chaosDetails.AppDetail.Namespace)
 		
 		return client.V1PodList(items=realPodList), None
@@ -143,12 +142,10 @@ class Pods(object):
 				
 				if isParentAnnotated:
 					filteredPods.append(pod)
-					self.setParentName(parentName, chaosDetails)
 					logging.info("[Info]: chaos candidate of kind: %s, name: %s, namespace: %s", chaosDetails.AppDetail.Kind, parentName, chaosDetails.AppDetail.Namespace)
 			else:
 				for pod in nonChaosPods.items:
 					filteredPods.append(pod)
-				self.setParentName(parentName, chaosDetails)
 				logging.info("[Info]: chaos candidate of kind: %s, name: %s, namespace: %s", chaosDetails.AppDetail.Kind, parentName, chaosDetails.AppDetail.Namespace)
 		
 		if len(filteredPods) == 0:
@@ -164,15 +161,3 @@ class Pods(object):
 			index = (index + 1) % len(filteredPods)
 		
 		return client.V1PodList(items=realPods), None
-	
- 	# setParentName set the parent name in chaosdetails struct
-	def setParentName(self, parentName, chaosDetails):
-		if len(chaosDetails.ParentsResources) == 0:
-			chaosDetails.ParentsResources.append(parentName)
-		else:
-		
-			for parentRes in chaosDetails.ParentsResources:
-				if parentRes == parentName:
-					return
-		
-			chaosDetails.ParentsResources.appendPR(parentName)

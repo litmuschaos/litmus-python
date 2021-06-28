@@ -18,7 +18,7 @@ help:
 	@echo ""
 	@echo "Usage:-"
 	@echo "\tmake deps          	-- sets up dependencies for image build"
-	@echo "\tmake docker.buildx     -- docker multi-arch image"
+	@echo "\tmake build   			 -- docker multi-arch image"
 	@echo "\tmake build-amd64   	-- builds the litmus-py docker amd64 image"
 	@echo "\tmake push-amd64    	-- pushes the litmus-py amd64 image"
 	@echo "\tmake build-amd64-byoc  -- builds the chaostest docker amd64 image"
@@ -26,7 +26,7 @@ help:
 	@echo ""
 
 .PHONY: all
-all: deps docker.buildx build-amd64 push-amd64 build-amd64-byoc push-amd64-byoc trivy-check
+all: deps buildx build-byoc build-litmus-python trivy-check
 
 .PHONY: deps
 deps: _build_check_docker
@@ -39,6 +39,9 @@ _build_check_docker:
 		&& exit 1; \
 		fi;
 
+.PHONY: buildx
+buildx: docker.buildx image-build
+
 .PHONY: docker.buildx
 docker.buildx:
 	@echo "------------------------------"
@@ -50,35 +53,46 @@ docker.buildx:
 		docker buildx use multibuilder;\
 	fi
 
-.PHONY: build-amd64
-build-amd64:
+.PHONY: image-build
+image-build:	
+	@echo "-------------------------"
+	@echo "--> Build builder image" 
+	@echo "-------------------------"
+	@docker buildx build --file Dockerfile --progress plane --platform linux/arm64,linux/amd64 --no-cache --tag $(DOCKER_REPO)/$(DOCKER_IMAGE):$(DOCKER_TAG) .
 
+.PHONY: build-litmus-python
+build-litmus-python: build-py-runner push-py-runner
+
+.PHONY: build-py-runner
+build-py-runner:
 	@echo "-------------------------"
 	@echo "--> Build py-runner image" 
 	@echo "-------------------------"
 	@sudo docker build --file Dockerfile --tag $(DOCKER_REPO)/$(DOCKER_IMAGE):$(DOCKER_TAG) . --build-arg TARGETARCH=amd64
 
-.PHONY: push-amd64
-push-amd64:
+.PHONY: push-py-runner
+push-py-runner:
 	@echo "-------------------"
 	@echo "--> py-runner image" 
 	@echo "-------------------"
 	REPONAME="$(DOCKER_REPO)" IMGNAME="$(DOCKER_IMAGE)" IMGTAG="$(DOCKER_TAG)" ./build/push
 
-.PHONY: build-amd64-byoc
-build-amd64-byoc:
+.PHONY: build-byoc
+build-byoc: build-chaostoolkit push-chaostoolkit
 
+.PHONY: build-chaostoolkit
+build-chaostoolkit:
 	@echo "-------------------------"
 	@echo "--> Build chaostoolkit image" 
 	@echo "-------------------------"
 	@sudo docker build --file byoc/Dockerfile --tag $(DOCKER_REPO)/$(DOCKER_IMAGE):$(DOCKER_TAG) . --build-arg TARGETARCH=amd64
 
-.PHONY: push-amd64-byoc
-push-amd64-byoc:
+.PHONY: push-chaostoolkit
+push-chaostoolkit:
 	@echo "-------------------"
 	@echo "--> chaostoolkit image" 
 	@echo "-------------------"
-	REPONAME="$(DOCKER_REPO)" IMGNAME="$(DOCKER_IMAGE)" IMGTAG="$(DOCKER_TAG)" .byoc/buildscripts/push
+	REPONAME="$(DOCKER_REPO)" IMGNAME="$(DOCKER_IMAGE)" IMGTAG="$(DOCKER_TAG)" ./build/push
 
 .PHONY: trivy-check
 trivy-check:
