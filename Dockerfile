@@ -8,7 +8,14 @@ ARG TARGETARCH
 # upgrade and setup python
 RUN apt-get update \
     && apt-get -y install gcc python-pip python3-pip python-dev curl \
-    && pip install --upgrade pip
+    && pip install --upgrade pip \
+    && pip install jinja2 pyYaml
+
+### Setup kops
+ENV kopsversion=1.10.0
+RUN curl -Lsf -o kops-linux-amd64 https://github.com/kubernetes/kops/releases/download/${kopsversion}/kops-linux-amd64
+RUN chmod +x ./kops-linux-amd64
+RUN mv ./kops-linux-amd64 /usr/local/bin/kops
 
 # Setup kubectl
 WORKDIR /litmus/kubectl/
@@ -30,6 +37,14 @@ COPY . .
 # Setup requirements
 RUN pip3 install -r requirements.txt
 RUN python3 setup.py install
+
+WORKDIR /litmus/byoc
+
+# Setup requirements for byoc
+RUN chmod +x install.sh
+RUN ./install.sh
+
+WORKDIR /litmus
 
 # Copying experiment file
 COPY ./bin/experiment/experiment.py ./experiments

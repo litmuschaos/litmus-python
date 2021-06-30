@@ -16,12 +16,11 @@ do
 done
 
 # Chaos toolkit litmus local package installation
-declare -a chaos_litmus_packages=("chaos")
+declare -a chaos_litmus_packages=("chaostest")
 for chaos_litmus_package in "${chaos_litmus_packages[@]}"
 do
   pwd
-  cd /app/"$chaos_litmus_package"/
-  cd chaostest
+  cd "$chaos_litmus_package"
   ls -ltr
   python setup.py develop
   pip install -U .

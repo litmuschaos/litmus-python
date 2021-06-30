@@ -105,7 +105,7 @@ def IsParentAnnotated(clients, parentName, chaosDetails):
 		if deploy.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) == chaosDetails.AppDetail.AnnotationValue:
 			return True, None
 
-	elif chaosDetails.AppDetail.Kind.lower() =="statefulset" or  chaosDetails.AppDetail.Kind.lower() == "statefulsets":
+	elif chaosDetails.AppDetail.Kind.lower() =="statefulset" or chaosDetails.AppDetail.Kind.lower() == "statefulsets":
 		try:
 			sts = clients.clientApps.read_namespaced_stateful_set(name=parentName, namespace=chaosDetails.AppDetail.Namespace)
 		except Exception as exp:
@@ -114,7 +114,7 @@ def IsParentAnnotated(clients, parentName, chaosDetails):
 		if sts.metadata.annotations.get(chaosDetails.AppDetail.AnnotationKey) == chaosDetails.AppDetail.AnnotationValue:
 			return True, None
 
-	elif chaosDetails.AppDetail.Kind.lower() =="daemonset" or  chaosDetails.AppDetail.Kind.lower() == "daemonsets":
+	elif chaosDetails.AppDetail.Kind.lower() =="daemonset" or chaosDetails.AppDetail.Kind.lower() == "daemonsets":
 		try:
 			ds = clients.clientApps.read_namespaced_daemon_set(name=parentName, namespace=chaosDetails.AppDetail.Namespace)
 		except Exception as exp:

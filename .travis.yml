@@ -6,6 +6,7 @@ install: true
 stages:
   - shell check
   - build docker images
+  - push docker images
 
 before_script:
   - sleep 15
@@ -27,18 +28,21 @@ jobs:
       name: checking syntax of shell script
       script:
       - bash -c 'shopt -s globstar nullglob; shellcheck **/*.{sh,ksh,bash}' || true
-
-    - stage: build docker images
-      name: build docker image byoc
-      env: GOARCH=amd64
-      script:
-      - make build-byoc
     
     - stage: build docker images
-      name: build docker image litmus-python
+      name: installing and configuring dependencies
       script:
-      - make buildx
-      - make build-litmus-python
+      - make deps
+    
+    - stage: build docker images
+      name: build docker image
+      script:
+      - make build
+
+    - stage: push docker images
+      name: push docker images
+      script:
+      - make push
 
 notifications:
   email:

@@ -50,7 +50,7 @@ ENV LANG=C.UTF-8
 WORKDIR /app/chaos
 
 ### Setup chaostoolkit packages
-COPY byoc /app/chaos
+COPY . /app/chaos
 
 RUN chmod +x install.sh
 
