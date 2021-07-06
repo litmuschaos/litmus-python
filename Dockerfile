@@ -11,17 +11,16 @@ RUN apt-get update \
     && pip install --upgrade pip \
     && pip install jinja2 pyYaml
 
-### Setup kops
-ENV kopsversion=1.10.0
-RUN curl -Lsf -o kops-linux-amd64 https://github.com/kubernetes/kops/releases/download/${kopsversion}/kops-linux-amd64
-RUN chmod +x ./kops-linux-amd64
-RUN mv ./kops-linux-amd64 /usr/local/bin/kops
+#Installing kops
+ENV kopsversion=v1.20.0
+RUN curl -Lsf -o kops-linux https://github.com/kubernetes/kops/releases/download/${kopsversion}/kops-linux-${TARGETARCH}
+RUN chmod +x ./kops-linux
+RUN mv ./kops-linux /usr/local/bin/kops
 
-# Setup kubectl
-WORKDIR /litmus/kubectl/
-RUN curl -Lsf -o kubectl https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-RUN chmod +x ./kubectl
-RUN mv ./kubectl /usr/local/bin/kubectl
+#Installing Kubectl
+ENV KUBE_LATEST_VERSION="v1.18.0"
+RUN curl -L https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/${TARGETARCH}/kubectl -o     /usr/local/bin/kubectl && \
+chmod +x /usr/local/bin/kubectl
 
 RUN rm -rf /tmp/* /root/.cache
 
