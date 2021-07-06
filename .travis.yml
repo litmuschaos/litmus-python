@@ -9,7 +9,6 @@ stages:
   - push docker images
 
 before_script:
-  - sleep 15
   - sudo apt-get install -y curl shellcheck
   - docker run --rm --privileged docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64
   # #Upgrade to Docker CE 19.03 for BuildKit support
