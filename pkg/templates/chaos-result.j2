@@ -1,0 +1,22 @@
+# Jinja template for ChaosResult
+---
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosResult
+metadata:
+    name: "{{ name }}"
+    namespace: "{{ namespace }}"
+    labels: {{ labels }}
+spec:
+    engine: "{{ engineName }}"
+    experiment: "{{ experimentName }}"
+    instance: "{{ instanceId }}"
+status:
+    experimentStatus: 
+        phase: "{{ phase }}"
+        verdict: "{{ verdict }}"
+        probeSuccessPercentage: "{{ probeSuccessPercentage }}"
+        failStep: "{{ failStep }}"
+    history:
+        passedRuns: {{ passedRuns }}
+        failedRuns: {{ failedRuns }}
+        stoppedRuns: {{ stoppedRuns }}
