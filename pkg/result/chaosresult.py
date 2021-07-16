@@ -14,13 +14,13 @@ class ChaosResults(object):
 
 		# Initialise experimentLabel
 		experimentLabel = {}
-		
+
 		# It will list all the chaos-result with matching label
 		# Note: We have added labels inside chaos result and looking for matching labels to list the chaos-result
 		try:
 			resultList = clients.clientDyn.resources.get(api_version="litmuschaos.io/v1alpha1", kind="ChaosResult").get(namespace=chaosDetails.ChaosNamespace, label_selector="name=" + resultDetails.Name)
 		except Exception as exp:
-			return exp
+			return ValueError("Failed to get ChaosResult with matching label {} in namespace {}".format("name=" + resultDetails.Name, chaosDetails.ChaosNamespace))
 		
 		# as the chaos pod won't be available for stopped phase
 		# skipping the derivation of labels from chaos pod, if phase is stopped
@@ -54,7 +54,7 @@ class ChaosResults(object):
 		passedRuns = 0,  failedRuns = 0, stoppedRuns = 0, probeSuccessPercentage = "Awaited"):
 		
 		try:	
-			env_tmpl = Environment(loader=PackageLoader('pkg', 'templates'), trim_blocks=True, lstrip_blocks=True,
+			env_tmpl = Environment(loader=PackageLoader('pkg', 'result'), trim_blocks=True, lstrip_blocks=True,
 									autoescape=select_autoescape(['yaml']))
 			template = env_tmpl.get_template('chaos-result.j2')
 			updated_chaosresult_template = template.render(name=resultDetails.Name, namespace=chaosDetails.ChaosNamespace, labels=experimentLabel, 

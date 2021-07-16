@@ -1,10 +1,10 @@
 import pkg.types.types  as types
-import pkg.generic.podDelete.types.types as experimentDetails
-import pkg.generic.podDelete.environment.environment as experimentEnv
+import pkg.generic.pod_delete.types.types as experimentDetails
+import pkg.generic.pod_delete.environment.environment as experimentEnv
 import pkg.events.events as events
 import logging
 import pkg.status.application as application
-import chaosLib.litmus.poddelete.lib.podDelete as litmusLIB
+import chaosLib.litmus.pod_delete.lib.pod_delete as litmusLIB
 import pkg.result.chaosresult as chaosResults
 import pkg.utils.common.common as common
 

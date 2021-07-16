@@ -1,7 +1,6 @@
 from datetime import datetime
 import pytz
 from kubernetes import client
-from kubernetes.client.rest import ApiException
 import pkg.utils.k8serror.k8serror as k8serror
 
 #CreateEvents create the events in the desired resource
@@ -39,7 +38,7 @@ def CreateEvents(eventsDetails , chaosDetails, kind, eventName, clients):
 	try:
 		clients.clientCoreV1.create_namespaced_event(chaosDetails.ChaosNamespace, body=event)
 	except Exception as exp:
-		return ValueError("Failed to create event with err: %s", exp)
+		return ValueError("Failed to create event with err: {}".format(exp))
 	return None
 
 #GenerateEvents update the events and increase the count by 1, if already present
@@ -67,6 +66,6 @@ def GenerateEvents(eventsDetails, chaosDetails, kind, clients):
 		event.message = eventsDetails.Message
 		try:
 			clients.clientCoreV1.patch_namespaced_event(eventName, chaosDetails.ChaosNamespace, body = event)
-		except ApiException as exp:
+		except Exception as exp:
 			return exp
 	return None
