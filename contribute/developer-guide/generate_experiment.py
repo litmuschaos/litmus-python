@@ -6,7 +6,7 @@ import argparse
 import glob
 import shutil
 
-# generate_csv creates __init__.py file which makes python to treat directories containing it as modules
+# generate_csv creates __init__.py file which helps python to find the corresponding module
 def generate_init(init_path):
     init_path = init_path  + '/' + '__init__.py'
     open(init_path, mode='a').close()

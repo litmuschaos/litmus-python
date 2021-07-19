@@ -105,7 +105,7 @@ scaffolded files consist of placeholders which can then be filled as desired.
   $ python3 generate_experiment.py -f=attributes.yaml -g=<experiment>
   ```
 
-  **Note**: Replace the `-g=<experiment>` placeholder with the appropriate value based on the usecase: 
+  **Note**: Replace the `-g=<generate-type>` placeholder with the appropriate value based on the usecase: 
   - `experiment`: Chaos experiment artifacts belonging to an existing OR new experiment.
   - `chart`: Just the chaos-chart metadata, i.e., chartserviceversion.yaml
       - Provide the type of chart in the `-t=<type>` flag. It supports the following values:

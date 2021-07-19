@@ -13,7 +13,7 @@ keywords:
 platforms:
   - Minikube
 scope: "Namespaced"
-auxiliaryappcheck: true
+auxiliaryappcheck: false
 permissions:
   - apigroups:
       - ""
