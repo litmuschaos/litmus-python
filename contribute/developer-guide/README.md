@@ -102,7 +102,7 @@ scaffolded files consist of placeholders which can then be filled as desired.
   `sample_exec_chaos` experiment.
 
   ```
-  $ python3 generate_experiment.py -f=attributes.yaml -g=<experiment>
+  $ python3 generate_experiment.py -f=attributes.yaml -g=<generate-type>
   ```
 
   **Note**: Replace the `-g=<generate-type>` placeholder with the appropriate value based on the usecase: 
