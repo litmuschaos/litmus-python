@@ -34,6 +34,17 @@ def RandomInterval(interval):
 	WaitForDuration(waitTime)
 	return None
 
+#GetTargetContainer will fetch the container name from application pod
+#This container will be used as target container
+def GetTargetContainer(appNamespace, appName, clients):
+	
+	try:
+		pod = clients.clientCoreV1.read_namespaced_pod(name=appName, namespace=appNamespace)
+	except Exception as e:
+		return "", e
+	
+	return pod.spec.containers[0].name, None
+
 # GetRunID generate a random
 def GetRunID():
 	runId = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))

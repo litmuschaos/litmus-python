@@ -86,8 +86,8 @@ class Pods(object):
 			nonChaosPods = []
 			# ignore chaos pods
 			for pod in podList.items:
-				if (pod.metadata.labels["chaosUID"] != str(chaosDetails.ChaosUID) or pod.metadata.labels["name"] == "chaos-operator"):
-					nonChaosPods = nonChaosPods.append(pod)
+				if pod.metadata.labels.get("chaosUID") == "" and pod.metadata.labels.get("name") != "chaos-operator": 
+					nonChaosPods.append(pod)
 			return client.V1PodList(items=nonChaosPods)
 		return podList
 	

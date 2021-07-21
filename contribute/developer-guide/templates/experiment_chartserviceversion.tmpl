@@ -1,0 +1,40 @@
+apiVersion: litmuchaos.io/v1alpha1
+kind: ChartServiceVersion
+metadata:
+  name: {{ name }} 
+  version: {{ version }}
+  annotations:
+    categories: {{ category }}
+spec:
+  displayName: {{ name }} 
+  categoryDescription: >
+    {{ description }} 
+  keywords: 
+  {%- for key in keywords %} 
+    - "{{ key }}" 
+  {%- endfor %} 
+  platforms: 
+  {%- for plat in platforms %} 
+    - "{{ plat }}" 
+  {% endfor %}
+  maturity: {{ maturity }}
+  maintainers:
+  {%- for i in maintainers %} 
+    - name: {{- i.name }} 
+      email: {{- i.email }} 
+  {%- endfor %} 
+  minKubeVersion: {{ minkubernetesversion }} 
+  provider: 
+    name: {{ provider.name }}
+  labels:
+    app.kubernetes.io/component: chartserviceversion
+    app.kubernetes.io/version: latest
+  links: 
+  {%- for ref in references %} 
+    - name: {{- ref.name }} 
+      url: {{- ref.url }} 
+  {%- endfor %} 
+  icon:
+    - url: 
+      mediatype: ""
+  chaosexpcrdlink: https://raw.githubusercontent.com/litmuschaos/chaos-charts/master/charts/{{ category }}/{{ name }}/experiment.yaml
