@@ -46,7 +46,7 @@ RUN ./install.sh
 WORKDIR /litmus
 
 # Copying experiment file
-COPY ./bin/experiment/experiment.py ./experiments
+COPY ./bin/experiment/experiment.py ./experiment
 
 ENV PYTHONPATH /litmus
 

@@ -1,0 +1,51 @@
+---
+name: "sample_exec_chaos"
+version: "0.1.0"
+category: "sample_category"
+repository: "https://github.com/litmuschaos/litmus-python/tree/master/sample_category/sample_exec_chaos"
+community: "https://kubernetes.slack.com/messages/CNXNB0ZTN"
+description: "it execs inside target pods to run the chaos inject commands, waits for the chaos duration and reverts the chaos"
+keywords:
+  - "pods"
+  - "kubernetes"
+  - "sample-category"
+  - "exec"
+platforms:
+  - Minikube
+scope: "Namespaced"
+auxiliaryappcheck: false
+permissions:
+  - apigroups:
+      - ""
+      - "batch"
+      - "apps"
+      - "litmuschaos.io"
+    resources:
+      - "jobs"
+      - "pods"
+      - "pods/log"
+      - "events"
+      - "deployments"
+      - "replicasets"
+      - "pods/exec"
+      - "chaosengines"
+      - "chaosexperiments"
+      - "chaosresults"
+    verbs:
+       - "create"
+       - "list"
+       - "get"
+       - "patch"
+       - "update"
+       - "delete"
+       - "deletecollection"
+maturity: "alpha"
+maintainers:
+  - name: "oumkale"
+    email: "oumkale@chaosnative.com"
+provider:
+  name: "ChaosNative"
+minkubernetesversion: "1.12.0"
+references:
+  - name: Documentation
+    url: "https://docs.litmuschaos.io/docs/getstarted/"
