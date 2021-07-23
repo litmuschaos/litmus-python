@@ -13,7 +13,7 @@ The artifacts associated with a chaos-experiment are summarized below:
 - Submitted in litmuschaos/chaos-charts repository, under the *chaos_category* folder
 
   - Experiment custom resource (CR) (holds experiment-specific chaos parameters & experiment entrypoint)
-  - Experiment ChartServiceVersion (holds experiment metadata that will be rendered on [charthub](hub.litmuschaos.io))
+  - Experiment ChartServiceVersion (holds experiment metadata that will be rendered on [charthub](https://hub.litmuschaos.io/))
   - Experiment RBAC (holds experiment-specific ServiceAccount, Role and RoleBinding)
   - Experiment Engine (holds experiment-specific chaosengine)
 
@@ -237,6 +237,7 @@ Follow the steps provided below to setup okteto & test the experiment execution.
         'experiments/sample_category/sample_exec_chaos',
         'experiments/sample_category/sample_exec_chaos/experiment',
       ```
+    - Add `&` operator in the end of kill command `CHAOS_KILL_COMMAND` example: `kill $(find /proc -name exe -lname '*/md5sum' 2>&1 | grep -v 'Permission denied' | awk -F/ '{print $(NF-1)}') &`. As we are running chaos command as a background process in separate thread.  
     - Import main file it in bin/experiment/experiment.py and add case. example: line number 3 in experiment.py 
     - Then go to root(litmus-python) and run `python3 setup.py install`
 
