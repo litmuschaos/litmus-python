@@ -238,6 +238,7 @@ Follow the steps provided below to setup okteto & test the experiment execution.
         'experiments/sample_category/sample_exec_chaos/experiment',
       ```
     - Add `&` operator at the end of kill commands `CHAOS_KILL_COMMAND` example: `kill $(find /proc -name exe -lname '*/md5sum' 2>&1 | grep -v 'Permission denied' | awk -F/ '{print $(NF-1)}') &`.
+      Because we are running this command as a background process using multi-threading.  
     - Import main file it in bin/experiment/experiment.py and add case. example: line number 3 in experiment.py 
     - Then go to root(litmus-python) and run `python3 setup.py install`
 
