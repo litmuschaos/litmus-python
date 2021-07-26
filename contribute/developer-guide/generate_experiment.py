@@ -249,6 +249,10 @@ def main():
         environment_dir = litmus_root + '/pkg/' + config['category'] + '/environment'
         types_dir = litmus_root + '/pkg/' + config['category'] + '/types'
         
+        # create and generate __init__.py file in chaosLib experiment dir 
+        create_dir(litmus_root + '/chaosLib/litmus/' + config['name'])
+        generate_init(litmus_root + '/chaosLib/litmus/' + config['name'])
+        
         # generate experiment.py
         generate_experiment(experiment_dir, entity_name, config, env)
 
