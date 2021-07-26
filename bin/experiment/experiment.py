@@ -4,7 +4,6 @@ import experiments.generic.pod_delete.pod_delete as pod_delete
 import argparse
 import logging
 import pkg.utils.client.client as client
-
 logging.basicConfig(format='time=%(asctime)s level=%(levelname)s  msg=%(message)s', level=logging.INFO)  
 
 def main():
