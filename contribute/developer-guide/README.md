@@ -229,15 +229,16 @@ Follow the steps provided below to setup okteto & test the experiment execution.
     -  Add packages routes for all the files which are generated from sdk in `setup.py` before creating image. 
       example :
       ```
-        'chaosLib/litmus/sample_exec_chaos',
-        'pkg/sample_category',
-        'pkg/sample_category/environment',
-        'pkg/sample_category/types',
-        'experiments/sample_category',
-        'experiments/sample_category/sample_exec_chaos',
-        'experiments/sample_category/sample_exec_chaos/experiment',
+      'chaosLib/litmus/sample_exec_chaos',
+      'chaosLib/litmus/sample_exec_chaos/lib',
+      'pkg/sample_category',
+      'pkg/sample_category/environment',
+      'pkg/sample_category/types',
+      'experiments/sample_category',
+      'experiments/sample_category/sample_exec_chaos',
+      'experiments/sample_category/sample_exec_chaos/experiment',
       ```
-    - Add `&` operator in the end of kill command `CHAOS_KILL_COMMAND` example: `kill $(find /proc -name exe -lname '*/md5sum' 2>&1 | grep -v 'Permission denied' | awk -F/ '{print $(NF-1)}') &`. As we are running chaos command as a background process in separate thread.  
+    - Add `&` operator in the end of chaos-inject command `CHAOS_INJECT_COMMAND` example: `md5sum /dev/zero &`. As we are running chaos command as a background process in a separate thread.  
     - Import main file it in bin/experiment/experiment.py and add case. example: line number 3 in experiment.py 
     - Then go to root(litmus-python) and run `python3 setup.py install`
 
