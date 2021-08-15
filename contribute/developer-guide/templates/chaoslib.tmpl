@@ -1,0 +1,133 @@
+
+import pkg.types.types  as types
+import pkg.events.events as events
+import logging, threading, signal, sys
+import pkg.utils.common.common as common
+import pkg.utils.common.pods as pods
+import pkg.utils.exec.exec as litmusexec
+
+# signal object
+class Signals(object):
+	def __init__(self, timeSignal=None, sigSignal=None):
+		self.timeSignal = timeSignal
+		self.sigSignal = sigSignal
+
+# experimentExecution check for the availibilty of the target pods and target containers for the chaos execution
+# if the target pod and container found then it will start chaos execution
+def experimentExecution(experimentsDetails, clients , resultDetails , eventsDetails , chaosDetails):
+
+	# Get the target pod details for the chaos execution
+	# if the target pod is not defined it will derive the random target pod list using pod affected percentage
+	targetPodList, err = pods.Pods().GetPodList(experimentsDetails.TargetPods, experimentsDetails.PodsAffectedPerc, chaosDetails, clients)
+	if err != None:
+		return err
+
+	podNames = []
+	for pod in targetPodList.items:
+		podNames.append(pod.metadata.name)
+	logging.info("[Info]: Target pods list, %s", podNames)
+
+	#Get the target container name of the application pod
+	if experimentsDetails.TargetContainer == "":
+		experimentsDetails.TargetContainer, err = common.GetTargetContainer(experimentsDetails.AppNS, targetPodList.items[0].metadata.name, clients)
+		if err != None:
+			return ValueError("unable to get the target container name, err: %s", err)
+	return runChaos(experimentsDetails, targetPodList, clients, resultDetails, eventsDetails, chaosDetails)
+
+# injectChaos inject the chaos
+def injectChaos(experimentsDetails , podName , clients):
+	# It will contains all the pod & container details required for exec command
+	execCommandDetails = litmusexec.PodDetails()
+	command = ['/bin/sh', '-c', experimentsDetails.ChaosInjectCmd]
+	
+	litmusexec.SetExecCommandAttributes(execCommandDetails, podName, experimentsDetails.TargetContainer, experimentsDetails.AppNS)
+	err = litmusexec.Exec(execCommandDetails, clients, command)
+	if err != None:
+		return ValueError("unable to run command inside target container, err: {}".format(err))
+
+	return None
+
+# runChaos start the chaos injection and kill it after chaos injection completed or any abortion found		
+def runChaos(experimentsDetails , targetPodList, clients , resultDetails, eventsDetails , chaosDetails):
+	
+	sign = Signals()
+	sign.timeSignal = False
+	sign.sigSignal = False
+	signal.alarm(experimentsDetails.ChaosDuration)
+
+	def signal_handler(sig, frame):
+		if sig == 14:
+			sign.timeSignal = True
+		else:
+			sign.sigSignal = True
+	
+	for pod in targetPodList.items :
+		
+		if experimentsDetails.EngineName != "" :
+			msg = "Injecting " + experimentsDetails.ExperimentName + " chaos on application pod"
+			types.SetEngineEventAttributes(eventsDetails, types.ChaosInject, msg, "Normal", chaosDetails)
+			events.GenerateEvents(eventsDetails, chaosDetails, "ChaosEngine", clients)
+
+		logging.info("[Chaos]: The Target application details container : %s, Pod : %s", experimentsDetails.TargetContainer, pod.metadata.name)
+
+		# sendor thread is used to transmit signal notifications.
+		threading.Thread(target=injectChaos, args=(experimentsDetails, pod.metadata.name, clients)).start()
+		signal.signal(signal.SIGTERM, signal_handler)
+		signal.signal(signal.SIGINT, signal_handler)
+		signal.signal(signal.SIGALRM, signal_handler)
+
+		logging.info("[Chaos]:Waiting for: %s", experimentsDetails.ChaosDuration)
+		
+		while True:
+			if sign.timeSignal:
+				logging.info("[Chaos]: Time is up for experiment: %s", experimentsDetails.ExperimentName)
+				c1 = None
+				break
+			elif sign.sigSignal:
+				logging.info("[Chaos]: Revert Started")
+				err = killChaos(experimentsDetails, pod.metadata.name, clients)
+				if err != None:
+					logging.error("unable to kill chaos process after receiving abortion signal")
+					break
+				logging.info("[Chaos]: Revert Completed")
+				sys.exit(0)
+				
+		err = killChaos(experimentsDetails, pod.metadata.name, clients)
+		if err != None:
+			return err
+	
+	return None
+
+#PrepareChaos contains the prepration steps before chaos injection
+def PrepareChaos(experimentsDetails, resultDetails, eventsDetails, chaosDetails, clients):
+	
+	#Waiting for the ramp time before chaos injection
+	if experimentsDetails.RampTime != 0 :
+		logging.info("[Ramp]: Waiting for the %s ramp time before injecting chaos",experimentsDetails.RampTime)
+		common.WaitForDuration(experimentsDetails.RampTime)
+	
+    #Starting the CPU stress experiment
+	err = experimentExecution(experimentsDetails, clients, resultDetails, eventsDetails, chaosDetails)
+	if err != None:
+		return err
+	
+	#Waiting for the ramp time after chaos injection
+	if experimentsDetails.RampTime != 0 :
+		logging.info("[Ramp]: Waiting for the %s ramp time after injecting chaos", experimentsDetails.RampTime)
+		common.WaitForDuration(experimentsDetails.RampTime)
+
+	return None
+
+# killChaos kill the process
+def killChaos(experimentsDetails, podName, clients):
+	# It will contains all the pod & container details required for exec command
+	execCommandDetails = litmusexec.PodDetails()
+
+	command = ['/bin/sh', '-c', experimentsDetails.ChaosKillCmd]
+
+	litmusexec.SetExecCommandAttributes(execCommandDetails, podName, experimentsDetails.TargetContainer, experimentsDetails.AppNS)
+	err = litmusexec.Exec(execCommandDetails, clients, command)
+	if err != None:
+		return ValueError("unable to kill the process in {} pod, err: {}".format(podName, err))
+
+	return

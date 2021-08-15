@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-import experimentList.generic.podDelete.podDelete as podDelete
+import experiments.generic.pod_delete.pod_delete as pod_delete
 import argparse
 import logging
 import pkg.utils.client.client as client
-
 logging.basicConfig(format='time=%(asctime)s level=%(levelname)s  msg=%(message)s', level=logging.INFO)  
 
 def main():
@@ -23,10 +22,9 @@ def main():
 
 	# invoke the corresponding experiment based on the the (-name) flag
 	if args.name == "pod-delete":
-		podDelete.PodDelete(clients)
+		pod_delete.PodDelete(clients)
 	else:
 		logging.error("Unsupported -name %s, please provide the correct value of -name args", args.name)
 	return
 if __name__ == "__main__":
 	main()
-	
