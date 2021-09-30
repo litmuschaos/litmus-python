@@ -1,4 +1,4 @@
-name: litmus-python
+name: litmus-experiment
 autocreate: true
 image: okteto/python:3
 command: bash
