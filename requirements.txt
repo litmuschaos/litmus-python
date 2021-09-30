@@ -5,7 +5,7 @@ dateparser==1.0.0
 decorator==5.0.9
 idna==2.10
 Jinja2==2.11.3
-kubernetes
+kubernetes==18.20.0
 protobuf==3.17.1
 py==1.10.0
 pyasn1==0.4.8
