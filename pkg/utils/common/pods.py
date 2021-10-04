@@ -28,7 +28,7 @@ class Pods(object):
 			if err != None :
 				return False, err			
 			if not isPodsAvailable:
-				return isPodsAvailable, None
+				return isPodsAvailable, ValueError("{} pod is not available in {} namespace".format(pod, namespace))
 
 		return True, None
 
@@ -37,17 +37,10 @@ class Pods(object):
 	def GetPodList(self, targetPods, podAffPerc , chaosDetails, clients):
 		
 		realpods = client.V1PodList
-		try:
-			podList = clients.clientCoreV1.list_namespaced_pod(chaosDetails.AppDetail.Namespace, label_selector=chaosDetails.AppDetail.Label)
-		except Exception as exp:
-			return client.V1PodList, exp
-		if len(podList.items) == 0:
-    			return False, ValueError("Failed to find the pod with matching labels in {} namespace".format(chaosDetails.AppDetail.Namespace))
-		
 		isPodsAvailable, err = self.VerifyExistanceOfPods(chaosDetails.AppDetail.Namespace, targetPods, clients)
 		if err != None:
 			return client.V1PodList, err
-		
+
 		# getting the pod, if the target pods is defined
 		# else select a random target pod from the specified labels
 		if isPodsAvailable:
@@ -55,7 +48,7 @@ class Pods(object):
 			if err != None or len(realpods.items) == 0:
 				return client.V1PodList, err
 		else:
-			nonChaosPods = self.FilterNonChaosPods(podList, chaosDetails, clients)
+			nonChaosPods = self.FilterNonChaosPods(chaosDetails, clients)
 			realpods, err = self.GetTargetPodsWhenTargetPodsENVNotSet(podAffPerc, nonChaosPods, chaosDetails, clients)
 			if err != None or len(realpods.items) == 0:
 				return client.V1PodList, err
@@ -72,54 +65,56 @@ class Pods(object):
 		try:
 			clients.clientCoreV1.read_namespaced_pod(name, namespace)
 		except Exception as err:
-			if not k8serror.K8serror().IsNotFound(err):
-				return False, err
-			elif k8serror.K8serror().IsNotFound(err):
+			if k8serror.K8serror().IsNotFound(err):
 				return False, None
+			else:
+				return False, err
 
 		return True, None
 	
 	#FilterNonChaosPods remove the chaos pods(operator, runner) for the podList
 	# it filter when the applabels are not defined and it will select random pods from appns
-	def FilterNonChaosPods(self, podList, chaosDetails, clients):
-		if chaosDetails.AppDetail.Label == "":
-			nonChaosPods = []
-			# ignore chaos pods
-			for pod in podList.items:
-				if pod.metadata.labels.get("chaosUID") == "" and pod.metadata.labels.get("name") != "chaos-operator": 
-					nonChaosPods.append(pod)
-			return client.V1PodList(items=nonChaosPods)
-		return podList
-	
-	# GetTargetPodsWhenTargetPodsENVSet derive the specific target pods, if TARGET_PODS env is set
-	def GetTargetPodsWhenTargetPodsENVSet(self, targetPods, chaosDetails, clients):
+	def FilterNonChaosPods(self, chaosDetails, clients):
 		try:
 			podList = clients.clientCoreV1.list_namespaced_pod(chaosDetails.AppDetail.Namespace, label_selector=chaosDetails.AppDetail.Label)
 		except Exception as exp:
 			return client.V1PodList, exp
-		
-		if len(podList.items) == 0 :
-			return client.V1PodList, ValueError("Failed to find the pods with matching labels in {} namespace".format(chaosDetails.AppDetail.Namespace))
+		if len(podList.items) == 0:
+				return False, ValueError("Failed to find the pod with matching labels in {} namespace".format(chaosDetails.AppDetail.Namespace))
+
+		nonChaosPods = []
+		# ignore chaos pods
+		for pod in podList.items:
+			if pod.metadata.labels.get("chaosUID") == None and pod.metadata.labels.get("name") != "chaos-operator": 
+				nonChaosPods.append(pod)
+		return client.V1PodList(items=nonChaosPods)
+
+	# GetTargetPodsWhenTargetPodsENVSet derive the specific target pods, if TARGET_PODS env is set
+	def GetTargetPodsWhenTargetPodsENVSet(self, targetPods, chaosDetails, clients):
 
 		targetPodsList = targetPods.split(",")
 		realPodList = []
-		for pod in podList.items :
-			for podTarget in targetPodsList :
+		
+		for targetPod in targetPodsList :
+			try:
+				pod = clients.clientCoreV1.read_namespaced_pod(targetPod, chaosDetails.AppDetail.Namespace)
+			except Exception as exp:
+				return client.V1PodList, exp
+
+			if chaosDetails.AppDetail.AnnotationCheck:
 				parentName, err = annotation.GetParentName(clients, pod, chaosDetails)
 				if err != None:
 					return client.V1PodList, err
-				if podTarget == pod.metadata.name :
-					if chaosDetails.AppDetail.AnnotationCheck:
-						isPodAnnotated, err = annotation.IsParentAnnotated(clients, parentName, chaosDetails)
-						if err != None :
-							return client.V1PodList, err
-						
-						if not isPodAnnotated:
-							return client.V1PodList, ValueError("{} target pods are not annotated".format(targetPods))
+				
+				isPodAnnotated, err = annotation.IsParentAnnotated(clients, parentName, chaosDetails)
+				if err != None :
+					return client.V1PodList, err
+				
+				if not isPodAnnotated:
+					return client.V1PodList, ValueError("{} target pods are not annotated".format(targetPods))
 
-					realPodList.append(pod)
-					logging.info("[Info]: chaos candidate of kind: %s, name: %s, namespace: %s", chaosDetails.AppDetail.Kind, parentName, chaosDetails.AppDetail.Namespace)
-		
+			realPodList.append(pod)
+
 		return client.V1PodList(items=realPodList), None
 	
 	# GetTargetPodsWhenTargetPodsENVNotSet derives the random target pod list, if TARGET_PODS env is not set
@@ -128,32 +123,25 @@ class Pods(object):
 		filteredPods = []
 		realPods = []
 		for pod in nonChaosPods.items:
-		
-			parentName, err = annotation.GetParentName(clients, pod, chaosDetails)
-		
-			if err != None:
-				return client.V1PodList, err
-
 			if chaosDetails.AppDetail.AnnotationCheck:
-				isParentAnnotated, err = annotation.IsParentAnnotated(clients, parentName, chaosDetails)
-		
+				parentName, err = annotation.GetParentName(clients, pod, chaosDetails)
 				if err != None:
-					return client.V1PodList, err 
+					return client.V1PodList, err
+				isParentAnnotated, err = annotation.IsParentAnnotated(clients, parentName, chaosDetails)
+				if err != None:
+					return client.V1PodList, err 	
 				
 				if isParentAnnotated:
 					filteredPods.append(pod)
-					logging.info("[Info]: chaos candidate of kind: %s, name: %s, namespace: %s", chaosDetails.AppDetail.Kind, parentName, chaosDetails.AppDetail.Namespace)
 			else:
-				for pod in nonChaosPods.items:
-					filteredPods.append(pod)
-				logging.info("[Info]: chaos candidate of kind: %s, name: %s, namespace: %s", chaosDetails.AppDetail.Kind, parentName, chaosDetails.AppDetail.Namespace)
-		
+				filteredPods.append(pod)
+
 		if len(filteredPods) == 0:
 			return client.V1PodList(items=filteredPods), ValueError("No target pod found")
 			
-		newPodListLength = max(1, maths.Adjustment(podAffPerc, len(filteredPods)))
+		newPodListLength = max(1, maths.Adjustment(min(podAffPerc,100), len(filteredPods)))
 		
-		# it will generate the random podlist
+  		# it will generate the random podlist
 		# it starts from the random index and choose requirement no of pods next to that index in a circular way.
 		index = random.randint(0,len(filteredPods)-1)
 		for i in range(int(newPodListLength)):

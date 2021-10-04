@@ -68,7 +68,7 @@ def getRolloutName(targetPod, chaosDetails, clients):
 	for own in rsOwnerRef :
 		if own.kind == "ReplicaSet":
 			try:
-				rs = clients.clientsAppsV1.read_namespaced_replica_set(own.name, chaosDetails.AppDetail.Namespace)
+				rs = clients.clientApps.read_namespaced_replica_set(own.name, chaosDetails.AppDetail.Namespace)
 			except Exception as exp:
 				return "", exp
 			
