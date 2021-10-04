@@ -225,7 +225,7 @@ Follow the steps provided below to setup okteto & test the experiment execution.
   This should take you to the bash prompt on the dev container into which the content of the litmus-python repo is loaded. 
   
   - Note : 
-    -  Avoid use `_` in names ex: sample_category(not sample-category)
+    -  Replace `_` in chart manifest with `-` ex: sample_category to sample-category. Don't replace in directory name.
     -  Add packages routes for all the files which are generated from sdk in `setup.py` before creating image. 
       example :
       ```
@@ -238,7 +238,8 @@ Follow the steps provided below to setup okteto & test the experiment execution.
       'experiments/sample_category/sample_exec_chaos',
       'experiments/sample_category/sample_exec_chaos/experiment',
       ```
-    - Add `&` operator in the end of chaos-inject command `CHAOS_INJECT_COMMAND` example: `md5sum /dev/zero &`. As we are running chaos command as a background process in a separate thread.  
+    - Add `&` operator at the end of chaos commands `CHAOS_INJECT_COMMAND` example: `md5sum /dev/zero &`. 
+      As we are running chaos commands as a background process in a separate thread.  
     - Import main file it in bin/experiment/experiment.py and add case. example: line number 3 in experiment.py 
     - Then go to root(litmus-python) and run `python3 setup.py install`
 

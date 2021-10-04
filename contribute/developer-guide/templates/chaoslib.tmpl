@@ -53,15 +53,14 @@ def runChaos(experimentsDetails , targetPodList, clients , resultDetails, events
 	sign = Signals()
 	sign.timeSignal = False
 	sign.sigSignal = False
-	signal.alarm(experimentsDetails.ChaosDuration)
-
+		
 	def signal_handler(sig, frame):
 		if sig == 14:
 			sign.timeSignal = True
 		else:
 			sign.sigSignal = True
 	
-	for pod in targetPodList.items :
+	for pod in targetPodList.items:
 		
 		if experimentsDetails.EngineName != "" :
 			msg = "Injecting " + experimentsDetails.ExperimentName + " chaos on application pod"
@@ -69,19 +68,19 @@ def runChaos(experimentsDetails , targetPodList, clients , resultDetails, events
 			events.GenerateEvents(eventsDetails, chaosDetails, "ChaosEngine", clients)
 
 		logging.info("[Chaos]: The Target application details container : %s, Pod : %s", experimentsDetails.TargetContainer, pod.metadata.name)
-
+		signal.alarm(experimentsDetails.ChaosDuration)
 		# sendor thread is used to transmit signal notifications.
 		threading.Thread(target=injectChaos, args=(experimentsDetails, pod.metadata.name, clients)).start()
 		signal.signal(signal.SIGTERM, signal_handler)
 		signal.signal(signal.SIGINT, signal_handler)
 		signal.signal(signal.SIGALRM, signal_handler)
 
-		logging.info("[Chaos]:Waiting for: %s", experimentsDetails.ChaosDuration)
-		
+		logging.info("[Chaos]: Waiting for: %s", experimentsDetails.ChaosDuration)
+
 		while True:
 			if sign.timeSignal:
 				logging.info("[Chaos]: Time is up for experiment: %s", experimentsDetails.ExperimentName)
-				c1 = None
+				sign.timeSignal = False
 				break
 			elif sign.sigSignal:
 				logging.info("[Chaos]: Revert Started")
@@ -91,11 +90,11 @@ def runChaos(experimentsDetails , targetPodList, clients , resultDetails, events
 					break
 				logging.info("[Chaos]: Revert Completed")
 				sys.exit(0)
-				
+			
 		err = killChaos(experimentsDetails, pod.metadata.name, clients)
 		if err != None:
 			return err
-	
+
 	return None
 
 #PrepareChaos contains the prepration steps before chaos injection
