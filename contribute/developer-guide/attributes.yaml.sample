@@ -1,7 +1,7 @@
 ---
-name: "sample-exec-chaos"
+name: "sample_exec_chaos"
 version: "0.1.0"
-category: "sample-category"
+category: "sample_category"
 repository: "https://github.com/litmuschaos/litmus-python/tree/master/sample_category/sample_exec_chaos"
 community: "https://kubernetes.slack.com/messages/CNXNB0ZTN"
 description: "it execs inside target pods to run the chaos inject commands, waits for the chaos duration and reverts the chaos"
