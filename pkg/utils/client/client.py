@@ -8,7 +8,6 @@ class K8sClient(object):
         self.clientCoreV1   =  client.CoreV1Api(conf)
         self.clientDyn      =  dynamic.DynamicClient(api_client.ApiClient(configuration=conf))
         self.clientApps     =  client.AppsV1Api(conf)
-        self.clientsAppsV1  = client.AppsV1beta1Api(conf)
 
 # Config maintain configuration for in and out cluster
 class Configuration(object):

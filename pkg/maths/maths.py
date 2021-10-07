@@ -11,4 +11,4 @@ def atoi(string):
 
 #Adjustment contains rule of three for calculating an integer given another integer representing a percentage
 def Adjustment(a, b):
-	return (a * b) / 100
+    return (a * b) / 100
