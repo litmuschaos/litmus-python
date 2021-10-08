@@ -1,5 +1,15 @@
 ### litmus-python:
 
+[![Slack Channel](https://img.shields.io/badge/Slack-Join-purple)](https://slack.litmuschaos.io)
+![GitHub Workflow](https://github.com/litmuschaos/litmus-python/actions/workflows/push.yml/badge.svg?branch=master)
+[![Docker Pulls](https://img.shields.io/docker/pulls/litmuschaos/py-runner.svg)](https://hub.docker.com/r/litmuschaos/py-runner)
+[![GitHub issues](https://img.shields.io/github/issues/litmuschaos/litmus-python)](https://github.com/litmuschaos/litmus-python/issues)
+[![Twitter Follow](https://img.shields.io/twitter/follow/litmuschaos?style=social)](https://twitter.com/LitmusChaos)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5298/badge)](https://bestpractices.coreinfrastructure.org/projects/5298)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Flitmuschaos%2Flitmus-python.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Flitmuschaos%2Flitmus-python?ref=badge_shield)
+[![YouTube Channel](https://img.shields.io/badge/YouTube-Subscribe-red)](https://www.youtube.com/channel/UCa57PMqmz_j0wnteRa9nCaw)
+<br><br>
+
 - This repo consists of Litmus Chaos Experiments written in python. The examples in this repo are good indicators of how to construct the experiments in python: complete with steady state checks, chaosresult generation, chaos injection,
 post chaos checks, create events and reports for observability and configure sinks for these.
 
