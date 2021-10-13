@@ -1,4 +1,4 @@
-### litmus-python:
+# litmus-python:
 
 [![Slack Channel](https://img.shields.io/badge/Slack-Join-purple)](https://slack.litmuschaos.io)
 ![GitHub Workflow](https://github.com/litmuschaos/litmus-python/actions/workflows/push.yml/badge.svg?branch=master)
@@ -7,14 +7,14 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/litmuschaos?style=social)](https://twitter.com/LitmusChaos)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5298/badge)](https://bestpractices.coreinfrastructure.org/projects/5298)
 [![YouTube Channel](https://img.shields.io/badge/YouTube-Subscribe-red)](https://www.youtube.com/channel/UCa57PMqmz_j0wnteRa9nCaw)
-<br><br>
+<br>
 
 - This repo consists of Litmus Chaos Experiments written in python. The examples in this repo are good indicators of how to construct the experiments in python: complete with steady state checks, chaosresult generation, chaos injection,
 post chaos checks, create events and reports for observability and configure sinks for these.
 
 **NOTE**
 
-- This repo can be viewed as an extension to the [litmuschaos/litmus](https://github.com litmuschaos/litmus) repo in the sense that the litmus repo also houses a significant set of experiments, built using ansible. The litmus repo will also continue to be the project's community-facing meta repo housing other important project artifacts. In that sense, litmus-py is very similar to and therefore a sister repo of [litmus-go](https://github.com/litmuschaos/litmus-go) which houses examples for experiment business logic written in python.
+- This repo can be viewed as an extension to the [litmuschaos/litmus](https://github.com/litmuschaos/litmus) repo. The litmus repo will also continue to be the project's community-facing meta repo housing other important project artifacts. In that sense, litmus-py is very similar to and therefore a sister repo of [litmus-go](https://github.com/litmuschaos/litmus-go) which houses examples for experiment business logic written in go.
 
 ## Litmus SDK
 
@@ -33,6 +33,10 @@ Refer the LitmusChaos documentation [litmus docs](https://docs.litmuschaos.io)
 You can contribute by raising issues, improving the documentation, contributing to the core framework and tooling, etc.
 
 Head over to the [Contribution guide](CONTRIBUTING.md)
+
+
+### Blogs
+- [Create Chaos Experiments Using the LitmusChaos Python SDK](https://dev.to/oumkale/create-chaos-experiments-using-the-litmuschaos-python-sdk-4492)
 
 ## License
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Flitmuschaos%2Flitmus-python.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Flitmuschaos%2Flitmus-python?ref=badge_large)
