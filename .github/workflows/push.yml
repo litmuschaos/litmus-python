@@ -42,3 +42,17 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           tags: litmuschaos/py-runner:ci
+      
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install Python dependencies
+        run: pip install black flake8
+
+      - name: Checking Python-Lint
+        uses: wearerequired/lint-action@v1
+        with:
+          black: true
+          flake8: true
