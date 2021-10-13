@@ -1,4 +1,3 @@
-
 FROM python:3.8
 
 LABEL maintainer="LitmusChaos"
@@ -8,6 +7,7 @@ ARG TARGETARCH
 # upgrade and setup python
 RUN apt-get update \
     && apt-get -y install gcc python3-pip python-dev curl \
+    && apt-get install -y libapr1-dev linux-libc-dev \
     && pip install --upgrade pip \
     && pip install jinja2 pyYaml
 

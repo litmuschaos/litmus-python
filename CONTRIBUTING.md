@@ -1,4 +1,4 @@
-# Contributing to Litmus-Go
+# Contributing to Litmus-Python
 
 Litmus is an Apache 2.0 Licensed project and uses the standard GitHub pull requests process to review and accept contributions.
 
@@ -47,7 +47,7 @@ You can also use git [aliases](https://git-scm.com/book/tr/v2/Git-Basics-Git-Ali
 
 ## Setting up your Development Environment
 
-This project is implemented using Go and uses the standard golang tools for development and build. In addition, this project heavily relies on Docker and Kubernetes. It is expected that the contributors.
+This project is implemented using Python and uses the standard python tools for development and build. In addition, this project heavily relies on Docker and Kubernetes. It is expected that the contributors.
     
 -   are familiar with working with Python
 -   are familiar with Docker containers
