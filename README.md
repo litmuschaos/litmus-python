@@ -24,6 +24,36 @@ It generates the custom chaos experiments with some default Pre & Post Chaos Che
 
 Refer [Litmus-SDK](https://github.com/litmuschaos/litmus-python/blob/master/contribute/developer-guide/README.md) for more details
 
+### Overview
+
+Litmus-Python chaos experiments are fundamental units within the LitmusChaos architecture. Users can choose between readily available chaos experiments or create new ones to construct a required Chaos Workflow.
+
+For more about working of LitmusChaos [refer](https://litmuschaos.github.io/litmus/).
+
+#### Experiment Flow :
+ - Experiment business logic image has to update `spec.definition.image` and tune parameters in Experiment custom resource (CR) which holds experiment-specific chaos parameters & experiment entrypoint. ChaosExperiment CRs are created by the operator when experiments are invoked by ChaosEngine.[Refer litmus-python pod-delete experiment](https://github.com/litmuschaos/chaos-charts/blob/master/charts/generic/pod-delete/python/experiment.yaml)
+  - Experiment Engine holds experiment-specific chaosengine. It connects an application instance with one or more chaos experiments while allowing the users to specify run-level details. This CR is also updated/patched with the status of the chaos experiments, making it the single source of truth concerning the chaos. ChaosEngine is watched by Litmus' Chaos-Operator which then invokes ChaosExperiments. [Refer litmus-python pod-delete engine](https://github.com/litmuschaos/chaos-charts/blob/master/charts/generic/pod-delete/python/engine.yaml)
+  - Now we need to fit Experiment and Engine into the workflow, Chaos Workflow is a set of different operations coupled together to achieve desired chaos impact on a Kubernetes Cluster. LitmusChaos leverages the popular workflow & GitOps tool, Argo, to achieve this. 
+    - Add experiment manifest in `install-experiment` artifacts and engine in `run-chaos` artifacts. 
+    - Follow the steps in [pod-delete workflow](https://github.com/litmuschaos/chaos-charts/blob/master/workflows/pod-delete/workflow.yaml) or [User guide](https://docs.litmuschaos.io/docs/user-guides/construct-workflow/)
+  - Now fork and clone [chaos-charts](https://github.com/litmuschaos/chaos-charts), Enter into [workflow](https://github.com/litmuschaos/chaos-charts/tree/master/workflows) directory.
+    - Enter into `charts` directory to add charts which has been generated using sdk, for [reference](https://github.com/litmuschaos/chaos-charts/tree/master/charts/cassandra)
+    - Enter into `workflow` directory and add workflow manifests for [reference](https://github.com/litmuschaos/chaos-charts/tree/master/workflows/podtato-head)
+    - **Note**: Update `sample_category` and `sample_exec_chaos` to `sample-category` and `sample-exec-chaos` inside manifest in every chart name while updating chaos-charts. Example: `sample_category.package.yaml` to `sample-category.package.yaml`
+    - Connect your Git repository with chaos-center [ChaosHub](https://docs.litmuschaos.io/docs/concepts/chaoshub/)
+  - Workflow can be added as a predefined workflow in Github and users can test by following the given steps:
+    - Fork and clone [chaos-charts](https://github.com/litmuschaos/chaos-charts), now Enter into [workflow](https://github.com/litmuschaos/chaos-charts/tree/master/workflows) directory.
+    - Follow the same structure for your workflow and push it. For [example](https://github.com/litmuschaos/chaos-charts/tree/master/workflows/podtato-head)
+    - Connect your Git repository with chaos-center [ChaosHub](https://docs.litmuschaos.io/docs/concepts/chaoshub/)
+  - Schedule your workflow with chaos-center in [given](https://docs.litmuschaos.io/docs/user-guides/schedule-workflow) manner, by selecting your connected [ChaosHub](https://docs.litmuschaos.io/docs/user-guides/schedule-workflow/#2-choose-a-workflow)
+    - To Run your [first workflow](https://docs.litmuschaos.io/docs/getting-started/run-your-first-workflow/) follow the step-by-step guidelines.
+    - After scheduling it one can [observe the workflow](https://docs.litmuschaos.io/docs/user-guides/observe-workflow)
+    - To [Analyze the workflow](https://docs.litmuschaos.io/docs/user-guides/analyze-workflow/#)  follow these guidelines
+    - Now User can [setup own Observablity](https://docs.litmuschaos.io/docs/user-guides/observability-set-up) and [Compare](https://docs.litmuschaos.io/docs/user-guides/comparative-analysis) it with other scheduled workflows with the help of monitoring dashboard
+  - It can be scheduled for repeated execution.
+    -  Select [edit Schedule](https://docs.litmuschaos.io/docs/user-guides/edit-schedule#3-change-the-schedule) to schedule recurrent workflow by selecting proper timing.
+    - [Refer manifest](https://github.com/litmuschaos/chaos-charts/blob/master/workflows/podtato-head/workflow_cron.yaml) manifest.
+
 ## How to get started?
 
 Refer the LitmusChaos documentation [litmus docs](https://docs.litmuschaos.io)
