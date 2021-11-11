@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import experiments.generic.pod_delete.pod_delete as pod_delete
+import experiments.generic.pod_delete.experiment.pod_delete as pod_delete
 import argparse
 import logging
 import pkg.utils.client.client as client
