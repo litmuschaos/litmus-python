@@ -69,6 +69,7 @@ packages = [
 	'experiments',
 	'experiments/generic',
 	'experiments/generic/pod_delete',
+ 	'experiments/generic/pod_delete/experiment',
 ]
 needs_pytest = set(['pytest', 'test']).intersection(sys.argv)
 package_data = {

@@ -23,11 +23,6 @@ The *generate_experiment.py* script is a simple way to bootstrap your experiment
 appropriate directory (i.e., as per the chaos_category) based on an attributes file provided as input by the chart-developer. The 
 scaffolded files consist of placeholders which can then be filled as desired.  
 
-### Pre-Requisites
-
-- *python3* is available (`sudo apt-get install python3`) 
-- *jinja2* & *pyYaml* python packages are available (`sudo apt-get install python3-pip`, `pip install jinja2`, `pip install pyYaml`) 
-
 ### Steps to Generate Experiment Manifests
 
 - Clone the litmus-python repository & navigate to the `contribute/developer-guide` folder
@@ -263,6 +258,11 @@ Follow the steps provided below to setup okteto & test the experiment execution.
 
   This dev container inherits the env, serviceaccount & other properties specified on the test deployment & is now suitable for 
   running the experiment.
+
+- Install dependencies 
+    - Run `curl -L https://storage.googleapis.com/kubernetes-release/release/"v1.18.0"/bin/linux/"amd64"/kubectl -o /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl`
+    - Run `pip3 install -r requirements.txt`
+    - Run `python3 setup.py install`, run this command for every change in experiment code.
 
 - Execute the experiment against the sample app chosen & verify the steps via logs printed on the console.
 

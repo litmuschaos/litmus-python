@@ -34,7 +34,6 @@ You can contribute by raising issues, improving the documentation, contributing 
 
 Head over to the [Contribution guide](CONTRIBUTING.md)
 
-
 ### Blogs
 - [Create Chaos Experiments Using the LitmusChaos Python SDK](https://dev.to/oumkale/create-chaos-experiments-using-the-litmuschaos-python-sdk-4492)
 
