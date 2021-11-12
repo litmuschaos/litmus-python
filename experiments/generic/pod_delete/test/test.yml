@@ -13,7 +13,7 @@ spec:
       labels:
         app: litmus-experiment
     spec:
-      serviceAccountName: litmus
+      serviceAccountName: pod-delete-sa
       containers:
       - name: gotest
         image: busybox
@@ -22,19 +22,19 @@ spec:
           - "3600"
         env:
           - name: APP_NAMESPACE
-            value: 'default'
+            value: ''
 
           - name: APP_LABEL
-            value: 'app=nginx'
+            value: ''
 
           - name: APP_KIND
-            value: 'deployment'
+            value: ''
 
           - name: TOTAL_CHAOS_DURATION
-            value: '20'
+            value: ''
 
           - name: CHAOS_INTERVAL
-            value: '10'
+            value: ''
 
           - name: FORCE
             value: ''
@@ -42,11 +42,8 @@ spec:
           - name: LIB
             value: 'litmus'
 
-          - name: TARGET_POD
-            value: ''
-
           - name: CHAOS_NAMESPACE
-            value: 'default'
+            value: ''
 
           - name: RAMP_TIME
             value: ''
