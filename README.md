@@ -28,7 +28,7 @@ Refer [Litmus-SDK](https://github.com/litmuschaos/litmus-python/blob/master/cont
 
 Litmus-Python chaos experiments are fundamental units within the LitmusChaos architecture. Users can choose between readily available chaos experiments or create new ones to construct a required Chaos Workflow.
 
-For more about working of LitmusChaos [refer](https://litmuschaos.github.io/litmus/).
+To know more about LitmusChaos experiments [refer](https://litmuschaos.github.io/litmus/) to this.
 
 #### Experiment Flow :
  - Experiment business logic image has to update `spec.definition.image` and tune parameters in Experiment custom resource (CR) which holds experiment-specific chaos parameters & experiment entrypoint. ChaosExperiment CRs are created by the operator when experiments are invoked by ChaosEngine.[Refer litmus-python pod-delete experiment](https://github.com/litmuschaos/chaos-charts/blob/master/charts/generic/pod-delete/python/experiment.yaml)
