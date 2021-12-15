@@ -32,7 +32,7 @@ To know more about LitmusChaos experiments [refer](https://litmuschaos.github.io
 
 #### Experiment Flow :
  - Experiment business logic image has to be updated in `spec.definition.image` along with experiment entrypoint and tunable parameters in ChaosEngine (CR) which holds experiment-specific chaos parameters. ChaosExperiment is created by chaos runner which is managed by chaos operator [Refer litmus-python pod-delete experiment](https://github.com/litmuschaos/chaos-charts/blob/master/charts/generic/pod-delete/python/experiment.yaml)
-  - Chaos Engine holds experiment-specific parameters. This CR is also updated/patched with the status of the chaos experiments, making it the single source of truth concerning the chaos. ChaosEngine is watched by Litmus' ChaosOperator which then invokes ChaosExperiments. [Refer litmus-python pod-delete engine](https://github.com/litmuschaos/chaos-charts/blob/master/charts/generic/pod-delete/python/engine.yaml)
+  - Chaos Engine holds experiment-specific parameters. This CR is also updated/patched with the status of the chaos experiments, making it the single source of truth concerning the chaos.
   - Now we need to fit Experiment and Engine into the workflow, Chaos Workflow is a set of different operations coupled together to achieve desired chaos impact on a Kubernetes Cluster. LitmusChaos leverages the popular workflow & GitOps tool, Argo, to achieve this. 
     - Add experiment manifest in `install-experiment` artifacts and engine in `run-chaos` artifacts. 
     - Follow the steps in [pod-delete workflow](https://github.com/litmuschaos/chaos-charts/blob/master/workflows/pod-delete/workflow.yaml) or [User guide](https://docs.litmuschaos.io/docs/user-guides/construct-workflow/)
