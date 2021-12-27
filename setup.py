@@ -69,6 +69,15 @@ packages = [
 	'experiments',
 	'experiments/generic',
 	'experiments/generic/pod_delete',
+	'chaosLib/litmus/aws_az_chaos',
+	'chaosLib/litmus/aws_az_chaos/lib',
+	'pkg/aws_az',
+	'pkg/aws_az/environment',
+	'pkg/aws_az/types',
+	'pkg/aws_status',
+	'experiments/aws_az',
+	'experiments/aws_az/aws_az_chaos',
+	'experiments/aws_az/aws_az_chaos/experiment',
  	'experiments/generic/pod_delete/experiment',
 ]
 needs_pytest = set(['pytest', 'test']).intersection(sys.argv)
