@@ -3,22 +3,19 @@ import pkg.aws_az.types.types as experimentDetails
 import pkg.aws_az.environment.environment as experimentEnv
 import pkg.events.events as events
 import logging
-import pkg.status.application as application
 import chaosLib.litmus.aws_az_chaos.lib.aws_az_chaos as litmusLIB
 import pkg.result.chaosresult as chaosResults
-from pkg.utils import client
 import pkg.utils.common.common as common
 import pkg.aws_status.status as awsStatus
 
-# Experiment contains steps to inject chaos
-def Experiment(clients):
+# AwsAzExperiment contains steps to inject chaos
+def AwsAzExperiment(clients):
 
 	# Initialising expermentDetails, resultDetails, eventsDetails, chaosDetails, status and result objects
 	experimentsDetails = experimentDetails.ExperimentDetails()
 	resultDetails = types.ResultDetails()
 	eventsDetails = types.EventDetails()
 	chaosDetails = types.ChaosDetails()
-	status = application.Application()
 	result = chaosResults.ChaosResults()
 	statusAws = awsStatus.AWS_AZ()
 
@@ -50,7 +47,7 @@ def Experiment(clients):
 	types.SetResultEventAttributes(eventsDetails, types.AwaitedVerdict, msg, "Normal", resultDetails)
 	events.GenerateEvents(eventsDetails, chaosDetails, "ChaosResult", clients)
 
-	#DISPLAY THE LOADBALANCER INFORMATION
+	# DISPLAY THE LOADBALANCER INFORMATION
 	logging.info("[Info]: The application information is as follows LoadBalancer Name=%s, LoadBalancer Zones=%s, Ramp Time=%s",experimentsDetails.LoadBalancerName,experimentsDetails.LoadBalancerZones,experimentsDetails.RampTime)
 	
 	# Calling AbortWatcher, it will continuously watch for the abort signal and generate the required and result
@@ -90,12 +87,12 @@ def Experiment(clients):
 	logging.info("[Confirmation]: %s chaos has been injected successfully", experimentsDetails.ExperimentName)
 	resultDetails.Verdict = "Pass"
 
-	# PRE-CHAOS APPLICATION STATUS CHECK
+	# POST-CHAOS APPLICATION STATUS CHECK
 	logging.info("[Status]: Verify that the AUT (Application Under Test) is running (post-chaos)")
 	err = statusAws.CheckAWSStatus(experimentsDetails)
 	if err != None:
 		logging.error("Target aws instance status check failed, err: %s", err)
-		failStep = "Verify that the AUT (Application Under Test) is running (pre-chaos)"
+		failStep = "Verify that the AUT (Application Under Test) is running (post-chaos)"
 		result.RecordAfterFailure(chaosDetails, resultDetails, failStep, eventsDetails, clients)
 		return
 	

@@ -25,7 +25,7 @@ def main():
 	if args.name == "pod-delete":
 		pod_delete.PodDelete(clients)
 	elif args.name == "aws-az-chaos":
-		aws_az_chaos.Experiment(clients)
+		aws_az_chaos.AwsAzExperiment(clients)
 	else:
 		logging.error("Unsupported -name %s, please provide the correct value of -name args", args.name)
 	return
