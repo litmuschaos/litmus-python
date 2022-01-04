@@ -28,7 +28,7 @@ spec:
             value: ''
  
           - name: LOAD_BALANCERNAME_ARN
-            value: 'na' 
+            value: '' 
           
           - name: AWS_SHARED_CREDENTIALS_FILE
             value: ""
@@ -38,12 +38,7 @@ spec:
           
           - name: AWS_REGIONS
             value: ""
-          
-          # provide auxiliary application details - namespace and labels of the applications
-          # sample input is - "ns1:app=percona,ns2:name=nginx"
-          - name: AUXILIARY_APPINFO
-            value: ''
-          
+
           ## Period to wait before injection of chaos in sec
           - name: RAMP_TIME
             value: ''

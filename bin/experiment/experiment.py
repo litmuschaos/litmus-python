@@ -3,7 +3,7 @@
 import experiments.aws_az.aws_az_chaos.experiment.aws_az_chaos as aws_az_chaos
 import experiments.generic.pod_delete.experiment.pod_delete as pod_delete
 import argparse
-import logging, os
+import logging
 import pkg.utils.client.client as client
 logging.basicConfig(format='time=%(asctime)s level=%(levelname)s  msg=%(message)s', level=logging.INFO)  
 

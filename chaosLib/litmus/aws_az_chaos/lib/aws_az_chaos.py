@@ -1,13 +1,8 @@
 
+import pkg.utils.common.common as common
 import pkg.types.types  as types
 import pkg.events.events as events
 import logging
-import pkg.utils.common.common as common
-import pkg.utils.exec.exec as litmusexec
-import pkg.types.types  as types
-import pkg.events.events as events
-import logging
-import pkg.utils.common.common as common
 from datetime import datetime
 import pkg.maths.maths as maths
 
@@ -76,7 +71,7 @@ def injectChaosInSerialMode(experimentsDetails , chaosDetails , eventsDetails , 
 					common.WaitForDuration(waitTime)
 
 			# Attaching the target available zone after the chaos injection
-			logging.info("[Status]: Atach the available zone back to load balancer")
+			logging.info("[Status]: Attach the available zone back to load balancer")
 			err = statusAws.attachAZtoLB(experimentsDetails, azone)
 			if err != None:
 				return err
@@ -131,7 +126,7 @@ def injectChaosInParallelMode(experimentsDetails , chaosDetails , eventsDetails 
 				common.WaitForDuration(waitTime)
 
 		# Attaching the target available zone after the chaos injection
-		logging.info("[Status]: Atach the available zone back to load balancer")
+		logging.info("[Status]: Attach the available zone back to load balancer")
 		for azone in targetZones:
 			err = statusAws.attachAZtoLB(experimentsDetails, azone)
 			if err != None:

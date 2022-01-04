@@ -6,7 +6,7 @@ class AWS_AZ(object):
     def __init__(self, client=None):
         self.clients = client
 
-    # CheckAWSStatus check target load balancer
+    # CheckAWSStatus checks target load balancer availability
     def CheckAWSStatus(self, experimentsDetails):
         
         self.clients = client.AWSClient().clientElb
