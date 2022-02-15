@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import experiments.aws_az.aws_az_chaos.experiment.aws_az_chaos as aws_az_chaos
 import experiments.generic.pod_delete.experiment.pod_delete as pod_delete
 import argparse
 import logging
@@ -23,6 +24,8 @@ def main():
 	# invoke the corresponding experiment based on the the (-name) flag
 	if args.name == "pod-delete":
 		pod_delete.PodDelete(clients)
+	elif args.name == "aws-az-chaos":
+		aws_az_chaos.AwsAzExperiment(clients)
 	else:
 		logging.error("Unsupported -name %s, please provide the correct value of -name args", args.name)
 	return
