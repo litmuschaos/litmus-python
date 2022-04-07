@@ -45,14 +45,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install python
-        run: apt install python3-pip
       - uses: snyk/actions/setup@master
+      - name: Install packages
+        run: pip3 install -r requirements.txt
       - run: snyk auth ${SNYK_TOKEN}
       - name: Snyk monitor
-        run: snyk test
+        run: snyk test --file=requirements.txt --command=python3
 
- 
+
   trivy:
     runs-on: ubuntu-latest
     steps:
