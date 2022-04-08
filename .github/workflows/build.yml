@@ -36,17 +36,23 @@ jobs:
       - name: Build Image
         run: make build
 
+ 
   security:
+    container:
+      image: litmuschaos/snyk:1.0
+      volumes:
+      - /home/runner/work/_actions/:/home/runner/work/_actions/
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/python@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high     
-  
+      - uses: actions/checkout@v2
+      - uses: snyk/actions/setup@master
+      - name: Install packages
+        run: pip3 install -r requirements.txt
+      - run: snyk auth ${SNYK_TOKEN}
+      - name: Snyk monitor
+        run: snyk test --file=requirements.txt --command=python3
+
+
   trivy:
     runs-on: ubuntu-latest
     steps:
