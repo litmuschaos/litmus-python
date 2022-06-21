@@ -8,8 +8,8 @@ def GetENV(experimentDetails):
 	experimentDetails.ExperimentName =  os.getenv("EXPERIMENT_NAME", "aws-az-chaos")
 	experimentDetails.ChaosNamespace = os.getenv("CHAOS_NAMESPACE", "")
 	experimentDetails.EngineName = os.getenv("CHAOSENGINE", "")
-	experimentDetails.ChaosDuration = maths.atoi(os.getenv("TOTAL_CHAOS_DURATION", ""))
-	experimentDetails.ChaosInterval = os.getenv("CHAOS_INTERVAL", "")
+	experimentDetails.ChaosDuration = maths.atoi(os.getenv("TOTAL_CHAOS_DURATION", "60"))
+	experimentDetails.ChaosInterval = os.getenv("CHAOS_INTERVAL", "30")
 	experimentDetails.RampTime = maths.atoi(os.getenv("RAMP_TIME", ""))
 	experimentDetails.ChaosLib = os.getenv("LIB", "litmus")
 	experimentDetails.ChaosUID = os.getenv("CHAOS_UID", "")
@@ -22,7 +22,7 @@ def GetENV(experimentDetails):
 	experimentDetails.LoadBalancerName = os.getenv("LOAD_BALANCER_NAME", "")
 	experimentDetails.LoadBalancerZones = os.getenv("LOAD_BALANCER_ZONES", "")
 	experimentDetails.LoadBalancerNameARN = os.getenv("LOAD_BALANCERNAME_ARN", "na")
-  
+
 #InitialiseChaosVariables initialise all the global variables
 def InitialiseChaosVariables(chaosDetails, experimentDetails):
 	appDetails = types.AppDetails()

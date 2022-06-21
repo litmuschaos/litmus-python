@@ -55,10 +55,16 @@ def injectChaosInSerialMode(experimentsDetails , chaosDetails , eventsDetails , 
 		# Detaching the target zones from loa balancer 
 		for azone in targetZones:
 
-			logging.info("[Info]: Detaching the following zone(s), Zone Name : %s", azone)
-			err = statusAws.detachAZfromLB(experimentsDetails, azone)
+			logging.info("[Info]: Detaching the following zone, Zone Name %s", azone)
+			targetSubnet, err = statusAws.getTargetSubnet(experimentsDetails, azone)
+			subnetList = list(targetSubnet.split(" "))
 			if err != None:
 				return err
+			logging.info("[Info]: Detaching the following subnet, %s", subnetList)
+			err = statusAws.detachSubnet(experimentsDetails, subnetList)
+			if err != None:
+				return err
+
 			if chaosDetails.Randomness:
 				err = common.RandomInterval(experimentsDetails.ChaosInterval)
 				if err != None:
@@ -85,19 +91,17 @@ def injectChaosInSerialMode(experimentsDetails , chaosDetails , eventsDetails , 
 			duration = (datetime.now() - ChaosStartTimeStamp).seconds
 
 	logging.info("[Completion]: %s chaos is done",(experimentsDetails.ExperimentName))
-
 	return None
 
 # injectChaosInParallelMode disable the target available zone from loadbalancer in parallel mode (all at once)
 def injectChaosInParallelMode(experimentsDetails , chaosDetails , eventsDetails , resultDetails, clients, statusAws):
 	
-
 	#ChaosStartTimeStamp contains the start timestamp, when the chaos injection begin
 	ChaosStartTimeStamp = datetime.now()
 	duration = (datetime.now() - ChaosStartTimeStamp).seconds
-	
+	subnet = []
+
 	while duration < experimentsDetails.ChaosDuration:
-		
   		# Get the target available zone details for the chaos execution
 		targetZones = experimentsDetails.LoadBalancerZones.split(",")
 		logging.info("[Info]: Target available zone list, %s", targetZones)
@@ -107,12 +111,17 @@ def injectChaosInParallelMode(experimentsDetails , chaosDetails , eventsDetails 
 			types.SetEngineEventAttributes(eventsDetails, types.ChaosInject, msg, "Normal", chaosDetails)
 			events.GenerateEvents(eventsDetails, chaosDetails, "ChaosEngine",clients)
 		
-		# Detaching the target zones from loa balancer
+		# Detaching the target zones from load balancer
 		for azone in targetZones:
-			logging.info("[Info]: Detaching the following zone(s), Zone Name %s", azone)
-			err = statusAws.detachAZfromLB(experimentsDetails, azone)
+			logging.info("[Info]: Detaching the following zone, Zone Name %s", azone)
+			targetSubnet, err = statusAws.getTargetSubnet(experimentsDetails, azone)
+			subnet.append(targetSubnet)
 			if err != None:
-				return err	
+				return err
+		logging.info("[Info]: Detaching the following subnet(s), %s", subnet)
+		err = statusAws.detachSubnet(experimentsDetails,subnet)
+		if err != None:
+			return err
 		
 		if chaosDetails.Randomness:
 			err = common.RandomInterval(experimentsDetails.ChaosInterval)
@@ -128,10 +137,10 @@ def injectChaosInParallelMode(experimentsDetails , chaosDetails , eventsDetails 
 		# Attaching the target available zone after the chaos injection
 		logging.info("[Status]: Attach the available zone back to load balancer")
 		for azone in targetZones:
-			err = statusAws.attachAZtoLB(experimentsDetails, azone)
+			err = statusAws.attachSubnet(experimentsDetails, subnet)
 			if err != None:
 				return err
-			
+     		
 		#Verify the status of available zone after the chaos injection
 		logging.info("[Status]: Checking AWS load balancer's AZ status")		
 		err = statusAws.CheckAWSStatus(experimentsDetails)
