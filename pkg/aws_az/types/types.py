@@ -2,7 +2,7 @@
 class ExperimentDetails(object):
 	def __init__(self, ExperimentName=None, EngineName=None, ChaosDuration=None, ChaosInterval=None, RampTime=None, Force=None, ChaosLib=None, 
 		AWSZones=None, AWSRegion=None, AppNS=None, AppLabel=None, AppKind=None, InstanceID=None, ChaosNamespace=None, ChaosPodName=None, Timeout=None, 
-		Delay=None, LoadBalancerName= None, LIBImagePullPolicy=None, LoadBalancerNameARN=None, LoadBalancerZones=None, UID=None):
+		Delay=None, LoadBalancerName= None, LIBImagePullPolicy=None, LoadBalancerNameARN=None, LoadBalancerZones=None, UID=None, VPCType=None):
 		self.ExperimentName      = ExperimentName 
 		self.EngineName          = EngineName
 		self.ChaosDuration       = ChaosDuration
@@ -23,4 +23,3 @@ class ExperimentDetails(object):
 		self.LoadBalancerName	 = LoadBalancerName
 		self.LoadBalancerZones 	 = LoadBalancerZones
 		self.LoadBalancerNameARN = LoadBalancerNameARN
-
