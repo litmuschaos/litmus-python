@@ -81,20 +81,20 @@ class ChaosResults(object):
 	#PatchChaosResult Update the chaos result
 	def PatchChaosResult(self, clients, result, chaosDetails, resultDetails, chaosResultLabel):
 		
-		passedRuns = 0 
-		failedRuns = 0 
-		stoppedRuns = 0
+		passedRuns = result.status.history.passedRuns
+		failedRuns = result.status.history.failedRuns
+		stoppedRuns = result.status.history.stoppedRuns
+
 		#isAllProbePassed, probeStatus = self.GetProbeStatus(resultDetails)
 		if str(resultDetails.Phase).lower() == "completed":
-			
 			if str(resultDetails.Verdict).lower() == "pass":
 				probeSuccessPercentage = "100"
-				passedRuns = result.status.history.passedRuns + 1
+				passedRuns += 1
 			elif str(resultDetails.Verdict).lower() == "fail":
-				failedRuns =  result.status.history.failedRuns + 1
+				failedRuns += 1
 				probeSuccessPercentage = "0"
 			elif str(resultDetails.Verdict).lower() == "stopped":
-				stoppedRuns = result.status.history.stoppedRuns + 1
+				stoppedRuns += 1
 				probeSuccessPercentage = "0"
 		else:
 			probeSuccessPercentage = "Awaited"
