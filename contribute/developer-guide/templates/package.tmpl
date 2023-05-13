@@ -1,5 +1,5 @@
-packageName: {{ category }}
+packageName: {{ category | replace("_", "-") }}
 experiments:
-  - name: {{ name }}
-    CSV: {{ name }}.chartserviceversion.yaml
-    desc: "{{ name }}"
+  - name: {{ name | replace("_", "-") }}
+    CSV: {{ name | replace("_", "-") }}.chartserviceversion.yaml
+    desc: "{{ name | replace("_", "-") }}"

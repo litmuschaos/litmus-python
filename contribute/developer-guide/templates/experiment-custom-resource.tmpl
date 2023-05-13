@@ -4,9 +4,9 @@ description:
     {{ description }}
 kind: ChaosExperiment
 metadata:
-  name: {{ name }}
+  name: {{ name | replace("_", "-") }}
   labels:
-    name: {{ name }}
+    name: {{ name | replace("_", "-") }}
     app.kubernetes.io/part-of: litmus
     app.kubernetes.io/component: chaosexperiment
     app.kubernetes.io/version: latest
@@ -32,7 +32,7 @@ spec:
     imagePullPolicy: Always
     args:
     - -c
-    - python3 -u experiment
+    - python3 -u experiment -name {{ name | replace("_", "-") }}
     command:
     - /bin/bash
     env:
@@ -50,7 +50,7 @@ spec:
       value: ''
       
     labels:
-      name: {{ name }}
+      name: {{ name | replace("_", "-") }}
       app.kubernetes.io/part-of: litmus
       app.kubernetes.io/component: experiment-job
       app.kubernetes.io/version: latest 

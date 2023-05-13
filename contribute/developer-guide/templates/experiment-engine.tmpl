@@ -11,11 +11,11 @@ spec:
   engineState: 'active'
   #ex. values: ns1:name=percona,ns2:run=nginx
   auxiliaryAppInfo: ''
-  chaosServiceAccount: {{ name }}-sa
+  chaosServiceAccount: {{ name | replace("_", "-") }}-sa
   # It can be delete/retain
   jobCleanUpPolicy: 'delete'
   experiments:
-    - name: {{ name }}
+    - name: {{ name | replace("_", "-") }}
       spec:
         components:
           env:
@@ -26,4 +26,15 @@ spec:
             # set chaos interval (in sec) as desired
             - name: CHAOS_INTERVAL
               value: '10'
-              
+
+            # provide application namespace
+            - name: APP_NAMESPACE
+              value: ''
+
+            # provide application labels
+            - name: APP_LABEL
+              value: ''
+
+            # provide application kind
+            - name: APP_KIND
+              value: ''

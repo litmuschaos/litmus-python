@@ -11,56 +11,65 @@ def generate_init(init_path):
     init_path = init_path  + '/' + '__init__.py'
     open(init_path, mode='a').close()
 
+
 # generate_csv creates the experiment chartserviceversion manifest
 def generate_csv(csv_parent_path, csv_name, csv_config, litmus_env):
-    
-    csv_filename = csv_parent_path + '/' + csv_name + '.' + 'experiment_chartserviceversion.yaml'
+    csv_filename = csv_parent_path + '/' + csv_name + '.chartserviceversion.yaml'
     # Load Jinja2 template
-    template = litmus_env.get_template('./templates/experiment_chartserviceversion.tmpl')
+    template = litmus_env.get_template('./templates/experiment-chartserviceversion.tmpl')
     output_from_parsed_template = template.render(csv_config)
+
     with open(csv_filename, "w") as f:
         f.write(output_from_parsed_template)
 
+
 # generate_csv creates the category chartserviceversion manifest
 def generate_csv_cat(csv_parent_path, csv_name, csv_config, litmus_env):
-    
-    csv_filename = csv_parent_path + '/' + csv_name + '.' + 'category_chartserviceversion.yaml'
+    csv_filename = csv_parent_path + '/' + csv_name + '.chartserviceversion.yaml'
     
     # Load Jinja2 template
-    template = litmus_env.get_template('./templates/category_chartserviceversion.tmpl')
+    template = litmus_env.get_template('./templates/category-chartserviceversion.tmpl')
     output_from_parsed_template = template.render(csv_config)
+
     with open(csv_filename, "w") as f:
         f.write(output_from_parsed_template)
+
 
 # generate_chart creates the experiment custom resource manifest
 def generate_chart(chart_parent_path, chart_config, litmus_env):
     chart_filename = chart_parent_path + '/' + 'experiment.yaml'
 
     # Load Jinja2 template
-    template = litmus_env.get_template('./templates/experiment_custom_resource.tmpl')
+    template = litmus_env.get_template('./templates/experiment-custom-resource.tmpl')
     output_from_parsed_template = template.render(chart_config)
+
     with open(chart_filename, "w") as f:
         f.write(output_from_parsed_template)
+
 
 # generate_rbac creates the rbac for the experiment
 def generate_rbac(chart_parent_path, chart_config, litmus_env):
     rbac_filename = chart_parent_path + '/' + 'rbac.yaml'
 
     # Load Jinja2 template
-    template = litmus_env.get_template('./templates/experiment_rbac.tmpl')
+    template = litmus_env.get_template('./templates/experiment-rbac.tmpl')
     output_from_parsed_template = template.render(chart_config)
+
     with open(rbac_filename, "w") as f:
         f.write(output_from_parsed_template)
+
 
 # generate_engine creates the chaos engine for the experiment
 def generate_engine(chart_parent_path, chart_config, litmus_env):
     engine_filename = chart_parent_path + '/' + 'engine.yaml'
 
     # Load Jinja2 template
-    template = litmus_env.get_template('./templates/experiment_engine.tmpl')
+    template = litmus_env.get_template('./templates/experiment-engine.tmpl')
     output_from_parsed_template = template.render(chart_config)
+
     with open(engine_filename, "w") as f:
         f.write(output_from_parsed_template)
+
 
 # generate_chaoslib creates the chaosLib for the experiment
 def generate_chaoslib(chaoslib_parent_path, chaoslib_name, chaoslib_config, litmus_env):
@@ -71,11 +80,13 @@ def generate_chaoslib(chaoslib_parent_path, chaoslib_name, chaoslib_config, litm
     # Load Jinja2 template
     template = litmus_env.get_template('./templates/chaoslib.tmpl')
     output_from_parsed_template = template.render(chaoslib_config)
+
     with open(chaoslib_filename, "w") as f:
         f.write(output_from_parsed_template)
     
     # generate __init__.py file
     generate_init(chaoslib_parent_path)
+
 
 # generate_environment creates the environment for the experiment
 def generate_environment(environment_parent_path, environment_config, litmus_env):
@@ -86,11 +97,13 @@ def generate_environment(environment_parent_path, environment_config, litmus_env
     # Load Jinja2 template
     template = litmus_env.get_template('./templates/environment.tmpl')
     output_from_parsed_template = template.render(environment_config)
+
     with open(environment_filename, "w") as f:
         f.write(output_from_parsed_template)
 
     # generate __init__.py file
     generate_init(environment_parent_path)
+
 
 # generate_types creates the types.py for the experiment
 def generate_types(types_parent_path, types_config, litmus_env):
@@ -101,21 +114,25 @@ def generate_types(types_parent_path, types_config, litmus_env):
     # Load Jinja2 template
     template = litmus_env.get_template('./templates/types.tmpl')
     output_from_parsed_template = template.render(types_config)
+
     with open(types_filename, "w") as f:
         f.write(output_from_parsed_template)
 
     # generate __init__.py file   
     generate_init(types_parent_path)
 
+
 # generate_k8s_deployment creates the experiment kubernetes deployment manifest
 def generate_k8s_deployment(k8s_parent_path, k8s_config, litmus_env):
     k8s_filename = k8s_parent_path + '/' + 'test.yml'
 
     # Load Jinja2 template
-    template = litmus_env.get_template('./templates/experiment_k8s_deployment.tmpl')
+    template = litmus_env.get_template('./templates/experiment-k8s-deployment.tmpl')
     output_from_parsed_template = template.render(k8s_config)
+
     with open(k8s_filename, "w") as f:
         f.write(output_from_parsed_template)
+
 
 # generate_experiment creates the expriment.py file
 def generate_experiment(experiment_parent_path, experiment_name, experiment_config, litmus_env):
@@ -124,11 +141,13 @@ def generate_experiment(experiment_parent_path, experiment_name, experiment_conf
     # Load Jinja2 template
     template = litmus_env.get_template('./templates/experiment.tmpl')
     output_from_parsed_template = template.render(experiment_config)
+
     with open(experiment_filename, "w+") as f:
         f.write(output_from_parsed_template)
 
     # generate __init__.py file
     generate_init(experiment_parent_path)
+
 
 # generate_package creates the package manifest
 def generate_package(package_parent_path, config, package_name, litmus_env):
@@ -137,15 +156,18 @@ def generate_package(package_parent_path, config, package_name, litmus_env):
     # Load Jinja2 template
     template = litmus_env.get_template('./templates/package.tmpl')
     output_package = template.render(config)
+
     with open(package_filename, "w") as f:
         f.write(output_package)
+
 
 # create_dir create new directory
 def create_dir(path):
     if os.path.isdir(path) != True:
         os.makedirs(path)
 
-def generate_icon(chart_parent_path, litmus_root, image_name, litmus_env):
+
+def generate_icon(chart_parent_path, litmus_root, image_name):
     src_dir = litmus_root + "/contribute/developer-guide/icons/"
     dst_dir = chart_parent_path + '/' + "icons/"
     create_dir(dst_dir)
@@ -154,6 +176,7 @@ def generate_icon(chart_parent_path, litmus_root, image_name, litmus_env):
         shutil.copy(jpgfile, dst_dir)
         os.rename(dst_dir + '/' + 'k8s.png', dst_dir + '/' + image_name +'.png')
         
+
 def main():
     
     parser = argparse.ArgumentParser()
@@ -178,6 +201,13 @@ def main():
     # get name and category
     entity_name = config['name']
     category_name = config['category']
+
+    # Replace underscore (_) with hyphen (-)
+    # in entity_name_yaml and category_name_yaml
+    # for chart filenames and k8s objects
+    # like service-accounts, chart file names etc.
+    entity_name_k8s = entity_name.replace("_", "-")
+    category_name_k8s = category_name.replace("_", "-")
     
     env = Environment(loader = FileSystemLoader('./'), trim_blocks=True, lstrip_blocks=True, autoescape=select_autoescape(['yaml']))
     
@@ -185,10 +215,13 @@ def main():
     litmus_root = os.path.abspath(os.path.join("..", os.pardir))
     
     # initilise directories
-    exp_root_dir = litmus_root + '/experiments/' + '/' + config['category']
+    exp_root_dir = litmus_root + '/experiments/' + '/' + category_name
     create_dir(exp_root_dir)
-    experiment_root_dir = exp_root_dir + '/' + config['name']
+
+    experiment_root_dir = exp_root_dir + '/' + entity_name
     create_dir(experiment_root_dir)
+
+    # Generate init files
     generate_init(exp_root_dir)
 
     # if generate_type is chart, only generate the chart(top)-level CSV & package manifests 
@@ -201,21 +234,21 @@ def main():
         if chartType == "category" or chartType == "all":
 			
             # generate icon for category
-            generate_icon(chart_dir, litmus_root, category_name, env)
+            generate_icon(chart_dir, litmus_root, category_name_k8s)
             
             # generate category chartserviceversion
-            generate_csv_cat(chart_dir, category_name, config, env) 
+            generate_csv_cat(chart_dir, category_name_k8s, config, env) 
             
             # generate package
-            generate_package(chart_dir, config, category_name, env)
+            generate_package(chart_dir, config, category_name_k8s, env)
         
         if chartType == "experiment" or chartType == "all":
 			
             # generate icon for category
-            generate_icon(chart_dir, litmus_root, entity_name, env)
+            generate_icon(chart_dir, litmus_root, entity_name_k8s)
 
             # generate experiment charts
-            generate_csv(chart_dir, entity_name, config, env)
+            generate_csv(chart_dir, entity_name_k8s, config, env)
 
             # generate experiment-custom-resource
             generate_chart(chart_dir, config, env)
@@ -245,13 +278,13 @@ def main():
         generate_init(experiment_root_dir)
         
         # initialise chaosLib, environment and types directory
-        chaoslib_dir = litmus_root + '/chaosLib/litmus/' + config['name'] + '/lib'
-        environment_dir = litmus_root + '/pkg/' + config['category'] + '/environment'
-        types_dir = litmus_root + '/pkg/' + config['category'] + '/types'
+        chaoslib_dir = litmus_root + '/chaosLib/litmus/' + entity_name + '/lib'
+        environment_dir = litmus_root + '/pkg/' + category_name + '/environment'
+        types_dir = litmus_root + '/pkg/' + category_name + '/types'
         
         # create and generate __init__.py file in chaosLib experiment dir 
-        create_dir(litmus_root + '/chaosLib/litmus/' + config['name'])
-        generate_init(litmus_root + '/chaosLib/litmus/' + config['name'])
+        create_dir(litmus_root + '/chaosLib/litmus/' + entity_name)
+        generate_init(litmus_root + '/chaosLib/litmus/' + entity_name)
         
         # generate experiment.py
         generate_experiment(experiment_dir, entity_name, config, env)
@@ -268,7 +301,7 @@ def main():
         # generate k8s deployment
         generate_k8s_deployment(test_dir, config, env)
 
-        generate_init(litmus_root + '/pkg/' + config['category'])
+        generate_init(litmus_root + '/pkg/' + category_name)
 
         print("experiment created successfully")
     else:
