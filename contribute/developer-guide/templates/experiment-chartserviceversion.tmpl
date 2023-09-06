@@ -1,12 +1,12 @@
 apiVersion: litmuchaos.io/v1alpha1
 kind: ChartServiceVersion
 metadata:
-  name: {{ name }} 
+  name: {{ name | replace("_", "-") }}
   version: {{ version }}
   annotations:
-    categories: {{ category }}
+    categories: {{ category | replace("_", "-") }}
 spec:
-  displayName: {{ name }} 
+  displayName: {{ name | replace("_", "-") }}
   categoryDescription: >
     {{ description }} 
   keywords: 
@@ -20,8 +20,8 @@ spec:
   maturity: {{ maturity }}
   maintainers:
   {%- for i in maintainers %} 
-    - name: {{- i.name }} 
-      email: {{- i.email }} 
+    - name: {{ i.name }} 
+      email: {{ i.email }} 
   {%- endfor %} 
   minKubeVersion: {{ minkubernetesversion }} 
   provider: 
@@ -31,10 +31,10 @@ spec:
     app.kubernetes.io/version: latest
   links: 
   {%- for ref in references %} 
-    - name: {{- ref.name }} 
-      url: {{- ref.url }} 
+    - name: {{ ref.name }} 
+      url: {{ ref.url }} 
   {%- endfor %} 
   icon:
     - url: 
       mediatype: ""
-  chaosexpcrdlink: https://raw.githubusercontent.com/litmuschaos/chaos-charts/master/charts/{{ category }}/{{ name }}/experiment.yaml
+  chaosexpcrdlink: https://raw.githubusercontent.com/litmuschaos/chaos-charts/master/charts/{{ category | replace("_", "-") }}/{{ name | replace("_", "-") }}/experiment.yaml

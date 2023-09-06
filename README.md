@@ -39,7 +39,6 @@ To know more about LitmusChaos experiments [refer](https://litmuschaos.github.io
   - Now fork and clone [chaos-charts](https://github.com/litmuschaos/chaos-charts), Enter into [workflow](https://github.com/litmuschaos/chaos-charts/tree/master/workflows) directory.
     - Enter into `charts` directory to add charts which has been generated using sdk, for [reference](https://github.com/litmuschaos/chaos-charts/tree/master/charts/cassandra)
     - Enter into `workflow` directory and add workflow manifests for [reference](https://github.com/litmuschaos/chaos-charts/tree/master/workflows/podtato-head)
-    - **Note**: Update `sample_category` and `sample_exec_chaos` to `sample-category` and `sample-exec-chaos` inside manifest in every chart name while updating chaos-charts. Example: `sample_category.package.yaml` to `sample-category.package.yaml`
     - Connect your Git repository with chaos-center [ChaosHub](https://docs.litmuschaos.io/docs/concepts/chaoshub/)
   - Workflow can be added as a predefined workflow in Github and users can test by following the given steps:
     - Fork and clone [chaos-charts](https://github.com/litmuschaos/chaos-charts), now Enter into [workflow](https://github.com/litmuschaos/chaos-charts/tree/master/workflows) directory.
