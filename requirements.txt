@@ -6,7 +6,7 @@ decorator==5.0.9
 idna==2.10
 Jinja2==2.11.3
 kubernetes==17.17.0
-protobuf==3.17.1
+protobuf==3.18.3
 py==1.10.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
