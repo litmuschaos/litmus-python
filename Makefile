@@ -56,7 +56,7 @@ image-build:
 	@echo "-------------------------"
 	@echo "--> Build py-runner image" 
 	@echo "-------------------------"
-	@docker buildx build --file Dockerfile --progress plane --platform linux/arm64,linux/amd64 --no-cache --tag $(DOCKER_REPO)/$(DOCKER_IMAGE):$(DOCKER_TAG) .
+	@docker buildx build --file Dockerfile --progress plain --platform linux/arm64,linux/amd64 --no-cache --tag $(DOCKER_REPO)/$(DOCKER_IMAGE):$(DOCKER_TAG) .
 
 .PHONY: push
 push: docker.buildx litmus-py-push
